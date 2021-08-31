@@ -1,8 +1,12 @@
 <script>
+	import Header from "./Header.svelte";
 	let name = "mimily";
 </script>
 
 <main>
+	<div class="header">
+		<Header />
+	</div>
 	<h1>Hello {name}?</h1>
 	<p>
 		Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn
