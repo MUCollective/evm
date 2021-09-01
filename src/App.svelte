@@ -5,7 +5,7 @@
 
 <main>
 	<div class="header">
-		<Header />
+		<Header/>
 	</div>
 	<h1>Hello {name}?</h1>
 	<p>
