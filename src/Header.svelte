@@ -1,14 +1,7 @@
 <script>
+	let name = "exploratory modeling";
 </script>
 
-<div id="header">
-	hello
-
-	<!-- <div id='logo-tagline'>
-      Exploring transformer models in your browser! 
-    </div> -->
-
-</div>
 
 <style>
 	@import "define";
@@ -52,3 +45,7 @@
 		color: white;
 	}
 </style>
+
+<div id="header">
+	<h1>{name}!</h1>
+</div>
