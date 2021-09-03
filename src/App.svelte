@@ -1,29 +1,79 @@
 <script>
 	import Header from "./Header.svelte";
-	import {flip} from "svelte/animate";
-    import {dndzone} from "svelte-dnd-action";
-    let items = [
-        {id: 1, name: "item1"},
-        {id: 2, name: "item2"},
-        {id: 3, name: "item3"},
-        {id: 4, name: "item4"}
-    ];
-    const flipDurationMs = 300;
-    function handleDndConsider(e) {
-        items = e.detail.items;
-    }
-    function handleDndFinalize(e) {
-        items = e.detail.items;
-    }
+	import Chart from "./Chart.svelte";
+	import { flip } from "svelte/animate";
+	import { dndzone } from "svelte-dnd-action";
+	import { Grid, Row, Column } from "carbon-components-svelte";
+	import * as cars from '../public/data/cars.json'
+
+	console.log(cars);
+
+	let items = [
+		{ id: 1, name: "item1" },
+		{ id: 2, name: "item2" },
+		{ id: 3, name: "item3" },
+		{ id: 4, name: "item4" },
+	];
+	const flipDurationMs = 300;
+	function handleDndConsider(e) {
+		items = e.detail.items;
+	}
+	function handleDndFinalize(e) {
+		items = e.detail.items;
+	}
 </script>
 
 <main>
 	<Header />
-	<section use:dndzone="{{items, flipDurationMs}}" on:consider="{handleDndConsider}" on:finalize="{handleDndFinalize}">
-		{#each items as item(item.id)}
-		<div animate:flip="{{duration: flipDurationMs}}">{item.name}</div>
-		{/each}
-	</section>
+	<Grid fullWidth>
+		<Row>
+			<Column style="outline: 1px solid var(--cds-interactive-04)">
+				drag zone
+				<section
+					use:dndzone={{ items, flipDurationMs }}
+					on:consider={handleDndConsider}
+					on:finalize={handleDndFinalize}
+				>
+					{#each items as item (item.id)}
+						<div animate:flip={{ duration: flipDurationMs }}>
+							{item.name}
+						</div>
+					{/each}
+				</section>
+			</Column>
+			<Column style="outline: 1px solid var(--cds-interactive-04)"
+				>drop zone
+				<section
+					use:dndzone={{ items, flipDurationMs }}
+					on:consider={handleDndConsider}
+					on:finalize={handleDndFinalize}
+				>
+					{#each items as item (item.id)}
+						<div animate:flip={{ duration: flipDurationMs }}>
+							{item.name}
+						</div>
+					{/each}
+				</section>
+			</Column>
+
+			<Column style="outline: 1px solid var(--cds-interactive-04)"
+				>chart zone
+				<!-- <section
+					use:dndzone={{ items, flipDurationMs }}
+					on:consider={handleDndConsider}
+					on:finalize={handleDndFinalize}
+				>
+					{#each items as item (item.id)}
+						<div animate:flip={{ duration: flipDurationMs }}>
+							{item.name}
+						</div>
+					{/each}
+				</section> -->
+				<Chart />
+				<p>{cars.mykey}</p>
+			</Column>
+		</Row>
+	</Grid>
 </main>
 
 <style>

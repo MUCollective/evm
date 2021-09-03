@@ -47,5 +47,5 @@
 </style>
 
 <div id="header">
-	<h1>{name}!</h1>
+	<h1>{name}</h1>
 </div>
