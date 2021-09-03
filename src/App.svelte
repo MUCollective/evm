@@ -4,9 +4,21 @@
 	import { flip } from "svelte/animate";
 	import { dndzone } from "svelte-dnd-action";
 	import { Grid, Row, Column } from "carbon-components-svelte";
-	import * as cars from '../public/data/cars.json'
+	import { onMount } from "svelte";
+	import * as d3 from "d3";
 
-	console.log(cars);
+	// import * as cars from './data/cars.json'
+
+	// $: cars && console.log(cars);
+
+	let data = null;
+
+	onMount(async () => {
+		console.log("loading data");
+		data = await d3.json("./data/cars.json");
+		console.log("loaded data");
+		console.log(data);
+	});
 
 	let items = [
 		{ id: 1, name: "item1" },
@@ -70,7 +82,7 @@
 					{/each}
 				</section> -->
 				<Chart />
-				<p>{cars.mykey}</p>
+				<!-- <p>{cars.mykey}</p> -->
 			</Column>
 		</Row>
 	</Grid>
