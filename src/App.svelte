@@ -13,11 +13,14 @@
 
 	let data = null;
 
+	// export let name = null;
+
 	onMount(async () => {
 		console.log("loading data");
 		data = await d3.json("./data/cars.json");
 		console.log("loaded data");
 		console.log(data);
+		console.log("hello!!!!");
 	});
 
 	let items = [

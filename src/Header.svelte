@@ -1,5 +1,5 @@
 <script>
-	let name = "exploratory modeling";
+	const name = "exploratory modeling";
 </script>
 
 
