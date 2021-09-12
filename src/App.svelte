@@ -10,11 +10,8 @@
 
 	let data = null,
 		mounted = false;
-		// items = null,
-		// curDragIdx = null,
-		// curDropId = null;
 
-	// TODO: generate drop zones from this spec programmatically
+	// controls the rendering of drag and drop elements
 	let dndState = [
 		{
 			id: "variables",
@@ -38,15 +35,6 @@
 		data = await d3.json("./data/cars.json");
 		console.log('loaded data', data);
 		// populate dropzone items with variable names from data
-		// items = [];
-		// Object.keys(data[0]).forEach((d, i) => {
-		// 	items.push({ 
-		// 		id: i, // gets overwritten by drag consider
-		// 		idx: i, 
-		// 		name: d,
-		// 		shelf: 'variables' // start on variables shelf
-		// 	});
-		// });
 		Object.keys(data[0]).forEach((d, i) => {
 			dndState[0].items.push({ 
 				id: i, // gets overwritten by drag consider
@@ -60,26 +48,16 @@
 
 	const flipDurationMs = 300;
 	function handleDndConsider(shelfId, e) {
-		console.log(e);
+		// console.log(e);
 		const shelfIdx = dndState.findIndex(d => d.id === shelfId);
 		dndState[shelfIdx].items = e.detail.items;
 		dndState = [...dndState];
-		// if (e.detail.info.trigger === "draggedEntered") {
-		// 	// get idx for dragged variable
-		// 	curDragIdx = e.detail.items.filter((d) => (d.hasOwnProperty('isDndShadowItem') && d.isDndShadowItem))[0].idx;
-		// 	// get shelf name from event handler
-		// 	curDropId = e.srcElement.id;
-		// }
 	}
 	function handleDndFinalize(shelfId, e) {
-		console.log(e);
+		// console.log(e);
 		const shelfIdx = dndState.findIndex(d => d.id === shelfId);
 		dndState[shelfIdx].items = e.detail.items;
 		dndState = [...dndState];
-		// // reset shelf for current variable
-		// let cur = items.filter((d) => d.idx === curDragIdx);
-		// cur[0].shelf = curDropId;
-		// console.log(cur);
 	}
 </script>
 
@@ -135,45 +113,6 @@
 							</Row>
 						{/if}
 					{/each}
-					<!-- <Row style="padding: 20px;">
-						<Column style="outline: 1px solid var(--cds-interactive-04)">
-							Horizontal position (drop zone)
-							{#if items}
-								<section
-									use:dndzone={{ items: items, flipDurationMs }}
-									on:consider={handleDndConsider}
-									on:finalize={handleDndFinalize}
-									id='x-drop'
-								>
-									{#each items.filter((d) => d.shelf === 'x-drop') as item (item.id)}
-										<div animate:flip={{ duration: flipDurationMs }}>
-											{item.name}
-										</div>
-									{/each}
-								</section>
-							{/if}
-						</Column>
-					</Row>
-					
-					<Row style="padding: 20px;">
-						<Column style="outline: 1px solid var(--cds-interactive-04)">
-							Vertical position (drop zone)
-							{#if items}
-								<section
-									use:dndzone={{ items: items, flipDurationMs }}
-									on:consider={handleDndConsider}
-									on:finalize={handleDndFinalize}
-									id='y-drop'
-								>
-									{#each items.filter((d) => d.shelf === 'x-drop') as item (item.id)}
-										<div animate:flip={{ duration: flipDurationMs }}>
-											{item.name}
-										</div>
-									{/each}
-								</section>
-							{/if} 
-						</Column>
-					</Row> -->
 				</Column>
 
 				<Column style="outline: 1px solid var(--cds-interactive-04)"
