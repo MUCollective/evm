@@ -46,6 +46,6 @@
 	}
 </style>
 
-<div id="header">
+<div id="header" style="margin: 0px 0px 20px 0px;">
 	<h1>{name}</h1>
 </div>

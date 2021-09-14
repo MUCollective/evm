@@ -1,31 +1,34 @@
 <script>
 	import Header from "./Header.svelte";
 	import Chart from "./Chart.svelte";
+	// import ChartVL from "./ChartVL.svelte";
 	import { flip } from "svelte/animate";
 	import { dndzone } from "svelte-dnd-action";
-	import { Grid, Row, Column } from "carbon-components-svelte";
+	import { Grid, Row, Column, Button } from "carbon-components-svelte";
 	import { onMount } from "svelte";
 	import * as d3 from "d3";
 
 
 	let data = null,
-		mounted = false;
+		mounted = false,
+		charting = false,
+		modeling = false;
 
 	// controls the rendering of drag and drop elements
 	let dndState = [
 		{
 			id: "variables",
-			name: "Dataset variables (drag zone)",
+			name: "Dataset (drag zone)",
 			items: []
 		},
 		{
 			id: "x-drop",
-			name: "Horizontal position (drop zone)",
+			name: "x-axis (drop zone)",
 			items: []
 		},
 		{
 			id: "y-drop",
-			name: "Vertical position (drop zone)",
+			name: "y-axis (drop zone)",
 			items: []
 		}
 	];
@@ -46,6 +49,7 @@
 		mounted = true;
 	});
 
+	// helper functions for drag and drop
 	const flipDurationMs = 300;
 	function handleDndConsider(shelfId, e) {
 		// console.log(e);
@@ -58,6 +62,15 @@
 		const shelfIdx = dndState.findIndex(d => d.id === shelfId);
 		dndState[shelfIdx].items = e.detail.items;
 		dndState = [...dndState];
+	}
+	// helper functions for modeling
+	function bootstrap(e) {
+		console.log(e);
+		modeling = true;
+	}
+	function model(e) {
+		console.log(e);
+		modeling = true;
 	}
 </script>
 
@@ -77,6 +90,8 @@
 				-->
 				<Column style="outline: 1px solid var(--cds-interactive-04)">
 					{dndState[0].name}
+					<br />
+					<br />
 					<section
 						use:dndzone={{items: dndState[0].items, flipDurationMs }}
 						on:consider={(e) => handleDndConsider(dndState[0].id, e)}
@@ -93,9 +108,11 @@
 				<Column>
 					{#each dndState as shelf}
 						{#if shelf.id !== 'variables'}
-							<Row style="padding: 20px; height: 150px;">
+							<Row style="padding: 0px 20px 20px 20px; height: 100px;">
 								<Column style="outline: 1px solid var(--cds-interactive-04);">
 									{shelf.name}
+									<br />
+									<br />
 									<section
 										use:dndzone={{ items: shelf.items, flipDurationMs }}
 										on:consider={(e) => handleDndConsider(shelf.id, e)}
@@ -116,7 +133,9 @@
 				</Column>
 
 				<Column style="outline: 1px solid var(--cds-interactive-04)"
-					>chart zone
+					>Visualization canvas
+					<br />
+					<br />
 					<!-- <section
 						use:dndzone={{ items, flipDurationMs }}
 						on:consider={handleDndConsider}
@@ -129,7 +148,28 @@
 						{/each}
 					</section> -->
 					<Chart />
+					<!-- <ChartVL /> -->
 					<!-- <p>{cars.mykey}</p> -->
+				</Column>
+
+				<Column style="outline: 1px solid var(--cds-interactive-04)"
+					>Show me a model
+					<br />
+					<br />
+					<!-- Model bar goes here -->
+					<Row style="padding: 0px 20px 20px 20px; height: 40px;">
+						<Column>
+							<Button on:click={bootstrap}>What if this pattern was noise?</Button>
+						</Column>
+					</Row>
+					<br />
+					<br />
+					<Row style="padding: 0px 20px 20px 20px; height: 40px;">
+						<Column>
+							<Button on:click={model}>Create a model for the current chart.</Button>
+						</Column>
+					</Row>
+					<!-- Other automated what ifs suggested below -->
 				</Column>
 			</Row>
 		{/if}

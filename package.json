@@ -11,6 +11,7 @@
     "@rollup/plugin-commonjs": "^17.0.0",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^11.0.0",
+    "@tsconfig/svelte": "^2.0.1",
     "@types/d3": "^7.0.0",
     "carbon-components-svelte": "^0.42.2",
     "rollup": "^2.3.4",
@@ -23,6 +24,10 @@
   },
   "dependencies": {
     "d3": "^7.0.1",
-    "sirv-cli": "^1.0.0"
+    "sirv-cli": "^1.0.0",
+    "svelte-vega": "^1.1.0",
+    "vega": "^5.20.2",
+    "vega-embed": "^6.18.2",
+    "vega-lite": "^5.1.1"
   }
 }

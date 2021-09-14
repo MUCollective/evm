@@ -39,9 +39,10 @@ export default {
 	},
 	plugins: [
 
-		json({
-			compact: true
-		  }),
+		// json({
+		// 	compact: true
+		//   }),
+		json(),
 		svelte({
 			compilerOptions: {
 				// enable run-time checks when not in production
