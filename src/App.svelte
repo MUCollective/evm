@@ -8,7 +8,6 @@
 	import { onMount } from "svelte";
 	import * as d3 from "d3";
 
-
 	let data = null,
 		mounted = false,
 		charting = false,
@@ -19,33 +18,33 @@
 		{
 			id: "variables",
 			name: "Dataset (drag zone)",
-			items: []
+			items: [],
 		},
 		{
 			id: "x-drop",
 			name: "x-axis (drop zone)",
-			items: []
+			items: [],
 		},
 		{
 			id: "y-drop",
 			name: "y-axis (drop zone)",
-			items: []
-		}
+			items: [],
+		},
 	];
 
 	onMount(async () => {
 		// load data
 		data = await d3.json("./data/cars.json");
-		console.log('loaded data', data);
+		console.log("loaded data", data);
 		// populate dropzone items with variable names from data
 		Object.keys(data[0]).forEach((d, i) => {
-			dndState[0].items.push({ 
+			dndState[0].items.push({
 				id: i, // gets overwritten by drag consider
-				idx: i, 
-				name: d
+				idx: i,
+				name: d,
 			});
 		});
-		console.log('drop zone state', dndState);
+		console.log("drop zone state", dndState);
 		mounted = true;
 	});
 
@@ -53,13 +52,13 @@
 	const flipDurationMs = 300;
 	function handleDndConsider(shelfId, e) {
 		// console.log(e);
-		const shelfIdx = dndState.findIndex(d => d.id === shelfId);
+		const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
 		dndState[shelfIdx].items = e.detail.items;
 		dndState = [...dndState];
 	}
 	function handleDndFinalize(shelfId, e) {
 		// console.log(e);
-		const shelfIdx = dndState.findIndex(d => d.id === shelfId);
+		const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
 		dndState[shelfIdx].items = e.detail.items;
 		dndState = [...dndState];
 	}
@@ -88,49 +87,76 @@
 					- format drop zones and draggable blocks similar to Polestar
 					- use css to modify layout to roughly match Polestar, leaving room for the modeling sidebar on the right
 				-->
-				<Column style="outline: 1px solid var(--cds-interactive-04)">
-					{dndState[0].name}
-					<br />
-					<br />
-					<section
-						use:dndzone={{items: dndState[0].items, flipDurationMs }}
-						on:consider={(e) => handleDndConsider(dndState[0].id, e)}
-						on:finalize={(e) => handleDndFinalize(dndState[0].id, e)}
-						id={dndState[0].id}
+				<div class="data-panel">
+					<Column
+						style="outline: 1px solid var(--cds-interactive-04)"
 					>
-						{#each dndState[0].items as item (item.id)}
-							<div animate:flip={{ duration: flipDurationMs }}>
-								{item.name}
-							</div>
-						{/each}
-					</section>
-				</Column>
-				<Column>
-					{#each dndState as shelf}
-						{#if shelf.id !== 'variables'}
-							<Row style="padding: 0px 20px 20px 20px; height: 100px;">
-								<Column style="outline: 1px solid var(--cds-interactive-04);">
-									{shelf.name}
-									<br />
-									<br />
-									<section
-										use:dndzone={{ items: shelf.items, flipDurationMs }}
-										on:consider={(e) => handleDndConsider(shelf.id, e)}
-										on:finalize={(e) => handleDndFinalize(shelf.id, e)}
-										id={shelf.id}
-										style="height: 100%;"
+						{dndState[0].name}
+						<br />
+						<br />
+						<section
+							use:dndzone={{
+								items: dndState[0].items,
+								flipDurationMs,
+							}}
+							on:consider={(e) =>
+								handleDndConsider(dndState[0].id, e)}
+							on:finalize={(e) =>
+								handleDndFinalize(dndState[0].id, e)}
+							id={dndState[0].id}
+						>
+							{#each dndState[0].items as item (item.id)}
+								<div
+									animate:flip={{ duration: flipDurationMs }}
+								>
+									{item.name}
+								</div>
+							{/each}
+						</section>
+					</Column>
+				</div>
+				<div class="encoding">
+					<Column>
+						{#each dndState as shelf}
+							{#if shelf.id !== "variables"}
+								<Row
+									style="padding: 0px 20px 20px 20px; height: 100px;"
+								>
+									<Column
+										style="outline: 1px solid var(--cds-interactive-04);"
 									>
-										{#each shelf.items as item (item.id)}
-											<div animate:flip={{ duration: flipDurationMs }}>
-												{item.name}
-											</div>
-										{/each}
-									</section>
-								</Column>
-							</Row>
-						{/if}
-					{/each}
-				</Column>
+										{shelf.name}
+										<br />
+										<br />
+										<section
+											use:dndzone={{
+												items: shelf.items,
+												flipDurationMs,
+											}}
+											on:consider={(e) =>
+												handleDndConsider(shelf.id, e)}
+											on:finalize={(e) =>
+												handleDndFinalize(shelf.id, e)}
+											id={shelf.id}
+											style="height: 100%;"
+										>
+											{#each shelf.items as item (item.id)}
+												<div
+													animate:flip={{
+														duration:
+															flipDurationMs,
+													}}
+												>
+													{item.name}
+												</div>
+											{/each}
+										</section>
+									</Column>
+								</Row>
+							{/if}
+						{/each}
+					</Column>
+				</div>
 
 				<Column style="outline: 1px solid var(--cds-interactive-04)"
 					>Visualization canvas
@@ -151,32 +177,39 @@
 					<!-- <ChartVL /> -->
 					<!-- <p>{cars.mykey}</p> -->
 				</Column>
-
-				<Column style="outline: 1px solid var(--cds-interactive-04)"
-					>Show me a model
-					<br />
-					<br />
-					<!-- Model bar goes here -->
-					<Row style="padding: 0px 20px 20px 20px; height: 40px;">
-						<Column>
-							<Button on:click={bootstrap}>What if this pattern was noise?</Button>
-						</Column>
-					</Row>
-					<br />
-					<br />
-					<Row style="padding: 0px 20px 20px 20px; height: 40px;">
-						<Column>
-							<Button on:click={model}>Create a model for the current chart.</Button>
-						</Column>
-					</Row>
-					<!-- Other automated what ifs suggested below -->
-				</Column>
+				<div class="model">
+					<Column style="outline: 1px solid var(--cds-interactive-04)"
+						>Show me a model
+						<br />
+						<br />
+						<!-- Model bar goes here -->
+						<Row style="padding: 0px 20px 20px 20px; height: 40px;">
+							<Column>
+								<Button on:click={bootstrap}
+									>What if this pattern was noise?</Button
+								>
+							</Column>
+						</Row>
+						<br />
+						<br />
+						<Row style="padding: 0px 20px 20px 20px; height: 40px;">
+							<Column>
+								<Button on:click={model}
+									>Create a model for the current chart.</Button
+								>
+							</Column>
+						</Row>
+						<!-- Other automated what ifs suggested below -->
+					</Column>
+				</div>
 			</Row>
 		{/if}
 	</Grid>
 </main>
 
 <style>
+	/* @import "define"; */
+
 	main {
 		text-align: center;
 		padding: 1em;
@@ -184,11 +217,12 @@
 		margin: 0 auto;
 	}
 
-	h1 {
-		color: #ff3e00;
-		text-transform: uppercase;
-		font-size: 4em;
-		font-weight: 100;
+	.data-panel {
+		background-color: #38425d;
+	}
+
+	.encoding, .model {
+		background-color: #e2e9f3;
 	}
 
 	@media (min-width: 640px) {
