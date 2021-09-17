@@ -75,135 +75,162 @@
 
 <main>
 	<Header />
+
 	<Grid fullWidth>
-		{#if mounted}
-			<Row>
-				<!-- TODO:
-					+ add Vertical position (drop zone) with it's own shelf id ('y-drop')
-					+ create a json state that controls what renders on all of the shelves, keeping track of items across shelves
-					+ programmatically generate drop zones from a json spec
-					+ figure out why drop zones don't work, why trigger is always "droppedOutsideOfAny" (problem was that drop zones had no height; added css below to fix)
-					- link Chart to variables in drop zone
-					- format drop zones and draggable blocks similar to Polestar
-					- use css to modify layout to roughly match Polestar, leaving room for the modeling sidebar on the right
-				-->
-				<div class="data-panel">
-					<Column
-						style="outline: 1px solid var(--cds-interactive-04)"
-					>
-						{dndState[0].name}
-						<br />
-						<br />
-						<section
-							use:dndzone={{
-								items: dndState[0].items,
-								flipDurationMs,
-							}}
-							on:consider={(e) =>
-								handleDndConsider(dndState[0].id, e)}
-							on:finalize={(e) =>
-								handleDndFinalize(dndState[0].id, e)}
-							id={dndState[0].id}
+		<div class="content" style="text-align: left; ">
+			{#if mounted}
+				<Row>
+					<!-- TODO:
+						+ add Vertical position (drop zone) with it's own shelf id ('y-drop')
+						+ create a json state that controls what renders on all of the shelves, keeping track of items across shelves
+						+ programmatically generate drop zones from a json spec
+						+ figure out why drop zones don't work, why trigger is always "droppedOutsideOfAny" (problem was that drop zones had no height; added css below to fix)
+						- link Chart to variables in drop zone
+						- format drop zones and draggable blocks similar to Polestar
+						- use css to modify layout to roughly match Polestar, leaving room for the modeling sidebar on the right
+					-->
+					<div class="data-panel card">
+						<Column
+							style="outline: 1px solid var(--cds-interactive-04)"
 						>
-							{#each dndState[0].items as item (item.id)}
-								<div
-									animate:flip={{ duration: flipDurationMs }}
-								>
+						<h3 style="color:white; ">Data</h3>
+						<div class="dataset-name" style="color: white;">
+
+							{dndState[0].name}
+						</div>
+							
+							<br />
+							<br />
+							<section 
+								use:dndzone={{
+									items: dndState[0].items,
+									flipDurationMs,
+								}}
+								on:consider={(e) =>
+									handleDndConsider(dndState[0].id, e)}
+								on:finalize={(e) =>
+									handleDndFinalize(dndState[0].id, e)}
+								id={dndState[0].id}
+							>
+								{#each dndState[0].items as item (item.id)}
+									<div 
+										animate:flip={{
+											duration: flipDurationMs,
+										}}
+										style="background-color: rgba(237,237,237,.8); 
+										margin-bottom:5px;
+										border-radius: 3px;
+										height: 20px;
+										font: 14px;
+										width: 180px;"
+									>
+										{item.name}
+									</div>
+								{/each}
+							</section>
+						</Column>
+					</div>
+					<div class="encoding card">
+						<Column>
+							{#each dndState as shelf}
+								{#if shelf.id !== "variables"}
+									<Row
+										style="padding: 0px 20px 20px 20px; height: 100px;"
+									>
+										<Column
+											style="outline: 1px solid var(--cds-interactive-04);"
+										>
+											{shelf.name}
+											<br />
+											<br />
+											<section
+												use:dndzone={{
+													items: shelf.items,
+													flipDurationMs,
+												}}
+												on:consider={(e) =>
+													handleDndConsider(
+														shelf.id,
+														e
+													)}
+												on:finalize={(e) =>
+													handleDndFinalize(
+														shelf.id,
+														e
+													)}
+												id={shelf.id}
+												style="height: 100%;"
+											>
+												{#each shelf.items as item (item.id)}
+													<div
+														animate:flip={{
+															duration:
+																flipDurationMs,
+														}}
+													>
+														{item.name}
+													</div>
+												{/each}
+											</section>
+										</Column>
+									</Row>
+								{/if}
+							{/each}
+						</Column>
+					</div>
+
+					<Column style="outline: 1px solid var(--cds-interactive-04)"
+						>Visualization canvas
+						<br />
+						<br />
+						<!-- <section
+							use:dndzone={{ items, flipDurationMs }}
+							on:consider={handleDndConsider}
+							on:finalize={handleDndFinalize}
+						>
+							{#each items as item (item.id)}
+								<div animate:flip={{ duration: flipDurationMs }}>
 									{item.name}
 								</div>
 							{/each}
-						</section>
+						</section> -->
+						<Chart />
+						<!-- <ChartVL /> -->
+						<!-- <p>{cars.mykey}</p> -->
 					</Column>
-				</div>
-				<div class="encoding">
-					<Column>
-						{#each dndState as shelf}
-							{#if shelf.id !== "variables"}
-								<Row
-									style="padding: 0px 20px 20px 20px; height: 100px;"
-								>
-									<Column
-										style="outline: 1px solid var(--cds-interactive-04);"
+					<div class="model card">
+						<Column
+							style="outline: 1px solid var(--cds-interactive-04)"
+							>Show me a model
+							<br />
+							<br />
+							<!-- Model bar goes here -->
+							<Row
+								style="padding: 0px 20px 20px 20px; height: 40px;"
+							>
+								<Column>
+									<Button on:click={bootstrap}
+										>What if this pattern was noise?</Button
 									>
-										{shelf.name}
-										<br />
-										<br />
-										<section
-											use:dndzone={{
-												items: shelf.items,
-												flipDurationMs,
-											}}
-											on:consider={(e) =>
-												handleDndConsider(shelf.id, e)}
-											on:finalize={(e) =>
-												handleDndFinalize(shelf.id, e)}
-											id={shelf.id}
-											style="height: 100%;"
-										>
-											{#each shelf.items as item (item.id)}
-												<div
-													animate:flip={{
-														duration:
-															flipDurationMs,
-													}}
-												>
-													{item.name}
-												</div>
-											{/each}
-										</section>
-									</Column>
-								</Row>
-							{/if}
-						{/each}
-					</Column>
-				</div>
-
-				<Column style="outline: 1px solid var(--cds-interactive-04)"
-					>Visualization canvas
-					<br />
-					<br />
-					<!-- <section
-						use:dndzone={{ items, flipDurationMs }}
-						on:consider={handleDndConsider}
-						on:finalize={handleDndFinalize}
-					>
-						{#each items as item (item.id)}
-							<div animate:flip={{ duration: flipDurationMs }}>
-								{item.name}
-							</div>
-						{/each}
-					</section> -->
-					<Chart />
-					<!-- <ChartVL /> -->
-					<!-- <p>{cars.mykey}</p> -->
-				</Column>
-				<div class="model">
-					<Column style="outline: 1px solid var(--cds-interactive-04)"
-						>Show me a model
-						<br />
-						<br />
-						<!-- Model bar goes here -->
-						<Row style="padding: 0px 20px 20px 20px; height: 40px;">
-							<Column>
-								<Button on:click={bootstrap}
-									>What if this pattern was noise?</Button
-								>
-							</Column>
-						</Row>
-						<br />
-						<br />
-						<Row style="padding: 0px 20px 20px 20px; height: 40px;">
-							<Column>
-								<Button on:click={model}
-									>Create a model for the current chart.</Button
-								>
-							</Column>
-						</Row>
-						<!-- Other automated what ifs suggested below -->
-					</Column>
-				</div>
-			</Row>
-		{/if}
+								</Column>
+							</Row>
+							<br />
+							<br />
+							<Row
+								style="padding: 0px 20px 20px 20px; height: 40px;"
+							>
+								<Column>
+									<Button on:click={model}
+										>Create a model for the current chart.</Button
+									>
+								</Column>
+							</Row>
+							<!-- Other automated what ifs suggested below -->
+						</Column>
+					</div>
+				</Row>
+			{/if}
+		</div>
 	</Grid>
 </main>
 
@@ -212,17 +239,30 @@
 
 	main {
 		text-align: center;
-		padding: 1em;
-		max-width: 240px;
+		/* padding: 1em; */
+		/* max-width: 240px; */
 		margin: 0 auto;
+		/* disable scrolling */
+		overflow: hidden;
+	}
+
+	.content {
+		padding-left: 0%;
+		padding-right: 0%;
 	}
 
 	.data-panel {
 		background-color: #38425d;
 	}
 
-	.encoding, .model {
+	.encoding,
+	.model {
 		background-color: #e2e9f3;
+	}
+
+	.card {
+		height: 100vh;
+		display: block;
 	}
 
 	@media (min-width: 640px) {
