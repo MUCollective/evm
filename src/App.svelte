@@ -84,7 +84,8 @@
 						+ add Vertical position (drop zone) with it's own shelf id ('y-drop')
 						+ create a json state that controls what renders on all of the shelves, keeping track of items across shelves
 						+ programmatically generate drop zones from a json spec
-						+ figure out why drop zones don't work, why trigger is always "droppedOutsideOfAny" (problem was that drop zones had no height; added css below to fix)
+						+ figure out why drop zones don't work, why trigger is always "droppedOutsideOfAny" 
+						  (problem was that drop zones had no height; added css below to fix)
 						- link Chart to variables in drop zone
 						- format drop zones and draggable blocks similar to Polestar
 						- use css to modify layout to roughly match Polestar, leaving room for the modeling sidebar on the right
@@ -132,16 +133,19 @@
 					</div>
 					<div class="encoding card">
 						<Column>
+							<h3 style="color:#38425d; ">Encoding</h3>
 							{#each dndState as shelf}
 								{#if shelf.id !== "variables"}
 									<Row
 										style="padding: 0px 20px 20px 20px; height: 100px;"
 									>
+									
 										<Column
 											style="outline: 1px solid var(--cds-interactive-04);"
 										>
 											{shelf.name}
 											<br />
+											
 											<br />
 											<section
 												use:dndzone={{
