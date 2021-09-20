@@ -22,12 +22,12 @@
 		},
 		{
 			id: "x-drop",
-			name: "x-axis (drop zone)",
+			name: "x",
 			items: [],
 		},
 		{
 			id: "y-drop",
-			name: "y-axis (drop zone)",
+			name: "y",
 			items: [],
 		},
 	];
@@ -44,7 +44,7 @@
 				name: d,
 			});
 		});
-		console.log("drop zone state", dndState);
+		console.log("drop zone state (dndState)", dndState);
 		mounted = true;
 	});
 
@@ -90,16 +90,18 @@
 						- format drop zones and draggable blocks similar to Polestar
 						- use css to modify layout to roughly match Polestar, leaving room for the modeling sidebar on the right
 					-->
+
+					<!-- data panel -->
 					<div class="data-panel card">
 						<Column
 							style="outline: 1px solid var(--cds-interactive-04)"
 						>
 							<h3 style="color:white; ">Data</h3>
 							<div class="dataset-name" style="color: white;">
+								<!-- title: Dataset (drag zone) -->
 								{dndState[0].name}
 							</div>
 
-							<br />
 							<br />
 							<section
 								use:dndzone={{
@@ -130,6 +132,9 @@
 							</section>
 						</Column>
 					</div>
+					<!-- end of data panel -->
+
+					<!-- encoding panel -->
 					<div class="encoding card">
 						<Column>
 							<h3 style="color:#38425d; ">Encoding</h3>
@@ -138,42 +143,56 @@
 									<Row
 										style="padding: 0px 20px 20px 20px; height: 100px;"
 									>
+										<div class="group">
+											<div class="encoding-label">
+												{shelf.name}
+											</div>
+											<div class="drop-field">
+												
+												<section
+													use:dndzone={{
+														items: shelf.items,
+														flipDurationMs,
+													}}
+													on:consider={(e) =>
+														handleDndConsider(
+															shelf.id,
+															e
+														)}
+													on:finalize={(e) =>
+														handleDndFinalize(
+															shelf.id,
+															e
+														)}
+													id={shelf.id}
+													style="height: 100%;"
+												>
+												{#if shelf.items.length == 0}
+													<span class="placeholder">
+														drop a field here
+													</span>
+												{/if}
+													<!-- after dropped -->
+													{#each shelf.items as item (item.id)}
+														<div
+															animate:flip={{
+																duration:
+																	flipDurationMs,
+															}}
+														>
+															{item.name}
+														</div>
+													{/each}
+												</section>
+												<!-- <span class="placeholder">
+												drop a field here
+											</span> -->
+											</div>
+										</div>
 										<Column
 											style="outline: 1px solid var(--cds-interactive-04);"
 										>
-											{shelf.name}
-											<br />
-
-											<br />
-											<section
-												use:dndzone={{
-													items: shelf.items,
-													flipDurationMs,
-												}}
-												on:consider={(e) =>
-													handleDndConsider(
-														shelf.id,
-														e
-													)}
-												on:finalize={(e) =>
-													handleDndFinalize(
-														shelf.id,
-														e
-													)}
-												id={shelf.id}
-												style="height: 100%;"
-											>
-												{#each shelf.items as item (item.id)}
-													<div
-														animate:flip={{
-															duration:
-																flipDurationMs,
-														}}
-													>
-														{item.name}
-													</div>
-												{/each}
-											</section>
+											<!-- {shelf.name} -->
 										</Column>
 									</Row>
 								{/if}
@@ -187,10 +206,10 @@
 									</span>
 								</div>
 							</div>
-	
+
 							<div class="group">
 								<div class="encoding-label">color</div>
-								<div class="drop-field" >
+								<div class="drop-field">
 									<span class="placeholder">
 										drop a field here
 									</span>
@@ -220,12 +239,13 @@
 									</span>
 								</div>
 							</div>
-	
+
 							<h3 style="color:#38425d; ">Filter</h3>
 						</Column>
-						
 					</div>
+					<!-- end of encoding panel -->
 
+					<!-- chart canvas -->
 					<Column style="outline: 1px solid var(--cds-interactive-04)"
 						>Visualization canvas
 						<br />
@@ -245,6 +265,9 @@
 						<!-- <ChartVL /> -->
 						<!-- <p>{cars.mykey}</p> -->
 					</Column>
+					<!-- end of chart canvas -->
+
+					<!-- model panel -->
 					<div class="model card">
 						<Column
 							style="outline: 1px solid var(--cds-interactive-04)"
@@ -277,6 +300,7 @@
 							<!-- Other automated what ifs suggested below -->
 						</Column>
 					</div>
+					<!-- end of model panel -->
 				</Row>
 			{/if}
 		</div>
