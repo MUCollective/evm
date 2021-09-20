@@ -94,15 +94,14 @@
 						<Column
 							style="outline: 1px solid var(--cds-interactive-04)"
 						>
-						<h3 style="color:white; ">Data</h3>
-						<div class="dataset-name" style="color: white;">
+							<h3 style="color:white; ">Data</h3>
+							<div class="dataset-name" style="color: white;">
+								{dndState[0].name}
+							</div>
 
-							{dndState[0].name}
-						</div>
-							
 							<br />
 							<br />
-							<section 
+							<section
 								use:dndzone={{
 									items: dndState[0].items,
 									flipDurationMs,
@@ -114,7 +113,7 @@
 								id={dndState[0].id}
 							>
 								{#each dndState[0].items as item (item.id)}
-									<div 
+									<div
 										animate:flip={{
 											duration: flipDurationMs,
 										}}
@@ -139,13 +138,12 @@
 									<Row
 										style="padding: 0px 20px 20px 20px; height: 100px;"
 									>
-									
 										<Column
 											style="outline: 1px solid var(--cds-interactive-04);"
 										>
 											{shelf.name}
 											<br />
-											
+
 											<br />
 											<section
 												use:dndzone={{
@@ -180,7 +178,52 @@
 									</Row>
 								{/if}
 							{/each}
+							<h3 style="color:#38425d; ">Marks</h3>
+							<div class="group">
+								<div class="encoding-label">size</div>
+								<div class="drop-field">
+									<span class="placeholder">
+										drop a field here
+									</span>
+								</div>
+							</div>
+	
+							<div class="group">
+								<div class="encoding-label">color</div>
+								<div class="drop-field" >
+									<span class="placeholder">
+										drop a field here
+									</span>
+								</div>
+							</div>
+							<div class="group">
+								<div class="encoding-label">shape</div>
+								<div class="drop-field">
+									<span class="placeholder">
+										drop a field here
+									</span>
+								</div>
+							</div>
+							<div class="group">
+								<div class="encoding-label">detail</div>
+								<div class="drop-field">
+									<span class="placeholder">
+										drop a field here
+									</span>
+								</div>
+							</div>
+							<div class="group">
+								<div class="encoding-label">text</div>
+								<div class="drop-field">
+									<span class="placeholder">
+										drop a field here
+									</span>
+								</div>
+							</div>
+	
+							<h3 style="color:#38425d; ">Filter</h3>
 						</Column>
+						
 					</div>
 
 					<Column style="outline: 1px solid var(--cds-interactive-04)"
@@ -205,7 +248,9 @@
 					<div class="model card">
 						<Column
 							style="outline: 1px solid var(--cds-interactive-04)"
-							>Show me a model
+						>
+							<h3 style="color:#38425d; ">Model</h3>
+							Show me a model
 							<br />
 							<br />
 							<!-- Model bar goes here -->
@@ -267,6 +312,49 @@
 	.card {
 		height: 100vh;
 		display: block;
+	}
+
+	.encoding-label {
+		border: 1px solid #ddd;
+		border-radius: 3px;
+		margin-bottom: 4px;
+		font-size: 11px;
+		background-color: rgba(55, 65, 92, 0.2);
+		display: block;
+		width: 45px;
+		margin: 0 0.2rem;
+		line-height: 22px;
+		flex-shrink: 0;
+		margin-right: 0px;
+	}
+
+	.group {
+		border: 1px solid #ddd;
+		border-radius: 3px;
+		margin-bottom: 4px;
+		font-size: 11px;
+		background-color: rgba(55, 65, 92, 0.2);
+		width: 100%;
+		display: flex;
+		height: 22px;
+	}
+
+	.placeholder {
+		display: block;
+		padding: 0 0.5em;
+		background-color: white;
+		border-radius: 3px;
+
+		text-overflow: ellipsis;
+
+		font-weight: normal;
+		color: #aaa;
+		/* width: 100%; */
+		height: 100%;
+	}
+
+	.drop-field {
+		width: 100%;
 	}
 
 	@media (min-width: 640px) {
