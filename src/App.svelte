@@ -140,63 +140,102 @@
 							<h3 style="color:#38425d; ">Encoding</h3>
 							{#each dndState as shelf}
 								{#if shelf.id !== "variables"}
-									<Row
-										style="padding: 0px 20px 20px 20px; height: 100px;"
-									>
-										<div class="group">
-											<div class="encoding-label">
-												{shelf.name}
-											</div>
-											<div class="drop-field">
-												
-												<section
-													use:dndzone={{
-														items: shelf.items,
-														flipDurationMs,
-													}}
-													on:consider={(e) =>
-														handleDndConsider(
-															shelf.id,
-															e
-														)}
-													on:finalize={(e) =>
-														handleDndFinalize(
-															shelf.id,
-															e
-														)}
-													id={shelf.id}
-													style="height: 100%;"
-												>
+									<div class="group">
+										<div class="encoding-label">
+											{shelf.name}
+										</div>
+										<div class="drop-field">
+											<section
+												use:dndzone={{
+													items: shelf.items,
+													flipDurationMs,
+												}}
+												on:consider={(e) =>
+													handleDndConsider(
+														shelf.id,
+														e
+													)}
+												on:finalize={(e) =>
+													handleDndFinalize(
+														shelf.id,
+														e
+													)}
+												id={shelf.id}
+												style="height: 100%;"
+											>
 												{#if shelf.items.length == 0}
 													<span class="placeholder">
 														drop a field here
 													</span>
 												{/if}
-													<!-- after dropped -->
-													{#each shelf.items as item (item.id)}
-														<div
-															animate:flip={{
-																duration:
-																	flipDurationMs,
-															}}
-														>
-															{item.name}
-														</div>
-													{/each}
-												</section>
-												<!-- <span class="placeholder">
-												drop a field here
-											</span> -->
-											</div>
+												<!-- after dropped -->
+												{#each shelf.items as item (item.id)}
+													<div
+														animate:flip={{
+															duration:
+																flipDurationMs,
+														}}
+													>
+														{item.name}
+													</div>
+												{/each}
+											</section>
 										</div>
-										<Column
-											style="outline: 1px solid var(--cds-interactive-04);"
-										>
-											<!-- {shelf.name} -->
-										</Column>
-									</Row>
+									</div>
 								{/if}
 							{/each}
+							<div class="group">
+								<div class="encoding-label">column</div>
+								<!-- {console.log("items", dndState.items)} -->
+								<div class="drop-field">
+									{#each dndState as shelf}
+										{#if shelf.id !== "variables"}
+											<div class="group">
+												<div class="drop-field">
+													<section
+														use:dndzone={{
+															items: shelf.items,
+															flipDurationMs,
+														}}
+														on:consider={(e) =>
+															handleDndConsider(
+																shelf.id,
+																e
+															)}
+														on:finalize={(e) =>
+															handleDndFinalize(
+																shelf.id,
+																e
+															)}
+														id={shelf.id}
+														style="height: 100%;"
+													>
+														{#if shelf.items.length == 0}
+															<span
+																class="placeholder"
+															>
+																drop a field
+																here
+															</span>
+														{/if}
+														<!-- after dropped -->
+														{#each shelf.items as item (item.id)}
+															<div
+																animate:flip={{
+																	duration:
+																		flipDurationMs,
+																}}
+															>
+																{item.name}
+															</div>
+														{/each}
+													</section>
+												</div>
+											</div>
+										{/if}
+									{/each}
+								</div>
+							</div>
 							<h3 style="color:#38425d; ">Marks</h3>
 							<div class="group">
 								<div class="encoding-label">size</div>

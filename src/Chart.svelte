@@ -1,7 +1,9 @@
 <script>
     import * as d3 from "d3";
 	// import {default as vegaEmbed} from 'vega-embed';
+	import * as vegaEmbed from 'vega-embed';
     import { onMount } from 'svelte';
+	import { VegaLite } from "svelte-vega";
 
 	var data = [30, 86, 168, 281, 303, 365];
 	// var spec = "https://raw.githubusercontent.com/vega/vega/master/docs/examples/bar-chart.vg.json";
@@ -21,7 +23,7 @@
 				return d;
 			});
 
-		// vegaEmbed("#vis", spec, { actions: false }).catch(error => console.log(error) );
+		vegaEmbed("#vis", spec, { actions: false }).catch(error => console.log(error) );
 	});
 </script>
 
