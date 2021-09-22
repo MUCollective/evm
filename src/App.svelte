@@ -26,7 +26,7 @@
 	// if you update "vlSpec", then the Vega-Lite spec is updated.
 	// if you want multiple vega-lite visualizations, then make it into an array,
 	// then duplicate "VegaLite" panel with the "vlSpec" argument changed.
- 
+
 	// controls the rendering of drag and drop elements
 	export let dndState: { id: string; name: string; items: any[] }[];
 	export let flipDurationMs: number;
@@ -71,7 +71,7 @@
 	}
 </script>
 
-<svelte:body />
+
 
 <main>
 	<Header {name} />
@@ -105,7 +105,7 @@
 					/>
 				</Column>
 				<Column style="width: 100%;">
-					<ChartPanel data={data} vlSpec={vlSpec} />
+					<ChartPanel {data} {vlSpec} />
 				</Column>
 				<Column style="min-width: 250px; max-width: 250px;">
 					<ModelPanel {bootstrap} {model} />
