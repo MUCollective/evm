@@ -1,5 +1,5 @@
-<script>
-	const name = "exploratory modeling";
+<script lang="ts">
+	export let name: string;
 </script>
 
 
@@ -18,7 +18,6 @@
 	.full-width {
 		width: 100%
 	}
-
 </style>
 
 <div id="header" style="margin: 0px 0px 20px 0px;">
