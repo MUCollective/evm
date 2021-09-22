@@ -1,4 +1,6 @@
-*Looking for a shareable component template? Go here --> [sveltejs/component-template](https://github.com/sveltejs/component-template)*
+*Psst — looking for a more complete solution? Check out [SvelteKit](https://kit.svelte.dev), the official framework for building web applications of all sizes, with a beautiful development experience and flexible filesystem-based routing.*
+
+*Looking for a shareable component template instead? Go here --> [sveltejs/component-template](https://github.com/sveltejs/component-template)*
 
 ---
 
@@ -104,4 +106,15 @@ Then, from within your project folder:
 ```bash
 npm run build
 surge public my-project.surge.sh
+```
+
+# FIX: Vega-Lite & Semver
+Whenever you clone this repo, access `./node_modules/semver/ranges` directory and open `outside.js` and `subset.js`.
+Comment out line 3 of each file (which is `const { ANY } = Comparator`).
+Then, add `const ANY = Symbol('SemVer ANY')` below line 3.
+This is (presumably) due to async error while loading Comparator component of Semver with `require` function.
+
+Or, simply run the following script at the `exploratory_modeling` directory
+```
+exploratory_modeling > sh scripts/semverFix.sh
 ```
