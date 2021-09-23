@@ -49,6 +49,7 @@
         {/if}
     {/each}
     <h3>Marks</h3>
+    (placeholders for now)
     <div class="group">
         <div class="encoding-label">size</div>
         <div class="drop-field">

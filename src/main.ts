@@ -24,6 +24,16 @@ const app = new App({
 				id: "y-drop",
 				name: "y",
 				items: [],
+			}, 
+			{
+				id: "row-drop",
+				name: "row",
+				items: [],
+			},
+			{
+				id: "col-drop",
+				name: "col",
+				items: [],
 			},
 		],
 		vlSpec: {
@@ -35,7 +45,7 @@ const app = new App({
 			mark: "bar",
 			encoding: {
 				x: { field: "origin", type: "nominal" },
-				y: { field: "mpg", type: "quantitative", aggregate: "mean" },
+				y: { field: "cyl", type: "quantitative", aggregate: "mean" },
 			},
 		}
 	}
