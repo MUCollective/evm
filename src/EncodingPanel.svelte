@@ -1,11 +1,23 @@
+<script context="module">
+    import { writable, get } from "svelte/store";
+
+    export const chartX = writable("origin");
+    export const chartY = writable("cyl");
+</script>
+
 <script lang="ts">
     import { flip } from "svelte/animate";
     import { dndzone } from "svelte-dnd-action";
+    import Chart from "./Chart.svelte";
+import { id } from "vega";
 
     export let dndState: { id: string; name: string; items: any[] }[];
     export let flipDurationMs: number;
     export let handleDndConsider;
     export let handleDndFinalize;
+
+    export let handleVlSpecConsider;
+    export let handleVlSpecFinalize;
 </script>
 
 <div class="encoding-panel card">
@@ -25,13 +37,13 @@
                         }}
                         on:consider={(e) => handleDndConsider(shelf.id, e)}
                         on:finalize={(e) => handleDndFinalize(shelf.id, e)}
+                        on:consider={(e) => handleVlSpecConsider(shelf.id, e)}
+                        on:consider={(e) => handleVlSpecFinalize(shelf.id, e)}
                         id={shelf.id}
                         style="height: 100%;"
                     >
                         {#if shelf.items.length == 0}
-                            <span class="placeholder">
-                                drop a field here
-                            </span>
+                            <span class="placeholder"> drop a field here </span>
                         {/if}
                         <!-- after dropped -->
                         {#each shelf.items as item (item.id)}
@@ -41,6 +53,15 @@
                                 }}
                             >
                                 {item.name}
+                                {#if shelf.id == "x-drop"}
+                                <!-- should update vlSpec -->
+                                    你好你好你好
+
+                                    <!-- {chartX.update((existing) => item.name)} -->
+                                    
+
+                                <!-- {console.log("updated x", $chartX)} -->
+                                {/if}
                             </div>
                         {/each}
                     </section>
@@ -90,7 +111,7 @@
         margin-top: 0;
     }
     h3 {
-        color:#38425d;
+        color: #38425d;
     }
     .encoding-panel {
         background-color: #e2e9f3;
@@ -125,7 +146,7 @@
         border-radius: 0.3rem 0 0 0.3rem;
         font-size: 11px;
         background-color: rgba(55, 65, 92, 0.2);
-        line-height: 100%;   
+        line-height: 100%;
     }
 
     .placeholder {

@@ -12,24 +12,33 @@
 	import EncodingPanel from "./EncodingPanel.svelte";
 	import ModelPanel from "./ModelPanel.svelte";
 
+	import { writable, get } from "svelte/store";
+
 	// props
 	export let name: string;
 	export let mounted: boolean;
 	export let charting: boolean; // not used?
 	export let modeling: boolean;
 
+
+	// export const chartX = writable("origin");
 	// props for Vega-Lite
 	// data should be a {}[] format (pure dataset), this will be wrapped by {"table": data} in the ChartPanel component.
 	export let data: any;
-	export let vlSpec: VisualizationSpec; // should be a valid vega-lite spec
+	export let vlSpec: VisualizationSpec; 
+	// should be a valid vega-lite spec
 	// if you update "data", then the data set for the visualization is updated.
 	// if you update "vlSpec", then the Vega-Lite spec is updated.
 	// if you want multiple vega-lite visualizations, then make it into an array,
 	// then duplicate "VegaLite" panel with the "vlSpec" argument changed.
 
+	export const visUpdate = writable(vlSpec);
+
 	// controls the rendering of drag and drop elements
 	export let dndState: { id: string; name: string; items: any[] }[];
 	export let flipDurationMs: number;
+	// export let xEncoding: {field: string; type:string};
+	// export let yEncoding: {field: string; type:string, aggregate:string};
 	onMount(async () => {
 		// load data
 		data = await d3.json("./data/cars.json");
@@ -51,14 +60,18 @@
 	function handleDndConsider(shelfId: any, e: any) {
 		// console.log(e);
 		const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
+		// console.log("让我看看什么修改之前的dndState[shelfIdx].items", dndState[shelfIdx].items);
 		dndState[shelfIdx].items = e.detail.items;
 		dndState = [...dndState];
 	}
 	function handleDndFinalize(shelfId: any, e: any) {
 		// console.log(e);
 		const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
+		// console.log("dndState[shelfIdx]是啥", dndState[shelfIdx])
 		dndState[shelfIdx].items = e.detail.items;
 		dndState = [...dndState];
+		// console.log("唉 怎么回事", dndState);
+		// console.log("让我看看什么是e", e);
 	}
 	// helper functions for modeling
 	function bootstrap(e: any) {
@@ -69,9 +82,49 @@
 		console.log(e);
 		modeling = true;
 	}
+
+	// console.log('checking vlspec', vlSpec);
+	// vlSpec.description = "hello";
+	console.log(vlSpec.mark);
+	console.log(vlSpec.encoding.x);
+
+	function handleVlSpecConsider(shelfid: any, e: any) {
+		// const shelfIdx = dndState.findIndex((d) => d.id === shelfid);
+		// const test = vlSpec[encoding].
+		// console.log("抄alex的shelfIdx", shelfIdx);
+		// console.log("为啥e是空的啊 ",e);
+		// console.log("救命 e.detail.items.name is", e.detail.items[0].name);
+		if (shelfid == "x-drop" && e.detail.items.length != 0) {
+			// console.log("怎么回事啊vlSpec.encoding", vlSpec.encoding);
+			// console.log('what should be changed', vlSpec.encoding["x"]);
+
+			vlSpec.encoding.x.field = e.detail.items[0].name;
+		}
+		if (shelfid == "y-drop" && e.detail.items.length != 0) {
+			// console.log("怎么回事啊vlSpec.encoding", vlSpec.encoding);
+			// console.log('what should be changed', vlSpec.encoding["y"]);
+
+			vlSpec.encoding.y.field = e.detail.items[0].name;
+		}
+		vlSpec = { ...vlSpec };
+		// console.log("check my function worked or not",vlSpec.encoding);
+	}
+
+	function handleVlSpecFinalize(shelfid: any, e: any) {
+		if (shelfid == "x-drop" && e.detail.items.length != 0) {
+			vlSpec.encoding.x.field = e.detail.items[0].name;
+		}
+		if (shelfid == "y-drop" && e.detail.items.length != 0) {
+			vlSpec.encoding.y.field = e.detail.items[0].name;
+		}
+		vlSpec = { ...vlSpec };
+		console.log("testing writable", $visUpdate);
+		console.log("compare to vlSpec", vlSpec);
+		console.log("check type", typeof $visUpdate);
+		console.log("check type", typeof vlSpec);
+		console.log("check my function worked or not", vlSpec.encoding);
+	}
 </script>
-
-
 
 <main>
 	<Header {name} />
@@ -102,10 +155,14 @@
 						{flipDurationMs}
 						{handleDndConsider}
 						{handleDndFinalize}
+						{handleVlSpecConsider}
+						{handleVlSpecFinalize}
 					/>
+					{console.log("check 唉", vlSpec)}
+					<!-- {console.log("check 呜呜呜", $visUpdate)} -->
 				</Column>
 				<Column style="width: 100%;">
-					<ChartPanel {data} {vlSpec} />
+					<ChartPanel {data}{vlSpec} />
 				</Column>
 				<Column style="min-width: 250px; max-width: 250px;">
 					<ModelPanel {bootstrap} {model} />

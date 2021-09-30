@@ -1,12 +1,19 @@
 <script lang="ts">
 	import type { VisualizationSpec } from "vega-embed";
 	import { VegaLite } from "svelte-vega";
+	import { chartX, chartY } from "./EncodingPanel.svelte";
+	import { get } from "svelte/store";
 
 	// from App.svelte
-	export let data:any;
+	export let data: any;
 	export let vlSpec: VisualizationSpec;
 
-	let dataset = { "table": data };
+	let dataset = { table: data };
+
+	console.log("trying");
+	console.log("chart panel x", $chartX);
+	console.log("chart panel y", $chartY);
+	console.log("why doesn't it change???", vlSpec);
 </script>
 
 <!-- data panel -->
@@ -24,10 +31,9 @@
 
 	.card {
 		display: block;
-        border-radius: 0.5rem;
-        padding: 0.5rem;
+		border-radius: 0.5rem;
+		padding: 0.5rem;
 		margin-left: 0.5rem;
 		margin-right: 0.5rem;
 	}
-
 </style>
