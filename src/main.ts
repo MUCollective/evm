@@ -45,7 +45,7 @@ const app = new App({
 			mark: "bar",
 			encoding: {
 				x: { field: "origin", type: "nominal" },
-				y: { field: "cyl", type: "quantitative", aggregate: "mean" },
+				y: { field: "mpg", type: "quantitative", aggregate: "mean" },
 			},
 		}
 	}

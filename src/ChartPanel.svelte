@@ -10,9 +10,9 @@
 
 	let dataset = { table: data };
 
-	console.log("trying");
-	console.log("chart panel x", $chartX);
-	console.log("chart panel y", $chartY);
+	console.log("this is chart panel");
+	// console.log("chart panel x", $chartX);
+	// console.log("chart panel y", $chartY);
 	console.log("why doesn't it change???", vlSpec);
 </script>
 

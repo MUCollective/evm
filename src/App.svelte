@@ -5,6 +5,8 @@
 	import * as d3 from "d3";
 	import type { VisualizationSpec } from "vega-embed";
 
+	export let counter: number = 0;
+
 	// app components
 	import Header from "./Header.svelte";
 	import DataPanel from "./DataPanel.svelte";
@@ -19,6 +21,7 @@
 	export let mounted: boolean;
 	export let charting: boolean; // not used?
 	export let modeling: boolean;
+
 
 
 	// export const chartX = writable("origin");
@@ -39,6 +42,9 @@
 	export let flipDurationMs: number;
 	// export let xEncoding: {field: string; type:string};
 	// export let yEncoding: {field: string; type:string, aggregate:string};
+
+	$: specChanged = false;
+
 	onMount(async () => {
 		// load data
 		data = await d3.json("./data/cars.json");
@@ -51,7 +57,7 @@
 				name: d,
 			});
 		});
-		console.log("drop zone state (dndState)", dndState);
+		// console.log("drop zone state (dndState)", dndState);
 		mounted = true;
 	});
 
@@ -85,8 +91,8 @@
 
 	// console.log('checking vlspec', vlSpec);
 	// vlSpec.description = "hello";
-	console.log(vlSpec.mark);
-	console.log(vlSpec.encoding.x);
+	// console.log(vlSpec.mark);
+	// console.log(vlSpec.encoding.x);
 
 	function handleVlSpecConsider(shelfid: any, e: any) {
 		// const shelfIdx = dndState.findIndex((d) => d.id === shelfid);
@@ -120,9 +126,10 @@
 		vlSpec = { ...vlSpec };
 		console.log("testing writable", $visUpdate);
 		console.log("compare to vlSpec", vlSpec);
-		console.log("check type", typeof $visUpdate);
-		console.log("check type", typeof vlSpec);
+		// console.log("check type", typeof $visUpdate);
+		// console.log("check type", typeof vlSpec);
 		console.log("check my function worked or not", vlSpec.encoding);
+		specChanged = true;
 	}
 </script>
 
@@ -158,11 +165,14 @@
 						{handleVlSpecConsider}
 						{handleVlSpecFinalize}
 					/>
+					{console.log(counter + 1)}
 					{console.log("check 唉", vlSpec)}
 					<!-- {console.log("check 呜呜呜", $visUpdate)} -->
 				</Column>
 				<Column style="width: 100%;">
+					{console.log("about to process chartpanel", vlSpec)}
 					<ChartPanel {data}{vlSpec} />
+					{console.log("this line is never reached")}
 				</Column>
 				<Column style="min-width: 250px; max-width: 250px;">
 					<ModelPanel {bootstrap} {model} />

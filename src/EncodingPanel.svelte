@@ -38,7 +38,7 @@ import { id } from "vega";
                         on:consider={(e) => handleDndConsider(shelf.id, e)}
                         on:finalize={(e) => handleDndFinalize(shelf.id, e)}
                         on:consider={(e) => handleVlSpecConsider(shelf.id, e)}
-                        on:consider={(e) => handleVlSpecFinalize(shelf.id, e)}
+                        on:finalize={(e) => handleVlSpecFinalize(shelf.id, e)}
                         id={shelf.id}
                         style="height: 100%;"
                     >
