@@ -22,13 +22,11 @@
 	export let charting: boolean; // not used?
 	export let modeling: boolean;
 
-
-
 	// export const chartX = writable("origin");
 	// props for Vega-Lite
 	// data should be a {}[] format (pure dataset), this will be wrapped by {"table": data} in the ChartPanel component.
 	export let data: any;
-	export let vlSpec: VisualizationSpec; 
+	export let vlSpec: VisualizationSpec;
 	// should be a valid vega-lite spec
 	// if you update "data", then the data set for the visualization is updated.
 	// if you update "vlSpec", then the Vega-Lite spec is updated.
@@ -44,6 +42,9 @@
 	// export let yEncoding: {field: string; type:string, aggregate:string};
 
 	$: specChanged = false;
+	let prevSpec: VisualizationSpec = vlSpec;
+	// $: prevSpec = {};
+	console.log("PREV prevSpec", prevSpec);
 
 	onMount(async () => {
 		// load data
@@ -60,6 +61,10 @@
 		// console.log("drop zone state (dndState)", dndState);
 		mounted = true;
 	});
+
+	$: {
+		
+	}
 
 	// helper functions for drag and drop
 	// passed to sub-components
@@ -95,6 +100,8 @@
 	// console.log(vlSpec.encoding.x);
 
 	function handleVlSpecConsider(shelfid: any, e: any) {
+		console.log("CHECK POINT: ",vlSpec);
+		prevSpec = vlSpec;
 		// const shelfIdx = dndState.findIndex((d) => d.id === shelfid);
 		// const test = vlSpec[encoding].
 		// console.log("抄alex的shelfIdx", shelfIdx);
@@ -113,6 +120,7 @@
 			vlSpec.encoding.y.field = e.detail.items[0].name;
 		}
 		vlSpec = { ...vlSpec };
+		
 		// console.log("check my function worked or not",vlSpec.encoding);
 	}
 
@@ -131,6 +139,8 @@
 		console.log("check my function worked or not", vlSpec.encoding);
 		specChanged = true;
 	}
+
+
 </script>
 
 <main>
@@ -157,6 +167,7 @@
 					/>
 				</Column>
 				<Column style="min-width: 250px; max-width: 250px;">
+					test test
 					<EncodingPanel
 						{dndState}
 						{flipDurationMs}
@@ -165,14 +176,23 @@
 						{handleVlSpecConsider}
 						{handleVlSpecFinalize}
 					/>
-					{console.log(counter + 1)}
+					{console.log("just processed encoding panel!!!")}
 					{console.log("check 唉", vlSpec)}
 					<!-- {console.log("check 呜呜呜", $visUpdate)} -->
 				</Column>
 				<Column style="width: 100%;">
-					{console.log("about to process chartpanel", vlSpec)}
-					<ChartPanel {data}{vlSpec} />
-					{console.log("this line is never reached")}
+					<ChartPanel {data} {vlSpec} />
+					after chart panel!!! change or not {specChanged}
+
+					{#if vlSpec != prevSpec}
+						vlSpec != prevSpec:
+						<ChartPanel {data} {vlSpec} />
+					{/if}
+					{#if typeof prevSpec !== 'undefined'}
+						prev: {prevSpec}
+					{/if}
+
+					vlSpec: {vlSpec.encoding.x.field}
 				</Column>
 				<Column style="min-width: 250px; max-width: 250px;">
 					<ModelPanel {bootstrap} {model} />

@@ -53,15 +53,6 @@ import { id } from "vega";
                                 }}
                             >
                                 {item.name}
-                                {#if shelf.id == "x-drop"}
-                                <!-- should update vlSpec -->
-                                    你好你好你好
-
-                                    <!-- {chartX.update((existing) => item.name)} -->
-                                    
-
-                                <!-- {console.log("updated x", $chartX)} -->
-                                {/if}
                             </div>
                         {/each}
                     </section>
