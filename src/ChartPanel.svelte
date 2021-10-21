@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { VisualizationSpec } from "vega-embed";
+	import type { VisualizationSpec, EmbedOptions } from "vega-embed";
 	import { VegaLite } from "svelte-vega";
 	import { chartX, chartY } from "./EncodingPanel.svelte";
 	import { get } from "svelte/store";
@@ -7,6 +7,7 @@
 	// from App.svelte
 	export let data: any;
 	export let vlSpec: VisualizationSpec;
+	export let options:EmbedOptions = {"renderer": "svg"};
 
 	let dataset = { table: data };
 
@@ -19,8 +20,9 @@
 <!-- data panel -->
 <div class="chart-panel card">
 	<h3>Visualization Canvas</h3>
+	{JSON.stringify(vlSpec)}
 	<!-- ignore the below error, it's due to the wrongly declared type in VegaLite; it is also ignored in Svelte.Vega -->
-	<VegaLite data={dataset} spec={vlSpec} />
+	<VegaLite bind:data={dataset} bind:spec={vlSpec} bind:options={options} on:change="{console.log('ddd')}" />
 </div>
 
 <style>

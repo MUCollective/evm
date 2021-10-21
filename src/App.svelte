@@ -43,9 +43,9 @@
 
 	$: specChanged = false;
 	let prevSpec: VisualizationSpec = vlSpec;
+	// let  copySpec: Vis
 	// $: prevSpec = {};
 	console.log("PREV prevSpec", prevSpec);
-
 	onMount(async () => {
 		// load data
 		data = await d3.json("./data/cars.json");
@@ -58,31 +58,33 @@
 				name: d,
 			});
 		});
-		// console.log("drop zone state (dndState)", dndState);
+		// console.log(“drop zone state (dndState)“, dndState);
 		mounted = true;
 	});
-
-	$: {
-		
-	}
-
 	// helper functions for drag and drop
 	// passed to sub-components
 	function handleDndConsider(shelfId: any, e: any) {
-		// console.log(e);
 		const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
-		// console.log("让我看看什么修改之前的dndState[shelfIdx].items", dndState[shelfIdx].items);
 		dndState[shelfIdx].items = e.detail.items;
 		dndState = [...dndState];
 	}
 	function handleDndFinalize(shelfId: any, e: any) {
-		// console.log(e);
 		const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
-		// console.log("dndState[shelfIdx]是啥", dndState[shelfIdx])
 		dndState[shelfIdx].items = e.detail.items;
+		console.log("event finalize: ", e);
 		dndState = [...dndState];
-		// console.log("唉 怎么回事", dndState);
-		// console.log("让我看看什么是e", e);
+		// prevSpec = deepCopy(vlSpec);
+		// copySpec = deepCopy(vlSpec);
+		if (e.srcElement.id != "variables") {
+			prevSpec = deepCopy(vlSpec);
+			if (shelfId == "x-drop" && e.detail.items.length != 0) {
+				vlSpec.encoding.x.field = e.detail.items[0].name;
+			}
+			if (shelfId == "y-drop" && e.detail.items.length != 0) {
+				vlSpec.encoding.y.field = e.detail.items[0].name;
+			}
+			vlSpec = { ...vlSpec };
+		}
 	}
 	// helper functions for modeling
 	function bootstrap(e: any) {
@@ -94,53 +96,30 @@
 		modeling = true;
 	}
 
-	// console.log('checking vlspec', vlSpec);
-	// vlSpec.description = "hello";
-	// console.log(vlSpec.mark);
-	// console.log(vlSpec.encoding.x);
+	function deepCopy(inObject) {
+		let outObject, value, key;
 
-	function handleVlSpecConsider(shelfid: any, e: any) {
-		console.log("CHECK POINT: ",vlSpec);
-		prevSpec = vlSpec;
-		// const shelfIdx = dndState.findIndex((d) => d.id === shelfid);
-		// const test = vlSpec[encoding].
-		// console.log("抄alex的shelfIdx", shelfIdx);
-		// console.log("为啥e是空的啊 ",e);
-		// console.log("救命 e.detail.items.name is", e.detail.items[0].name);
-		if (shelfid == "x-drop" && e.detail.items.length != 0) {
-			// console.log("怎么回事啊vlSpec.encoding", vlSpec.encoding);
-			// console.log('what should be changed', vlSpec.encoding["x"]);
-
-			vlSpec.encoding.x.field = e.detail.items[0].name;
+		if (typeof inObject !== "object" || inObject === null) {
+			return inObject; // Return the value if inObject is not an object
 		}
-		if (shelfid == "y-drop" && e.detail.items.length != 0) {
-			// console.log("怎么回事啊vlSpec.encoding", vlSpec.encoding);
-			// console.log('what should be changed', vlSpec.encoding["y"]);
 
-			vlSpec.encoding.y.field = e.detail.items[0].name;
+		// Create an array or object to hold the values
+		outObject = Array.isArray(inObject) ? [] : {};
+
+		for (key in inObject) {
+			value = inObject[key];
+
+			// Recursively (deep) copy for nested objects, including arrays
+			outObject[key] = deepCopy(value);
 		}
-		vlSpec = { ...vlSpec };
-		
-		// console.log("check my function worked or not",vlSpec.encoding);
+
+		return outObject;
 	}
 
-	function handleVlSpecFinalize(shelfid: any, e: any) {
-		if (shelfid == "x-drop" && e.detail.items.length != 0) {
-			vlSpec.encoding.x.field = e.detail.items[0].name;
-		}
-		if (shelfid == "y-drop" && e.detail.items.length != 0) {
-			vlSpec.encoding.y.field = e.detail.items[0].name;
-		}
-		vlSpec = { ...vlSpec };
-		console.log("testing writable", $visUpdate);
-		console.log("compare to vlSpec", vlSpec);
-		// console.log("check type", typeof $visUpdate);
-		// console.log("check type", typeof vlSpec);
-		console.log("check my function worked or not", vlSpec.encoding);
-		specChanged = true;
-	}
+	// function checkIfRender(vlSpec) {
+	// 	if vlSpec.encoding.x.field
 
-
+	// }
 </script>
 
 <main>
@@ -173,24 +152,23 @@
 						{flipDurationMs}
 						{handleDndConsider}
 						{handleDndFinalize}
-						{handleVlSpecConsider}
-						{handleVlSpecFinalize}
 					/>
 					{console.log("just processed encoding panel!!!")}
 					{console.log("check 唉", vlSpec)}
-					<!-- {console.log("check 呜呜呜", $visUpdate)} -->
 				</Column>
 				<Column style="width: 100%;">
-					<ChartPanel {data} {vlSpec} />
+					<ChartPanel bind:data bind:vlSpec />
 					after chart panel!!! change or not {specChanged}
-
+					{#if vlSpec !== undefined}
+						<br />hello!!!!!
+						<br />vlSpec !== undefined
+						<ChartPanel {data} {vlSpec} />
+					{/if}
 					{#if vlSpec != prevSpec}
 						vlSpec != prevSpec:
 						<ChartPanel {data} {vlSpec} />
 					{/if}
-					{#if typeof prevSpec !== 'undefined'}
-						prev: {prevSpec}
-					{/if}
+					prev: {prevSpec.encoding.x.field}
 
 					vlSpec: {vlSpec.encoding.x.field}
 				</Column>
