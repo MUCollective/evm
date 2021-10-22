@@ -38,13 +38,9 @@
 	// controls the rendering of drag and drop elements
 	export let dndState: { id: string; name: string; items: any[] }[];
 	export let flipDurationMs: number;
-	// export let xEncoding: {field: string; type:string};
-	// export let yEncoding: {field: string; type:string, aggregate:string};
 
 	$: specChanged = false;
 	let prevSpec: VisualizationSpec = vlSpec;
-	// let  copySpec: Vis
-	// $: prevSpec = {};
 	console.log("PREV prevSpec", prevSpec);
 	onMount(async () => {
 		// load data
@@ -58,7 +54,6 @@
 				name: d,
 			});
 		});
-		// console.log(“drop zone state (dndState)“, dndState);
 		mounted = true;
 	});
 	// helper functions for drag and drop
@@ -74,7 +69,6 @@
 		console.log("event finalize: ", e);
 		dndState = [...dndState];
 		// prevSpec = deepCopy(vlSpec);
-		// copySpec = deepCopy(vlSpec);
 		if (e.srcElement.id != "variables") {
 			prevSpec = deepCopy(vlSpec);
 			if (shelfId == "x-drop" && e.detail.items.length != 0) {
@@ -85,6 +79,7 @@
 			}
 			vlSpec = { ...vlSpec };
 		}
+		// document.getElementById("chart").remove();
 	}
 	// helper functions for modeling
 	function bootstrap(e: any) {
@@ -116,10 +111,7 @@
 		return outObject;
 	}
 
-	// function checkIfRender(vlSpec) {
-	// 	if vlSpec.encoding.x.field
-
-	// }
+	// console.log(document.getElementsByClassName("vega-embed"));
 </script>
 
 <main>
@@ -153,24 +145,16 @@
 						{handleDndConsider}
 						{handleDndFinalize}
 					/>
-					{console.log("just processed encoding panel!!!")}
-					{console.log("check 唉", vlSpec)}
 				</Column>
 				<Column style="width: 100%;">
-					<ChartPanel bind:data bind:vlSpec />
-					after chart panel!!! change or not {specChanged}
-					{#if vlSpec !== undefined}
-						<br />hello!!!!!
-						<br />vlSpec !== undefined
-						<ChartPanel {data} {vlSpec} />
-					{/if}
-					{#if vlSpec != prevSpec}
-						vlSpec != prevSpec:
-						<ChartPanel {data} {vlSpec} />
-					{/if}
-					prev: {prevSpec.encoding.x.field}
-
-					vlSpec: {vlSpec.encoding.x.field}
+					{#key vlSpec.encoding.x.field}
+						{#key vlSpec.encoding.y.field}
+							vlSpec has changed
+							{console.log("spec changed")}
+							{console.log(vlSpec)}
+							<ChartPanel bind:data bind:vlSpec />
+						{/key}
+					{/key}
 				</Column>
 				<Column style="min-width: 250px; max-width: 250px;">
 					<ModelPanel {bootstrap} {model} />
