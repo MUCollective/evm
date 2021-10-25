@@ -39,7 +39,7 @@
 	export let dndState: { id: string; name: string; items: any[] }[];
 	export let flipDurationMs: number;
 
-	$: specChanged = false;
+	$: specChanged = 0;
 	let prevSpec: VisualizationSpec = vlSpec;
 	console.log("PREV prevSpec", prevSpec);
 	onMount(async () => {
@@ -64,6 +64,7 @@
 		dndState = [...dndState];
 	}
 	function handleDndFinalize(shelfId: any, e: any) {
+		console.log("encoding!!!", vlSpec.encoding);
 		const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
 		dndState[shelfIdx].items = e.detail.items;
 		console.log("event finalize: ", e);
@@ -72,12 +73,19 @@
 		if (e.srcElement.id != "variables") {
 			prevSpec = deepCopy(vlSpec);
 			if (shelfId == "x-drop" && e.detail.items.length != 0) {
-				vlSpec.encoding.x.field = e.detail.items[0].name;
+				// vlSpec.encoding.x.field = e.detail.items[0].name;
+				console.log("encoding", vlSpec.encoding);
+				console.log(typeof vlSpec.encoding);
+				var tempX = { field: e.detail.items[0].name };
+				vlSpec.encoding.x = tempX;
+				console.log(vlSpec.encoding);
+				// vlSpec.encoding["x"] = {"field":e.detail.items[0].name}
 			}
 			if (shelfId == "y-drop" && e.detail.items.length != 0) {
 				vlSpec.encoding.y.field = e.detail.items[0].name;
 			}
 			vlSpec = { ...vlSpec };
+			specChanged ++;
 		}
 		// document.getElementById("chart").remove();
 	}
@@ -147,14 +155,28 @@
 					/>
 				</Column>
 				<Column style="width: 100%;">
-					{#key vlSpec.encoding.x.field}
-						{#key vlSpec.encoding.y.field}
-							vlSpec has changed
-							{console.log("spec changed")}
-							{console.log(vlSpec)}
-							<ChartPanel bind:data bind:vlSpec />
-						{/key}
-					{/key}
+					{#if Object.keys(vlSpec.encoding).length != 0}
+						{console.log(
+							"!= 0",
+							vlSpec.encoding,
+							vlSpec.encoding.toString()
+						)}
+						{#if dndState[dndState.findIndex((d) => d.id == "x-drop")].items.length != 0 || dndState[dndState.findIndex((d) => d.id == "y-drop")].items.length != 0}
+							{#if vlSpec.encoding.x.field != "" || vlSpec.encoding.y.field != ""}
+								{console.log(dndState)}
+
+								<!-- {#key vlSpec.encoding.x.field}
+									{#key vlSpec.encoding.y.field} -->
+									{#key specChanged}
+										vlSpec has changed
+										{console.log("spec changed")}
+										{console.log(vlSpec)}
+										<ChartPanel bind:data bind:vlSpec />
+									{/key}
+								<!-- {/key} -->
+							{/if}
+						{/if}
+					{/if}
 				</Column>
 				<Column style="min-width: 250px; max-width: 250px;">
 					<ModelPanel {bootstrap} {model} />

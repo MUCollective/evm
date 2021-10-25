@@ -13,7 +13,7 @@
 	let dataset = { table: data };
 
 	console.log("this is chart panel");
-	console.log("why doesn't it change???", vlSpec);
+	console.log("dataset", dataset);
 
 
 </script>
