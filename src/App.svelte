@@ -61,12 +61,12 @@
 	function handleDndConsider(shelfId: any, e: any) {
 		const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
 		dndState[shelfIdx].items = e.detail.items;
-		dndState = [...dndState];
 	}
 	function handleDndFinalize(shelfId: any, e: any) {
 		const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
 		dndState[shelfIdx].items = e.detail.items;
 		console.log("event finalize: ", e);
+		console.log("dndState", dndState);
 		dndState = [...dndState];
 		// prevSpec = deepCopy(vlSpec);
 		if (e.srcElement.id != "variables") {
@@ -83,14 +83,14 @@
 			}
 			vlSpec = { ...vlSpec };
 			specChanged++;
+			console.log("e.srcElement.id != variables时候的dnd state", dndState);
 		} else {
-			console.log("dragging from encoding to data panel");
-			console.log(shelfId, "sheldID");
-			console.log("event: ", e);
-			if (e.srcElement.id == "x-drop") {
-				console.log("shelf id is x-drop");
-				console.log("dndstate", dndState);
-			}
+			// e.srcElement.id == "variables"
+			// change remove variable from vlspec
+			console.log("change remove variable from vlspec 工作！！！！")
+			console.log(e);
+			console.log("shelfID: ", shelfId);
+			console.log("看看dndState什么时候改", dndState);
 		}
 		// document.getElementById("chart").remove();
 	}

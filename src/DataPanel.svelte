@@ -41,6 +41,8 @@
                 {item.name}
             </div>
         {/each}
+        {console.log("exits data panel")}
+        {console.log("==============================")}
     </section>
 </div>
 
