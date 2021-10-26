@@ -12,8 +12,6 @@
 
 	let dataset = { table: data };
 
-	console.log("this is chart panel");
-	console.log("dataset", dataset);
 
 
 </script>

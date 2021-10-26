@@ -42,7 +42,7 @@ const app = new App({
 			data: {
 				name: "table",
 			},
-			mark: "bar",
+			mark: "tick",
 			encoding: {
 				// x: { field: "", type: "nominal" },
 				// y: { field: "", type: "quantitative", aggregate: "mean" },

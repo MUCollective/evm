@@ -64,7 +64,6 @@
 		dndState = [...dndState];
 	}
 	function handleDndFinalize(shelfId: any, e: any) {
-		console.log("encoding!!!", vlSpec.encoding);
 		const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
 		dndState[shelfIdx].items = e.detail.items;
 		console.log("event finalize: ", e);
@@ -73,19 +72,25 @@
 		if (e.srcElement.id != "variables") {
 			prevSpec = deepCopy(vlSpec);
 			if (shelfId == "x-drop" && e.detail.items.length != 0) {
-				// vlSpec.encoding.x.field = e.detail.items[0].name;
-				console.log("encoding", vlSpec.encoding);
-				console.log(typeof vlSpec.encoding);
-				var tempX = { field: e.detail.items[0].name };
+				var tempX = { field: e.detail.items[0].name};
 				vlSpec.encoding.x = tempX;
-				console.log(vlSpec.encoding);
-				// vlSpec.encoding["x"] = {"field":e.detail.items[0].name}
+				console.log("x从无到有", vlSpec.encoding);
 			}
 			if (shelfId == "y-drop" && e.detail.items.length != 0) {
-				vlSpec.encoding.y.field = e.detail.items[0].name;
+				var tempY = { field: e.detail.items[0].name };
+				vlSpec.encoding.y = tempY;
+				console.log("y从无到有", vlSpec);
 			}
 			vlSpec = { ...vlSpec };
-			specChanged ++;
+			specChanged++;
+		} else {
+			console.log("dragging from encoding to data panel");
+			console.log(shelfId, "sheldID");
+			console.log("event: ", e);
+			if (e.srcElement.id == "x-drop") {
+				console.log("shelf id is x-drop");
+				console.log("dndstate", dndState);
+			}
 		}
 		// document.getElementById("chart").remove();
 	}
@@ -146,7 +151,6 @@
 					/>
 				</Column>
 				<Column style="min-width: 250px; max-width: 250px;">
-					test test
 					<EncodingPanel
 						{dndState}
 						{flipDurationMs}
@@ -156,26 +160,10 @@
 				</Column>
 				<Column style="width: 100%;">
 					{#if Object.keys(vlSpec.encoding).length != 0}
-						{console.log(
-							"!= 0",
-							vlSpec.encoding,
-							vlSpec.encoding.toString()
-						)}
-						{#if dndState[dndState.findIndex((d) => d.id == "x-drop")].items.length != 0 || dndState[dndState.findIndex((d) => d.id == "y-drop")].items.length != 0}
-							{#if vlSpec.encoding.x.field != "" || vlSpec.encoding.y.field != ""}
-								{console.log(dndState)}
-
-								<!-- {#key vlSpec.encoding.x.field}
-									{#key vlSpec.encoding.y.field} -->
-									{#key specChanged}
-										vlSpec has changed
-										{console.log("spec changed")}
-										{console.log(vlSpec)}
-										<ChartPanel bind:data bind:vlSpec />
-									{/key}
-								<!-- {/key} -->
-							{/if}
-						{/if}
+							{#key specChanged}
+								vlSpec has changed
+								<ChartPanel bind:data bind:vlSpec />
+							{/key}
 					{/if}
 				</Column>
 				<Column style="min-width: 250px; max-width: 250px;">
