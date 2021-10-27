@@ -61,33 +61,44 @@
 	function handleDndConsider(shelfId: any, e: any) {
 		const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
 		dndState[shelfIdx].items = e.detail.items;
+		$: console.log("変更しました", dndState);
 	}
 	function handleDndFinalize(shelfId: any, e: any) {
 		const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
 		dndState[shelfIdx].items = e.detail.items;
 		console.log("event finalize: ", e);
-		console.log("dndState", dndState);
+		console.log("dndState x-drop", dndState[1]);
 		dndState = [...dndState];
 		// prevSpec = deepCopy(vlSpec);
 		if (e.srcElement.id != "variables") {
 			prevSpec = deepCopy(vlSpec);
-			if (shelfId == "x-drop" && e.detail.items.length != 0) {
-				var tempX = { field: e.detail.items[0].name};
-				vlSpec.encoding.x = tempX;
-				console.log("x从无到有", vlSpec.encoding);
-			}
-			if (shelfId == "y-drop" && e.detail.items.length != 0) {
-				var tempY = { field: e.detail.items[0].name };
-				vlSpec.encoding.y = tempY;
-				console.log("y从无到有", vlSpec);
+			if (e.detail.items.length != 0) {
+				var varName = e.detail.items[0].name;
+				var varSample = data[0][varName];
+				var varType;
+				if (typeof varSample == "number") {
+					varType = "quantitative";
+				} else if (typeof varSample == "string") {
+					varType = "nominal";
+				}
+				var tempEncoding = { field: e.detail.items[0].name , type:varType};
+				if (shelfId == "x-drop") {
+					vlSpec.encoding.x = tempEncoding;
+				}
+				if (shelfId == "y-drop" && e.detail.items.length != 0) {
+					vlSpec.encoding.y = tempEncoding;
+				}
 			}
 			vlSpec = { ...vlSpec };
 			specChanged++;
-			console.log("e.srcElement.id != variables时候的dnd state", dndState);
+			console.log(
+				"e.srcElement.id != variables时候的dnd state",
+				dndState
+			);
 		} else {
 			// e.srcElement.id == "variables"
 			// change remove variable from vlspec
-			console.log("change remove variable from vlspec 工作！！！！")
+			console.log("change remove variable from vlspec 工作！！！！");
 			console.log(e);
 			console.log("shelfID: ", shelfId);
 			console.log("看看dndState什么时候改", dndState);
@@ -160,10 +171,10 @@
 				</Column>
 				<Column style="width: 100%;">
 					{#if Object.keys(vlSpec.encoding).length != 0}
-							{#key specChanged}
-								vlSpec has changed
-								<ChartPanel bind:data bind:vlSpec />
-							{/key}
+						{#key specChanged}
+							vlSpec has changed
+							<ChartPanel bind:data bind:vlSpec />
+						{/key}
 					{/if}
 				</Column>
 				<Column style="min-width: 250px; max-width: 250px;">
