@@ -15,6 +15,7 @@ import { id } from "vega";
     export let flipDurationMs: number;
     export let handleDndConsider;
     export let handleDndFinalize;
+    export let encodingToData;
 </script>
 
 <div class="encoding-panel card">
@@ -31,6 +32,7 @@ import { id } from "vega";
                         use:dndzone={{
                             items: shelf.items,
                             flipDurationMs,
+                            dragDisabled: true
                         }}
                         on:consider={(e) => handleDndConsider(shelf.id, e)}
                         on:finalize={(e) => handleDndFinalize(shelf.id, e)}
@@ -48,6 +50,7 @@ import { id } from "vega";
                                 }}
                             >
                                 {item.name}
+                                <button on:click={encodingToData(item.name, shelf.id, shelf.items)}>&times;</button>
                             </div>
                         {/each}
                     </section>

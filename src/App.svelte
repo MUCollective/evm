@@ -61,15 +61,14 @@
 	function handleDndConsider(shelfId: any, e: any) {
 		const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
 		dndState[shelfIdx].items = e.detail.items;
-		$: console.log("変更しました", dndState);
 	}
 	function handleDndFinalize(shelfId: any, e: any) {
+		console.log("e.detail.items", e.detail);
 		const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
 		dndState[shelfIdx].items = e.detail.items;
 		console.log("event finalize: ", e);
 		console.log("dndState x-drop", dndState[1]);
 		dndState = [...dndState];
-		// prevSpec = deepCopy(vlSpec);
 		if (e.srcElement.id != "variables") {
 			prevSpec = deepCopy(vlSpec);
 			if (e.detail.items.length != 0) {
@@ -81,7 +80,10 @@
 				} else if (typeof varSample == "string") {
 					varType = "nominal";
 				}
-				var tempEncoding = { field: e.detail.items[0].name , type:varType};
+				var tempEncoding = {
+					field: e.detail.items[0].name,
+					type: varType,
+				};
 				if (shelfId == "x-drop") {
 					vlSpec.encoding.x = tempEncoding;
 				}
@@ -91,20 +93,32 @@
 			}
 			vlSpec = { ...vlSpec };
 			specChanged++;
-			console.log(
-				"e.srcElement.id != variables时候的dnd state",
-				dndState
-			);
-		} else {
-			// e.srcElement.id == "variables"
-			// change remove variable from vlspec
-			console.log("change remove variable from vlspec 工作！！！！");
-			console.log(e);
-			console.log("shelfID: ", shelfId);
-			console.log("看看dndState什么时候改", dndState);
 		}
-		// document.getElementById("chart").remove();
 	}
+
+	function encodingToData(variable: any, shelfId: any, item: any) {
+		console.log("NEW FUNCTION !!!!!!!!!");
+		console.log("variable", variable, "shelfId", shelfId, "item", item);
+		console.log("before any changes", vlSpec.encoding);
+		console.log(typeof dndState[0]);
+		// add to last
+
+		console.log(item);
+		const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
+		dndState[shelfIdx].items = [];
+		dndState[0].items.push(item[0]);
+		console.log(dndState);
+		dndState = [...dndState];
+		if (shelfId == "x-drop") {
+			delete vlSpec.encoding.x;
+		}
+		if (shelfId == "y-drop") {
+			delete vlSpec.encoding.y;
+		}
+		vlSpec = { ...vlSpec };
+		specChanged++;
+	}
+
 	// helper functions for modeling
 	function bootstrap(e: any) {
 		console.log(e);
@@ -167,6 +181,7 @@
 						{flipDurationMs}
 						{handleDndConsider}
 						{handleDndFinalize}
+						{encodingToData}
 					/>
 				</Column>
 				<Column style="width: 100%;">
