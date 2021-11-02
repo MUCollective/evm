@@ -58,6 +58,7 @@ import { id } from "vega";
             </div>
         {/if}
     {/each}
+    <!-- TODO: add aggregate option here -->
     <h3>Marks</h3>
     (placeholders for now)
     <div class="group">

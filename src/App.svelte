@@ -66,24 +66,30 @@
 		console.log("e.detail.items", e.detail);
 		const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
 		dndState[shelfIdx].items = e.detail.items;
-		console.log("event finalize: ", e);
-		console.log("dndState x-drop", dndState[1]);
 		dndState = [...dndState];
 		if (e.srcElement.id != "variables") {
 			prevSpec = deepCopy(vlSpec);
 			if (e.detail.items.length != 0) {
 				var varName = e.detail.items[0].name;
 				var varSample = data[0][varName];
+				console.log("varSample", varSample);
+				console.log(data[0]);
+				console.log(varName, data[0][varName]);
 				var varType;
 				if (typeof varSample == "number") {
 					varType = "quantitative";
 				} else if (typeof varSample == "string") {
 					varType = "nominal";
 				}
-				var tempEncoding = {
+				const tempEncoding = {
 					field: e.detail.items[0].name,
 					type: varType,
 				};
+				if (varType == "nominal") {
+					tempEncoding.aggregate = "count";
+					vlSpec.mark = "bar";
+				}
+				console.log(tempEncoding);
 				if (shelfId == "x-drop") {
 					vlSpec.encoding.x = tempEncoding;
 				}
@@ -91,8 +97,19 @@
 					vlSpec.encoding.y = tempEncoding;
 				}
 			}
+			// continuous x continuous scatter plot
+			if (vlSpec.encoding.x && vlSpec.encoding.y) {
+				if (
+					vlSpec.encoding.x.type == vlSpec.encoding.y.type &&
+					vlSpec.encoding.x.type == "quantitative"
+				) {
+					vlSpec.mark = "point";
+				}
+			}
+			console.log("should be point now", vlSpec);
 			vlSpec = { ...vlSpec };
 			specChanged++;
+			console.log("vlspec:", vlSpec);
 		}
 	}
 
@@ -115,6 +132,7 @@
 		if (shelfId == "y-drop") {
 			delete vlSpec.encoding.y;
 		}
+		vlSpec.mark = "tick";
 		vlSpec = { ...vlSpec };
 		specChanged++;
 	}
