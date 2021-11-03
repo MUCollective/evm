@@ -15,6 +15,7 @@
 	import ModelPanel from "./ModelPanel.svelte";
 
 	import { writable, get } from "svelte/store";
+	import { isXorY } from "vega-lite/build/src/channel";
 
 	// props
 	export let name: string;
@@ -27,6 +28,7 @@
 	// data should be a {}[] format (pure dataset), this will be wrapped by {"table": data} in the ChartPanel component.
 	export let data: any;
 	export let vlSpec: VisualizationSpec;
+	// export let facet: any;
 	// should be a valid vega-lite spec
 	// if you update "data", then the data set for the visualization is updated.
 	// if you update "vlSpec", then the Vega-Lite spec is updated.
@@ -96,6 +98,14 @@
 				if (shelfId == "y-drop" && e.detail.items.length != 0) {
 					vlSpec.encoding.y = tempEncoding;
 				}
+				if (shelfId == "row-drop") {
+					vlSpec.encoding.row = { field: e.detail.items[0].name };
+					console.log("facet", vlSpec);
+				}
+				if (shelfId == "col-drop") {
+					vlSpec.encoding.column = { field: e.detail.items[0].name };
+					console.log("facet", vlSpec);
+				}
 			}
 			// continuous x continuous scatter plot
 			if (vlSpec.encoding.x && vlSpec.encoding.y) {
@@ -106,7 +116,6 @@
 					vlSpec.mark = "point";
 				}
 			}
-			console.log("should be point now", vlSpec);
 			vlSpec = { ...vlSpec };
 			specChanged++;
 			console.log("vlspec:", vlSpec);
@@ -118,7 +127,6 @@
 		console.log("variable", variable, "shelfId", shelfId, "item", item);
 		console.log("before any changes", vlSpec.encoding);
 		console.log(typeof dndState[0]);
-		// add to last
 
 		console.log(item);
 		const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
@@ -126,13 +134,21 @@
 		dndState[0].items.push(item[0]);
 		console.log(dndState);
 		dndState = [...dndState];
-		if (shelfId == "x-drop") {
-			delete vlSpec.encoding.x;
+		if (shelfId == "x-drop" || shelfId == "y-drop") {
+			if (shelfId == "x-drop") {
+				delete vlSpec.encoding.x;
+			} else {
+				delete vlSpec.encoding.y;
+			}
+			vlSpec.mark = "tick";
 		}
-		if (shelfId == "y-drop") {
-			delete vlSpec.encoding.y;
+		if (shelfId == "row-drop") {
+			delete vlSpec.encoding.row;
 		}
-		vlSpec.mark = "tick";
+		if (shelfId == "col-drop") {
+			delete vlSpec.encoding.column;
+		}
+		
 		vlSpec = { ...vlSpec };
 		specChanged++;
 	}
