@@ -65,14 +65,33 @@
 		dndState[shelfIdx].items = e.detail.items;
 	}
 	function handleDndFinalize(shelfId: any, e: any) {
-		console.log("e.detail.items", e.detail);
-		const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
-		dndState[shelfIdx].items = e.detail.items;
-		dndState = [...dndState];
 		if (e.srcElement.id != "variables") {
+			const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
+			// 1 if x-row
+			console.log("current", dndState[shelfIdx].items[dndState[shelfIdx].items.length - 1].name);
+			// {id: 'x-drop', name: 'x', items: Array(1)}
+			// id: "x-drop"
+			// items: Array(1)
+			// 0: {id: 0, idx: 0, name: 'name'}
+			// current {id: 'x-drop', name: 'x', items: Array(2)}
+			var varName = e.detail.items[0].name;
+			console.log("compare", varName);
+			if (dndState[shelfIdx].items[dndState[shelfIdx].items.length - 1].name != varName) {
+				console.log("HERE !!!!!!!!!!!");
+				console.log(dndState);
+				encodingToData(
+					dndState[shelfIdx].name,
+					shelfId,
+					dndState[shelfIdx].items
+				);
+				console.log("what about now !!!!!!!!!!!");
+				console.log(dndState);
+			}
+
+			dndState[shelfIdx].items = e.detail.items;
+			dndState = [...dndState];
 			prevSpec = deepCopy(vlSpec);
 			if (e.detail.items.length != 0) {
-				var varName = e.detail.items[0].name;
 				var varSample = data[0][varName];
 				console.log("varSample", varSample);
 				console.log(data[0]);
@@ -130,8 +149,12 @@
 
 		console.log(item);
 		const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
+		console.log("why doesn't it change", dndState[shelfIdx]);
 		dndState[shelfIdx].items = [];
-		dndState[0].items.push(item[0]);
+		console.log("?????", dndState[shelfIdx], "this should be empty", dndState[shelfIdx].items);
+		console.log(dndState[0]);
+		dndState[0].items.push(item[item.length-1]);
+		console.log("now?????", dndState[shelfIdx]);
 		console.log(dndState);
 		dndState = [...dndState];
 		if (shelfId == "x-drop" || shelfId == "y-drop") {
@@ -148,7 +171,7 @@
 		if (shelfId == "col-drop") {
 			delete vlSpec.encoding.column;
 		}
-		
+
 		vlSpec = { ...vlSpec };
 		specChanged++;
 	}
