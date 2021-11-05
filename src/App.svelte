@@ -156,7 +156,7 @@
 	}
 
 	function changeAggregation(aggr: any, shelfId: any) {
-		if (shelfId == "x-drop") {
+		if (shelfId == "x-drop" && typeof vlSpec.encoding.x != "undefined") {
 			if (aggr == "none") {
 				if (typeof vlSpec.encoding.x.aggregate != "undefined") {
 					delete vlSpec.encoding.x.aggregate;
@@ -192,9 +192,21 @@
 		if (aggr == "sum") {
 			vlSpec.mark = "bar";
 		}
+		if (typeof vlSpec.encoding.x.aggregate == "undefined" && typeof vlSpec.encoding.y.aggregate == "undefined") {
+			if (vlSpec.encoding.x && vlSpec.encoding.y) {
+				if (
+					vlSpec.encoding.x.type == vlSpec.encoding.y.type &&
+					vlSpec.encoding.x.type == "quantitative"
+				) {
+					vlSpec.mark = "point";
+				}
+			} else {
+				vlSpec.mark = "tick";
+			}
+		}
 		vlSpec = { ...vlSpec };
 		specChanged++;
-		console.log(vlSpec);
+		console.log("why no change?");
 	}
 
 	function encodingToData(variable: any, shelfId: any, item: any) {

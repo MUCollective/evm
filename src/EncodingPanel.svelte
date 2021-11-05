@@ -20,7 +20,10 @@
     export let changeAggregation;
 
     let mark;
-    let aggregate = {};
+    let aggregateX;
+    let aggregateY;
+    let aggregateRow;
+    let aggregateCol;
 </script>
 
 <div class="encoding-panel card">
@@ -63,15 +66,7 @@
                                     )}
                                     >&times;
                                 </button>
-                                
-                                    <select bind:value={aggregate} on:change={changeAggregation(aggregate, shelf.id)}>
-                                        <option disabled selected value> -- </option>
-                                        <option value="none">none</option>
-                                        <option value="count">count</option>
-                                        <option value="sum">sum</option>
-                                        <option value="mean">mean</option>
-                                    </select>
-                                
+
                                 
                             </div>
                         {/each}
@@ -80,6 +75,34 @@
             </div>
         {/if}
     {/each}
+    <select bind:value={aggregateX} on:change={changeAggregation(aggregateX, "x-drop")}>
+        <option disabled selected value> -- x aggregation -- </option>
+        <option value="none">none</option>
+        <option value="count">count</option>
+        <option value="sum">sum</option>
+        <option value="mean">mean</option>
+    </select>
+    <select bind:value={aggregateY} on:change={changeAggregation(aggregateY, "y-drop")}>
+        <option disabled selected value> -- y aggregation -- </option>
+        <option value="none">none</option>
+        <option value="count">count</option>
+        <option value="sum">sum</option>
+        <option value="mean">mean</option>
+    </select>
+    <select bind:value={aggregateRow} on:change={changeAggregation(aggregateRow, "row-drop")}>
+        <option disabled selected value> -- row aggregation -- </option>
+        <option value="none">none</option>
+        <option value="count">count</option>
+        <option value="sum">sum</option>
+        <option value="mean">mean</option>
+    </select>
+    <select bind:value={aggregateCol} on:change={changeAggregation(aggregateCol, "col-drop")}>
+        <option disabled selected value> -- col aggregation -- </option>
+        <option value="none">none</option>
+        <option value="count">count</option>
+        <option value="sum">sum</option>
+        <option value="mean">mean</option>
+    </select>
     <!-- TODO: add aggregate option here -->
     <h3>Marks</h3>
     <select bind:value={mark} on:change={changeMark(mark)}>
