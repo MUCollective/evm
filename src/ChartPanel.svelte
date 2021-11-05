@@ -21,7 +21,10 @@
 	<h3>Visualization Canvas</h3>
 	<!-- <VegaEmbed {vlSpec} {dataset} /> -->
 	<!-- ignore the below error, it's due to the wrongly declared type in VegaLite; it is also ignored in Svelte.Vega -->
-	<VegaLite bind:data={dataset} bind:spec={vlSpec} bind:options={options}/>
+	<div id="container">
+
+		<VegaLite bind:data={dataset} bind:spec={vlSpec} bind:options={options}/>
+	</div>
 </div>
 
 <style>
@@ -36,5 +39,14 @@
 		padding: 0.5rem;
 		margin-left: 0.5rem;
 		margin-right: 0.5rem;
+		max-height: 70vh;
+		overflow-y: scroll;
+		max-width: 40vw;
+		overflow-x: scroll;
+	}
+	
+	#container {
+		width: 100%;
+		height: 100%;
 	}
 </style>

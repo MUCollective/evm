@@ -174,11 +174,11 @@
 			}
 		} else if (shelfId == "col-drop") {
 			if (aggr == "none") {
-				if (typeof vlSpec.encoding.col.aggregate != "undefined") {
-					delete vlSpec.encoding.col.aggregate;
+				if (typeof vlSpec.encoding.column.aggregate != "undefined") {
+					delete vlSpec.encoding.column.aggregate;
 				}
 			} else {
-				vlSpec.encoding.col.aggregate = aggr;
+				vlSpec.encoding.column.aggregate = aggr;
 			}
 		} else if (shelfId == "row-drop") {
 			if (aggr == "none") {
