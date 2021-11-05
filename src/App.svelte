@@ -164,7 +164,7 @@
 			} else {
 				vlSpec.encoding.x.aggregate = aggr;
 			}
-		} else if (shelfId == "y-drop") {
+		} else if (shelfId == "y-drop"&& typeof vlSpec.encoding.y != "undefined") {
 			if (aggr == "none") {
 				if (typeof vlSpec.encoding.y.aggregate != "undefined") {
 					delete vlSpec.encoding.y.aggregate;
@@ -172,7 +172,7 @@
 			} else {
 				vlSpec.encoding.y.aggregate = aggr;
 			}
-		} else if (shelfId == "col-drop") {
+		} else if (shelfId == "col-drop"&& typeof vlSpec.encoding.column != "undefined") {
 			if (aggr == "none") {
 				if (typeof vlSpec.encoding.column.aggregate != "undefined") {
 					delete vlSpec.encoding.column.aggregate;
@@ -180,7 +180,7 @@
 			} else {
 				vlSpec.encoding.column.aggregate = aggr;
 			}
-		} else if (shelfId == "row-drop") {
+		} else if (shelfId == "row-drop"&& typeof vlSpec.encoding.row != "undefined") {
 			if (aggr == "none") {
 				if (typeof vlSpec.encoding.row.aggregate != "undefined") {
 					delete vlSpec.encoding.row.aggregate;
@@ -192,7 +192,7 @@
 		if (aggr == "sum") {
 			vlSpec.mark = "bar";
 		}
-		if (typeof vlSpec.encoding.x.aggregate == "undefined" && typeof vlSpec.encoding.y.aggregate == "undefined") {
+		if (typeof vlSpec.encoding.x != "undefined" && typeof vlSpec.encoding.x.aggregate == "undefined" && typeof vlSpec.encoding.y != "undefined" && typeof vlSpec.encoding.y.aggregate == "undefined") {
 			if (vlSpec.encoding.x && vlSpec.encoding.y) {
 				if (
 					vlSpec.encoding.x.type == vlSpec.encoding.y.type &&
