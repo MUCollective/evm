@@ -158,12 +158,36 @@
 	function changeAggregation(aggr: any, shelfId: any) {
 		if (shelfId == "x-drop") {
 			if (aggr == "none") {
-				if (typeof vlSpec.encoding.x.aggregate != "undefined"){
-
+				if (typeof vlSpec.encoding.x.aggregate != "undefined") {
 					delete vlSpec.encoding.x.aggregate;
 				}
-			} else {vlSpec.encoding.x.aggregate = aggr;}
-		
+			} else {
+				vlSpec.encoding.x.aggregate = aggr;
+			}
+		} else if (shelfId == "y-drop") {
+			if (aggr == "none") {
+				if (typeof vlSpec.encoding.y.aggregate != "undefined") {
+					delete vlSpec.encoding.y.aggregate;
+				}
+			} else {
+				vlSpec.encoding.y.aggregate = aggr;
+			}
+		} else if (shelfId == "col-drop") {
+			if (aggr == "none") {
+				if (typeof vlSpec.encoding.col.aggregate != "undefined") {
+					delete vlSpec.encoding.col.aggregate;
+				}
+			} else {
+				vlSpec.encoding.col.aggregate = aggr;
+			}
+		} else if (shelfId == "row-drop") {
+			if (aggr == "none") {
+				if (typeof vlSpec.encoding.row.aggregate != "undefined") {
+					delete vlSpec.encoding.row.aggregate;
+				}
+			} else {
+				vlSpec.encoding.row.aggregate = aggr;
+			}
 		}
 		if (aggr == "sum") {
 			vlSpec.mark = "bar";
