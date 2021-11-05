@@ -68,7 +68,11 @@
 		if (e.srcElement.id != "variables") {
 			const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
 			// 1 if x-row
-			console.log("current", dndState[shelfIdx].items[dndState[shelfIdx].items.length - 1].name);
+			console.log(
+				"current",
+				dndState[shelfIdx].items[dndState[shelfIdx].items.length - 1]
+					.name
+			);
 			// {id: 'x-drop', name: 'x', items: Array(1)}
 			// id: "x-drop"
 			// items: Array(1)
@@ -76,7 +80,10 @@
 			// current {id: 'x-drop', name: 'x', items: Array(2)}
 			var varName = e.detail.items[0].name;
 			console.log("compare", varName);
-			if (dndState[shelfIdx].items[dndState[shelfIdx].items.length - 1].name != varName) {
+			if (
+				dndState[shelfIdx].items[dndState[shelfIdx].items.length - 1]
+					.name != varName
+			) {
 				console.log("HERE !!!!!!!!!!!");
 				console.log(dndState);
 				encodingToData(
@@ -141,8 +148,32 @@
 		}
 	}
 
+	function changeMark(selected: any) {
+		vlSpec.mark = selected;
+		vlSpec = { ...vlSpec };
+		specChanged++;
+		console.log("CHANGING MARK,", selected, vlSpec);
+	}
+
+	function changeAggregation(aggr: any, shelfId: any) {
+		if (shelfId == "x-drop") {
+			if (aggr == "none") {
+				if (typeof vlSpec.encoding.x.aggregate != "undefined"){
+
+					delete vlSpec.encoding.x.aggregate;
+				}
+			} else {vlSpec.encoding.x.aggregate = aggr;}
+		
+		}
+		if (aggr == "sum") {
+			vlSpec.mark = "bar";
+		}
+		vlSpec = { ...vlSpec };
+		specChanged++;
+		console.log(vlSpec);
+	}
+
 	function encodingToData(variable: any, shelfId: any, item: any) {
-		console.log("NEW FUNCTION !!!!!!!!!");
 		console.log("variable", variable, "shelfId", shelfId, "item", item);
 		console.log("before any changes", vlSpec.encoding);
 		console.log(typeof dndState[0]);
@@ -151,9 +182,14 @@
 		const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
 		console.log("why doesn't it change", dndState[shelfIdx]);
 		dndState[shelfIdx].items = [];
-		console.log("?????", dndState[shelfIdx], "this should be empty", dndState[shelfIdx].items);
+		console.log(
+			"?????",
+			dndState[shelfIdx],
+			"this should be empty",
+			dndState[shelfIdx].items
+		);
 		console.log(dndState[0]);
-		dndState[0].items.push(item[item.length-1]);
+		dndState[0].items.push(item[item.length - 1]);
 		console.log("now?????", dndState[shelfIdx]);
 		console.log(dndState);
 		dndState = [...dndState];
@@ -239,6 +275,8 @@
 						{handleDndConsider}
 						{handleDndFinalize}
 						{encodingToData}
+						{changeMark}
+						{changeAggregation}
 					/>
 				</Column>
 				<Column style="width: 100%;">

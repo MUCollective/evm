@@ -9,13 +9,18 @@
     import { flip } from "svelte/animate";
     import { dndzone } from "svelte-dnd-action";
     import Chart from "./Chart.svelte";
-import { id } from "vega";
+    import { id } from "vega";
 
     export let dndState: { id: string; name: string; items: any[] }[];
     export let flipDurationMs: number;
     export let handleDndConsider;
     export let handleDndFinalize;
     export let encodingToData;
+    export let changeMark;
+    export let changeAggregation;
+
+    let mark;
+    let aggregate = {};
 </script>
 
 <div class="encoding-panel card">
@@ -32,7 +37,7 @@ import { id } from "vega";
                         use:dndzone={{
                             items: shelf.items,
                             flipDurationMs,
-                            dragDisabled: true
+                            dragDisabled: true,
                         }}
                         on:consider={(e) => handleDndConsider(shelf.id, e)}
                         on:finalize={(e) => handleDndFinalize(shelf.id, e)}
@@ -50,7 +55,24 @@ import { id } from "vega";
                                 }}
                             >
                                 {item.name}
-                                <button on:click={encodingToData(item.name, shelf.id, shelf.items)}>&times;</button>
+                                <button
+                                    on:click={encodingToData(
+                                        item.name,
+                                        shelf.id,
+                                        shelf.items
+                                    )}
+                                    >&times;
+                                </button>
+                                
+                                    <select bind:value={aggregate} on:change={changeAggregation(aggregate, shelf.id)}>
+                                        <option disabled selected value> -- </option>
+                                        <option value="none">none</option>
+                                        <option value="count">count</option>
+                                        <option value="sum">sum</option>
+                                        <option value="mean">mean</option>
+                                    </select>
+                                
+                                
                             </div>
                         {/each}
                     </section>
@@ -60,6 +82,20 @@ import { id } from "vega";
     {/each}
     <!-- TODO: add aggregate option here -->
     <h3>Marks</h3>
+    <select bind:value={mark} on:change={changeMark(mark)}>
+        <option disabled selected value> -- change marking -- </option>
+        <option value="area">area</option>
+        <option value="bar">bar</option>
+        <option value="circle">circle</option>
+        <option value="line">line</option>
+        <option value="point">point</option>
+        <option value="rect">rect</option>
+        <option value="rule">rule</option>
+        <option value="square">square</option>
+        <option value="text">text</option>
+        <option value="tick">tick</option>
+        <option value="geoshape">geoshape</option>
+    </select>
     (placeholders for now)
     <div class="group">
         <div class="encoding-label">size</div>
