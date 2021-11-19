@@ -20,6 +20,9 @@
     export let changeMark;
     export let changeAggregation;
     export let filterData;
+    export let logTransform;
+    export let clearLogTransform;
+    export let logOddsTransform;
 
     let mark;
     let aggregateX;
@@ -27,6 +30,9 @@
     let aggregateRow;
     let aggregateCol;
     let filter;
+    let log;
+    let logOdds
+    let clearLogOddsTransform;
 </script>
 
 <div class="encoding-panel card">
@@ -69,8 +75,6 @@
                                     )}
                                     >&times;
                                 </button>
-
-                                
                             </div>
                         {/each}
                     </section>
@@ -78,28 +82,40 @@
             </div>
         {/if}
     {/each}
-    <select bind:value={aggregateX} on:change={changeAggregation(aggregateX, "x-drop")}>
+    <select
+        bind:value={aggregateX}
+        on:change={changeAggregation(aggregateX, "x-drop")}
+    >
         <option disabled selected value> -- x aggregation -- </option>
         <option value="none">none</option>
         <option value="count">count</option>
         <option value="sum">sum</option>
         <option value="mean">mean</option>
     </select>
-    <select bind:value={aggregateY} on:change={changeAggregation(aggregateY, "y-drop")}>
+    <select
+        bind:value={aggregateY}
+        on:change={changeAggregation(aggregateY, "y-drop")}
+    >
         <option disabled selected value> -- y aggregation -- </option>
         <option value="none">none</option>
         <option value="count">count</option>
         <option value="sum">sum</option>
         <option value="mean">mean</option>
     </select>
-    <select bind:value={aggregateRow} on:change={changeAggregation(aggregateRow, "row-drop")}>
+    <select
+        bind:value={aggregateRow}
+        on:change={changeAggregation(aggregateRow, "row-drop")}
+    >
         <option disabled selected value> -- row aggregation -- </option>
         <option value="none">none</option>
         <option value="count">count</option>
         <option value="sum">sum</option>
         <option value="mean">mean</option>
     </select>
-    <select bind:value={aggregateCol} on:change={changeAggregation(aggregateCol, "col-drop")}>
+    <select
+        bind:value={aggregateCol}
+        on:change={changeAggregation(aggregateCol, "col-drop")}
+    >
         <option disabled selected value> -- col aggregation -- </option>
         <option value="none">none</option>
         <option value="count">count</option>
@@ -123,15 +139,35 @@
         <option value="geoshape">geoshape</option>
     </select>
 
-
     <h3>Filter</h3>
     variable:
     <select bind:value={filter} on:change={filterData(filter)}>
         <option disabled selected value> -- variable -- </option>
         {#each originalDndState[0].items as item}
-        <option value={item.name}>{item.name}</option>
+            <option value={item.name}>{item.name}</option>
         {/each}
     </select>
+    <!-- TODO: ask alex what to filter on !!!!!!!!! -->
+    log transform:
+    <select bind:value={log} on:change={logTransform(log)}>
+        <option disabled selected value> -- variable -- </option>
+        {#each originalDndState[0].items as item}
+            <option value={item.name}>{item.name}</option>
+        {/each}
+    </select>
+    <button on:click={clearLogTransform()}
+    on:click="{() => log = "-- variable --" }">&times;
+    </button>
+
+    <br>
+    log odds transform:
+    <select bind:value={logOdds} on:change={logOddsTransform(logOdds)}>
+        <option disabled selected value> -- variable -- </option>
+        {#each originalDndState[0].items as item}
+            <option value={item.name}>{item.name}</option>
+        {/each}
+    </select>
+
 </div>
 
 <style>

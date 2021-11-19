@@ -236,10 +236,57 @@
 		var varSample = data[0][filterVar];
 		console.log(varSample);
 		if (typeof varSample == "number") {
-			vlSpec.transform = [{filter: {field: filterVar, range: [2, 3]}}];
+			vlSpec.transform = [
+				{ filter: { field: filterVar, range: [2, 3] } },
+			];
 		}
+		console.log(dndState);
 		vlSpec = { ...vlSpec };
 		specChanged++;
+	}
+
+	function logTransform(filterVar: any) {
+		console.log("log transform");
+		var varSample = data[0][filterVar];
+		console.log(varSample);
+		console.log(dndState[1].items[0]);
+		if (typeof varSample == "number") {
+			if (
+				dndState[1].items[0] != "undefined" &&
+				dndState[1].items[0].name == filterVar
+			) {
+				console.log("changing x");
+				vlSpec.encoding.x.scale = { type: "log" };
+			} else if (
+				dndState[2].items[0] != "undefined" &&
+				dndState[2].items[0].name == filterVar
+			) {
+				vlSpec.encoding.y.scale = { type: "log" };
+			}
+			vlSpec = { ...vlSpec };
+			specChanged++;
+		}
+	}
+
+	function clearLogTransform() {
+		console.log(vlSpec.encoding.x.scale);
+		if (vlSpec.encoding.x.scale != "undefined") {
+			delete vlSpec.encoding.x.scale;
+		} 
+		if (vlSpec.encoding.y.scale != "undefined") {
+			delete vlSpec.encoding.y.scale;
+		}
+		console.log(vlSpec);
+		vlSpec = { ...vlSpec };
+			specChanged++;
+	}
+
+	function logOddsTransform(logOdds) {
+
+	}
+
+	function clearLogOddsTransform() {
+
 	}
 
 	function encodingToData(variable: any, shelfId: any, item: any) {
@@ -348,6 +395,10 @@
 						{changeMark}
 						{changeAggregation}
 						{filterData}
+						{logTransform}
+						{clearLogTransform}
+						{logOddsTransform}
+						{clearLogOddsTransform}
 					/>
 				</Column>
 				<Column style="width: 100%;">
