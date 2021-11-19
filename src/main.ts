@@ -36,6 +36,7 @@ const app = new App({
 				items: [],
 			},
 		],
+		originalDndState:[],
 		
 		vlSpec: {
 			$schema: "https://vega.github.io/schema/vega-lite/v5.json",
@@ -48,6 +49,7 @@ const app = new App({
 				// x: { field: "", type: "nominal" },
 				// y: { field: "", type: "quantitative", aggregate: "mean" },
 			},
+			transform :[]
 		}
 	}
 });

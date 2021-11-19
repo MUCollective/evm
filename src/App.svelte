@@ -15,7 +15,6 @@
 	import ModelPanel from "./ModelPanel.svelte";
 
 	import { writable, get } from "svelte/store";
-	import { isXorY } from "vega-lite/build/src/channel";
 
 	// props
 	export let name: string;
@@ -40,6 +39,7 @@
 	// controls the rendering of drag and drop elements
 	export let dndState: { id: string; name: string; items: any[] }[];
 	export let flipDurationMs: number;
+	export let originalDndState: { id: string; name: string; items: any[] }[];
 
 	$: specChanged = 0;
 	let prevSpec: VisualizationSpec = vlSpec;
@@ -57,7 +57,11 @@
 			});
 		});
 		mounted = true;
+		originalDndState = deepCopy(dndState);
+		console.log("originalDndState", originalDndState);
 	});
+
+	// originalDndState = deepCopy(dndState);
 	// helper functions for drag and drop
 	// passed to sub-components
 	function handleDndConsider(shelfId: any, e: any) {
@@ -94,7 +98,12 @@
 				console.log("what about now !!!!!!!!!!!");
 				console.log(dndState);
 			}
-
+			console.log(
+				"before change dndState[shelfIdx].items",
+				dndState[shelfIdx],
+				dndState[shelfIdx].items
+			);
+			console.log("e.detail.items", e.detail.items);
 			dndState[shelfIdx].items = e.detail.items;
 			dndState = [...dndState];
 			prevSpec = deepCopy(vlSpec);
@@ -164,7 +173,10 @@
 			} else {
 				vlSpec.encoding.x.aggregate = aggr;
 			}
-		} else if (shelfId == "y-drop"&& typeof vlSpec.encoding.y != "undefined") {
+		} else if (
+			shelfId == "y-drop" &&
+			typeof vlSpec.encoding.y != "undefined"
+		) {
 			if (aggr == "none") {
 				if (typeof vlSpec.encoding.y.aggregate != "undefined") {
 					delete vlSpec.encoding.y.aggregate;
@@ -172,7 +184,10 @@
 			} else {
 				vlSpec.encoding.y.aggregate = aggr;
 			}
-		} else if (shelfId == "col-drop"&& typeof vlSpec.encoding.column != "undefined") {
+		} else if (
+			shelfId == "col-drop" &&
+			typeof vlSpec.encoding.column != "undefined"
+		) {
 			if (aggr == "none") {
 				if (typeof vlSpec.encoding.column.aggregate != "undefined") {
 					delete vlSpec.encoding.column.aggregate;
@@ -180,7 +195,10 @@
 			} else {
 				vlSpec.encoding.column.aggregate = aggr;
 			}
-		} else if (shelfId == "row-drop"&& typeof vlSpec.encoding.row != "undefined") {
+		} else if (
+			shelfId == "row-drop" &&
+			typeof vlSpec.encoding.row != "undefined"
+		) {
 			if (aggr == "none") {
 				if (typeof vlSpec.encoding.row.aggregate != "undefined") {
 					delete vlSpec.encoding.row.aggregate;
@@ -192,7 +210,12 @@
 		if (aggr == "sum") {
 			vlSpec.mark = "bar";
 		}
-		if (typeof vlSpec.encoding.x != "undefined" && typeof vlSpec.encoding.x.aggregate == "undefined" && typeof vlSpec.encoding.y != "undefined" && typeof vlSpec.encoding.y.aggregate == "undefined") {
+		if (
+			typeof vlSpec.encoding.x != "undefined" &&
+			typeof vlSpec.encoding.x.aggregate == "undefined" &&
+			typeof vlSpec.encoding.y != "undefined" &&
+			typeof vlSpec.encoding.y.aggregate == "undefined"
+		) {
 			if (vlSpec.encoding.x && vlSpec.encoding.y) {
 				if (
 					vlSpec.encoding.x.type == vlSpec.encoding.y.type &&
@@ -206,7 +229,17 @@
 		}
 		vlSpec = { ...vlSpec };
 		specChanged++;
-		console.log("why no change?");
+	}
+
+	function filterData(filterVar: any, shelfId: any) {
+		console.log(filterVar);
+		var varSample = data[0][filterVar];
+		console.log(varSample);
+		if (typeof varSample == "number") {
+			vlSpec.transform = [{filter: {field: filterVar, range: [2, 3]}}];
+		}
+		vlSpec = { ...vlSpec };
+		specChanged++;
 	}
 
 	function encodingToData(variable: any, shelfId: any, item: any) {
@@ -307,12 +340,14 @@
 				<Column style="min-width: 250px; max-width: 250px;">
 					<EncodingPanel
 						{dndState}
+						{originalDndState}
 						{flipDurationMs}
 						{handleDndConsider}
 						{handleDndFinalize}
 						{encodingToData}
 						{changeMark}
 						{changeAggregation}
+						{filterData}
 					/>
 				</Column>
 				<Column style="width: 100%;">

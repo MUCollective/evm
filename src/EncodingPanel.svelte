@@ -12,18 +12,21 @@
     import { id } from "vega";
 
     export let dndState: { id: string; name: string; items: any[] }[];
+    export let originalDndState: { id: string; name: string; items: any[] }[];
     export let flipDurationMs: number;
     export let handleDndConsider;
     export let handleDndFinalize;
     export let encodingToData;
     export let changeMark;
     export let changeAggregation;
+    export let filterData;
 
     let mark;
     let aggregateX;
     let aggregateY;
     let aggregateRow;
     let aggregateCol;
+    let filter;
 </script>
 
 <div class="encoding-panel card">
@@ -119,39 +122,16 @@
         <option value="tick">tick</option>
         <option value="geoshape">geoshape</option>
     </select>
-    (placeholders for now)
-    <div class="group">
-        <div class="encoding-label">size</div>
-        <div class="drop-field">
-            <span class="placeholder"> drop a field here </span>
-        </div>
-    </div>
-    <div class="group">
-        <div class="encoding-label">color</div>
-        <div class="drop-field">
-            <span class="placeholder"> drop a field here </span>
-        </div>
-    </div>
-    <div class="group">
-        <div class="encoding-label">shape</div>
-        <div class="drop-field">
-            <span class="placeholder"> drop a field here </span>
-        </div>
-    </div>
-    <div class="group">
-        <div class="encoding-label">detail</div>
-        <div class="drop-field">
-            <span class="placeholder"> drop a field here </span>
-        </div>
-    </div>
-    <div class="group">
-        <div class="encoding-label">text</div>
-        <div class="drop-field">
-            <span class="placeholder"> drop a field here </span>
-        </div>
-    </div>
+
 
     <h3>Filter</h3>
+    variable:
+    <select bind:value={filter} on:change={filterData(filter)}>
+        <option disabled selected value> -- variable -- </option>
+        {#each originalDndState[0].items as item}
+        <option value={item.name}>{item.name}</option>
+        {/each}
+    </select>
 </div>
 
 <style>
