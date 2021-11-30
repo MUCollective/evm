@@ -29,10 +29,19 @@
     let aggregateY;
     let aggregateRow;
     let aggregateCol;
-    let filter;
+    let filterVar;
     let log;
-    let logOdds
+    let logOdds;
     let clearLogOddsTransform;
+
+    let includeOrExclude = "include";
+    function onChange(event) {
+        includeOrExclude = event.currentTarget.value;
+    }
+
+    let condition;
+    let conditionValue1;
+    let conditionValue2;
 </script>
 
 <div class="encoding-panel card">
@@ -141,13 +150,57 @@
 
     <h3>Filter</h3>
     variable:
-    <select bind:value={filter} on:change={filterData(filter)}>
+    <select bind:value={filterVar}>
         <option disabled selected value> -- variable -- </option>
         {#each originalDndState[0].items as item}
             <option value={item.name}>{item.name}</option>
         {/each}
     </select>
+
+    {#if filterVar}
+        <br />
+        <label>
+            <input
+                checked={includeOrExclude === "include"}
+                on:change={onChange}
+                type="radio"
+                name="includeExclude"
+                value="include"
+            /> include
+        </label>
+        <label>
+            <input
+                checked={includeOrExclude === "exclude"}
+                on:change={onChange}
+                type="radio"
+                name="includeExclude"
+                value="exclude"
+            /> exclude
+        </label>
+        <br />
+        <select bind:value={condition}>
+            <option disabled selected value> -- condition -- </option>
+            <option value="greater">greater than</option>
+            <option value="greaterEqual">greater than or equal to</option>
+            <option value="less">less than</option>
+            <option value="lessEqual">less than or equal to</option>
+            <option value="equal">equal to</option>
+            <option value="between">between</option>
+        </select>
+        {#if condition == "greater" || condition == "greaterEqual" || condition == "less" || condition == "lessEqual" || condition == "equal"}
+            <input bind:value={conditionValue1} />
+        {:else if condition == "between"}
+            min: <input bind:value={conditionValue1} />
+            max: <input bind:value={conditionValue2} />
+        {/if}
+        {#if condition && conditionValue1}
+        <button  on:change={filterData(filterVar, includeOrExclude, condition, conditionValue1, conditionValue2)}> &#10003; </button>
+        {/if}
+        
+    {/if}
     <!-- TODO: ask alex what to filter on !!!!!!!!! -->
+
+    <h3>Transform</h3>
     log transform:
     <select bind:value={log} on:change={logTransform(log)}>
         <option disabled selected value> -- variable -- </option>
@@ -155,11 +208,13 @@
             <option value={item.name}>{item.name}</option>
         {/each}
     </select>
-    <button on:click={clearLogTransform()}
-    on:click="{() => log = "-- variable --" }">&times;
+    <button
+        on:click={clearLogTransform()}
+        on:click={() => (log = "-- variable --")}
+        >&times;
     </button>
 
-    <br>
+    <br />
     log odds transform:
     <select bind:value={logOdds} on:change={logOddsTransform(logOdds)}>
         <option disabled selected value> -- variable -- </option>
@@ -167,7 +222,6 @@
             <option value={item.name}>{item.name}</option>
         {/each}
     </select>
-
 </div>
 
 <style>

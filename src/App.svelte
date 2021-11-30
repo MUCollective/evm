@@ -231,18 +231,18 @@
 		specChanged++;
 	}
 
-	function filterData(filterVar: any, shelfId: any) {
-		console.log(filterVar);
-		var varSample = data[0][filterVar];
-		console.log(varSample);
-		if (typeof varSample == "number") {
-			vlSpec.transform = [
-				{ filter: { field: filterVar, range: [2, 3] } },
-			];
-		}
-		console.log(dndState);
-		vlSpec = { ...vlSpec };
-		specChanged++;
+	function filterData(varToFilter, includeOrExclude, condition, conditionValue1, conditionValue2) {
+		// console.log(filterVar);
+		// var varSample = data[0][filterVar];
+		// console.log(varSample);
+		// if (typeof varSample == "number") {
+		// 	vlSpec.transform = [
+		// 		{ filter: { field: filterVar, range: [2, 3] } },
+		// 	];
+		// }
+		// console.log(dndState);
+		// vlSpec = { ...vlSpec };
+		// specChanged++;
 	}
 
 	function logTransform(filterVar: any) {
