@@ -26,6 +26,7 @@
 	// props for Vega-Lite
 	// data should be a {}[] format (pure dataset), this will be wrapped by {"table": data} in the ChartPanel component.
 	export let data: any;
+	export let dataChanged: any;
 	export let vlSpec: VisualizationSpec;
 	// export let facet: any;
 	// should be a valid vega-lite spec
@@ -278,9 +279,11 @@
 				}
 			}
 		});
-		// console.log(res);
-		data = res;
-		console.log(data);
+		console.log(res);
+		// dataChanged = res;
+		// console.log(dataChanged);
+		console.log(dndState);
+		specChanged++;
 	}
 
 	function logTransform(filterVar: any) {
