@@ -194,7 +194,7 @@
             max: <input bind:value={conditionValue2} />
         {/if}
         {#if condition && conditionValue1}
-        <button  on:change={filterData(filterVar, includeOrExclude, condition, conditionValue1, conditionValue2)}> &#10003; </button>
+        <button  on:click={filterData(filterVar, includeOrExclude, condition, conditionValue1, conditionValue2)}> &#10003; </button>
         {/if}
         
     {/if}

@@ -231,18 +231,56 @@
 		specChanged++;
 	}
 
-	function filterData(varToFilter, includeOrExclude, condition, conditionValue1, conditionValue2) {
-		// console.log(filterVar);
-		// var varSample = data[0][filterVar];
-		// console.log(varSample);
-		// if (typeof varSample == "number") {
-		// 	vlSpec.transform = [
-		// 		{ filter: { field: filterVar, range: [2, 3] } },
-		// 	];
-		// }
-		// console.log(dndState);
-		// vlSpec = { ...vlSpec };
-		// specChanged++;
+	function filterData(
+		varToFilter,
+		includeOrExclude,
+		condition,
+		conditionValue1,
+		conditionValue2
+	) {
+		console.log(varToFilter);
+		var res = data.filter(function (entry) {
+			if (condition == "greater") {
+				if (includeOrExclude == "include") {
+					return entry[varToFilter] > conditionValue1;
+				} else {
+					return entry[varToFilter] <= conditionValue1;
+				}
+			} else if (condition == "greaterEqual") {
+				if (includeOrExclude == "include") {
+					return entry[varToFilter] >= conditionValue1;
+				} else {
+					return entry[varToFilter] < conditionValue1;
+				}
+			} else if (condition == "less") {
+				if (includeOrExclude == "include") {
+					return entry[varToFilter] < conditionValue1;
+				} else {
+					return entry[varToFilter] >= conditionValue1;
+				}
+			} else if (condition == "lessEqual") {
+				if (includeOrExclude == "include") {
+					return entry[varToFilter] <= conditionValue1;
+				} else {
+					return entry[varToFilter] > conditionValue1;
+				}
+			} else if (condition == "equal") {
+				if (includeOrExclude == "include") {
+					return entry[varToFilter] == conditionValue1;
+				} else {
+					return entry[varToFilter] != conditionValue1;
+				}
+			} else if (condition == "between") {
+				if (includeOrExclude == "include") {
+					return conditionValue1 < entry[varToFilter] && entry[varToFilter] < conditionValue2;
+				} else {
+					return conditionValue1 > entry[varToFilter] &&  entry[varToFilter] > conditionValue2;
+				}
+			}
+		});
+		// console.log(res);
+		data = res;
+		console.log(data);
 	}
 
 	function logTransform(filterVar: any) {
@@ -272,22 +310,18 @@
 		console.log(vlSpec.encoding.x.scale);
 		if (vlSpec.encoding.x.scale != "undefined") {
 			delete vlSpec.encoding.x.scale;
-		} 
+		}
 		if (vlSpec.encoding.y.scale != "undefined") {
 			delete vlSpec.encoding.y.scale;
 		}
 		console.log(vlSpec);
 		vlSpec = { ...vlSpec };
-			specChanged++;
+		specChanged++;
 	}
 
-	function logOddsTransform(logOdds) {
+	function logOddsTransform(logOdds) {}
 
-	}
-
-	function clearLogOddsTransform() {
-
-	}
+	function clearLogOddsTransform() {}
 
 	function encodingToData(variable: any, shelfId: any, item: any) {
 		console.log("variable", variable, "shelfId", shelfId, "item", item);
