@@ -9,6 +9,8 @@ const app = new App({
 		modeling: false,
 		flipDurationMs: 300,
 		data: null,
+		dataChanged: null,
+		filter: [],
 		dndState: [
 			{
 				id: "variables",

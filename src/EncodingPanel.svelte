@@ -20,24 +20,32 @@
     export let changeMark;
     export let changeAggregation;
     export let filterData;
+    export let removeFilter;
     export let logTransform;
     export let clearLogTransform;
     export let logOddsTransform;
 
+    export let filter: any;
+
     let mark;
     let aggregateX;
     let aggregateY;
-    let aggregateRow;
-    let aggregateCol;
     let filterVar;
     let log;
     let logOdds;
     let clearLogOddsTransform;
+    let showAddingFilter = false;
 
     let includeOrExclude = "include";
     function onChange(event) {
         includeOrExclude = event.currentTarget.value;
     }
+
+    // function removeFilter(index) {
+    //     filter.splice(index, 1);
+    //     filter = [...filter];
+    //     console.log(filter)
+    // }
 
     let condition;
     let conditionValue1;
@@ -91,6 +99,25 @@
             </div>
         {/if}
     {/each}
+
+    <!-- TODO: add aggregate option here -->
+    <h3>Marks</h3>
+    <select bind:value={mark} on:change={changeMark(mark)}>
+        <option disabled selected value> -- change marking -- </option>
+        <option value="area">area</option>
+        <option value="bar">bar</option>
+        <option value="circle">circle</option>
+        <option value="line">line</option>
+        <option value="point">point</option>
+        <option value="rect">rect</option>
+        <option value="rule">rule</option>
+        <option value="square">square</option>
+        <option value="text">text</option>
+        <option value="tick">tick</option>
+        <option value="geoshape">geoshape</option>
+    </select>
+
+    <h3>Aggregation</h3>
     <select
         bind:value={aggregateX}
         on:change={changeAggregation(aggregateX, "x-drop")}
@@ -111,93 +138,93 @@
         <option value="sum">sum</option>
         <option value="mean">mean</option>
     </select>
-    <select
-        bind:value={aggregateRow}
-        on:change={changeAggregation(aggregateRow, "row-drop")}
-    >
-        <option disabled selected value> -- row aggregation -- </option>
-        <option value="none">none</option>
-        <option value="count">count</option>
-        <option value="sum">sum</option>
-        <option value="mean">mean</option>
-    </select>
-    <select
-        bind:value={aggregateCol}
-        on:change={changeAggregation(aggregateCol, "col-drop")}
-    >
-        <option disabled selected value> -- col aggregation -- </option>
-        <option value="none">none</option>
-        <option value="count">count</option>
-        <option value="sum">sum</option>
-        <option value="mean">mean</option>
-    </select>
-    <!-- TODO: add aggregate option here -->
-    <h3>Marks</h3>
-    <select bind:value={mark} on:change={changeMark(mark)}>
-        <option disabled selected value> -- change marking -- </option>
-        <option value="area">area</option>
-        <option value="bar">bar</option>
-        <option value="circle">circle</option>
-        <option value="line">line</option>
-        <option value="point">point</option>
-        <option value="rect">rect</option>
-        <option value="rule">rule</option>
-        <option value="square">square</option>
-        <option value="text">text</option>
-        <option value="tick">tick</option>
-        <option value="geoshape">geoshape</option>
-    </select>
 
     <h3>Filter</h3>
-    variable:
-    <select bind:value={filterVar}>
-        <option disabled selected value> -- variable -- </option>
-        {#each originalDndState[0].items as item}
-            <option value={item.name}>{item.name}</option>
+    current filters:
+    <button on:click={() => (showAddingFilter = true)}>+ </button>
+    <button on:click={removeFilter(0, true)}>clear all filters </button>
+    <!-- {#key filter.length} -->
+    {#if filter.length != 0}
+        {#each filter as f, i}
+            <!-- {console.log(f)} -->
+            <br />
+            index = {i}
+            {f.includeExclude}
+            {f.variable}
+            {f.condition}
+            {f.value1}
+            <button on:click={removeFilter(i)}>&times; </button>
+            <br />
         {/each}
-    </select>
-
-    {#if filterVar}
+    {:else}
         <br />
-        <label>
-            <input
-                checked={includeOrExclude === "include"}
-                on:change={onChange}
-                type="radio"
-                name="includeExclude"
-                value="include"
-            /> include
-        </label>
-        <label>
-            <input
-                checked={includeOrExclude === "exclude"}
-                on:change={onChange}
-                type="radio"
-                name="includeExclude"
-                value="exclude"
-            /> exclude
-        </label>
-        <br />
-        <select bind:value={condition}>
-            <option disabled selected value> -- condition -- </option>
-            <option value="greater">greater than</option>
-            <option value="greaterEqual">greater than or equal to</option>
-            <option value="less">less than</option>
-            <option value="lessEqual">less than or equal to</option>
-            <option value="equal">equal to</option>
-            <option value="between">between</option>
-        </select>
-        {#if condition == "greater" || condition == "greaterEqual" || condition == "less" || condition == "lessEqual" || condition == "equal"}
-            <input bind:value={conditionValue1} />
-        {:else if condition == "between"}
-            min: <input bind:value={conditionValue1} />
-            max: <input bind:value={conditionValue2} />
-        {/if}
-        {#if condition && conditionValue1}
-        <button  on:click={filterData(filterVar, includeOrExclude, condition, conditionValue1, conditionValue2)}> &#10003; </button>
-        {/if}
-        
+        None
     {/if}
+    <!-- {/key} -->
+    <br />
+    {#if showAddingFilter}
+        variable:
+        <select bind:value={filterVar}>
+            <option disabled selected value> -- variable -- </option>
+            {#each originalDndState[0].items as item}
+                <option value={item.name}>{item.name}</option>
+            {/each}
+        </select>
+        {#if filterVar}
+            <br />
+            <label>
+                <input
+                    checked={includeOrExclude === "include"}
+                    on:change={onChange}
+                    type="radio"
+                    name="includeExclude"
+                    value="include"
+                /> include
+            </label>
+            <label>
+                <input
+                    checked={includeOrExclude === "exclude"}
+                    on:change={onChange}
+                    type="radio"
+                    name="includeExclude"
+                    value="exclude"
+                /> exclude
+            </label>
+            <br />
+            <select bind:value={condition}>
+                <option disabled selected value> -- condition -- </option>
+                <option value="greater">greater than</option>
+                <option value="greaterEqual">greater than or equal to</option>
+                <option value="less">less than</option>
+                <option value="lessEqual">less than or equal to</option>
+                <option value="equal">equal to</option>
+                <option value="between">between</option>
+            </select>
+            {#if condition == "greater" || condition == "greaterEqual" || condition == "less" || condition == "lessEqual" || condition == "equal"}
+                <input bind:value={conditionValue1} />
+            {:else if condition == "between"}
+                min: <input bind:value={conditionValue1} />
+                max: <input bind:value={conditionValue2} />
+            {/if}
+            {#if condition && conditionValue1}
+                <button
+                    on:click={filterData(
+                        filterVar,
+                        includeOrExclude,
+                        condition,
+                        conditionValue1,
+                        conditionValue2
+                    )}
+                    on:click={() => (showAddingFilter = false)}
+                >
+                    &#10003;
+                </button>
+            {/if}
+        {/if}
+    {/if}
+
+    <!-- there's no filter right now -->
+
     <!-- TODO: ask alex what to filter on !!!!!!!!! -->
 
     <h3>Transform</h3>

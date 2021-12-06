@@ -15,6 +15,7 @@
 	import ModelPanel from "./ModelPanel.svelte";
 
 	import { writable, get } from "svelte/store";
+	import type { forEach } from "vega-lite/build/src/encoding";
 
 	// props
 	export let name: string;
@@ -27,6 +28,7 @@
 	// data should be a {}[] format (pure dataset), this will be wrapped by {"table": data} in the ChartPanel component.
 	export let data: any;
 	export let dataChanged: any;
+
 	export let vlSpec: VisualizationSpec;
 	// export let facet: any;
 	// should be a valid vega-lite spec
@@ -42,6 +44,8 @@
 	export let flipDurationMs: number;
 	export let originalDndState: { id: string; name: string; items: any[] }[];
 
+	export let filter: any;
+
 	$: specChanged = 0;
 	let prevSpec: VisualizationSpec = vlSpec;
 	console.log("PREV prevSpec", prevSpec);
@@ -49,6 +53,8 @@
 		// load data
 		data = await d3.json("./data/cars.json");
 		console.log("loaded data", data);
+		dataChanged = data;
+		dataChanged = [...dataChanged];
 		// populate dropzone items with variable names from data
 		Object.keys(data[0]).forEach((d, i) => {
 			dndState[0].items.push({
@@ -60,6 +66,7 @@
 		mounted = true;
 		originalDndState = deepCopy(dndState);
 		console.log("originalDndState", originalDndState);
+		console.log(dataChanged);
 	});
 
 	// originalDndState = deepCopy(dndState);
@@ -232,6 +239,7 @@
 		specChanged++;
 	}
 
+	// var filterCount = 0;
 	function filterData(
 		varToFilter,
 		includeOrExclude,
@@ -239,8 +247,50 @@
 		conditionValue1,
 		conditionValue2
 	) {
+		// filterCount++;
+		// filter.push(tempFilter);
+		filter.push({
+			variable: varToFilter,
+			includeExclude: includeOrExclude,
+			condition: condition,
+			value1: conditionValue1,
+			value2: conditionValue2,
+		});
+		filter = [...filter];
+		console.log(filter);
 		console.log(varToFilter);
-		var res = data.filter(function (entry) {
+		filter.forEach((f) => {
+			console.log(f);
+			filterHelper(
+				f.variable,
+				f.includeExclude,
+				f.condition,
+				f.value1,
+				f.value2
+			);
+		});
+		console.log(dataChanged);
+		console.log(dndState);
+
+		specChanged++;
+	}
+
+	function filterHelper(
+		varToFilter,
+		includeOrExclude,
+		condition,
+		conditionValue1,
+		conditionValue2
+	) {
+		console.log("in filterhepler, dataChanged:", dataChanged);
+		console.log(
+			varToFilter,
+			includeOrExclude,
+			condition,
+			conditionValue1,
+			conditionValue2
+		);
+		dataChanged = dataChanged.filter(function (entry) {
 			if (condition == "greater") {
 				if (includeOrExclude == "include") {
 					return entry[varToFilter] > conditionValue1;
@@ -273,16 +323,72 @@
 				}
 			} else if (condition == "between") {
 				if (includeOrExclude == "include") {
-					return conditionValue1 < entry[varToFilter] && entry[varToFilter] < conditionValue2;
+					return (
+						conditionValue1 < entry[varToFilter] &&
+						entry[varToFilter] < conditionValue2
+					);
 				} else {
-					return conditionValue1 > entry[varToFilter] &&  entry[varToFilter] > conditionValue2;
+					return (
+						conditionValue1 > entry[varToFilter] &&
+						entry[varToFilter] > conditionValue2
+					);
 				}
 			}
 		});
-		console.log(res);
-		// dataChanged = res;
-		// console.log(dataChanged);
-		console.log(dndState);
+		// dataChanged = newData;
+		dataChanged = [...dataChanged];
+		console.log(dataChanged);
+	}
+
+	function removeFilter(index, clearAll = false) {
+		dataChanged = data;
+		dataChanged = [...dataChanged];
+		if (clearAll) {
+			filter = [];
+		} else {
+			console.log(filter);
+			// var removedFilter = filter.splice(index, 1);
+			var removedFilter = filter[index];
+			var filterTemp;
+			if (index != 0) {
+				console.log("filter.slice(0, index)", filter.slice(0, index));
+				console.log(
+					"filter.slice(index, filter.length)",
+					filter.slice(index, filter.length)
+				);
+				filterTemp = filter
+					.slice(0, index)
+					.concat(filter.slice(index, filter.length));
+				
+			} else {
+				filterTemp = filter.slice(1);
+			}
+			console.log("filterTemp", filterTemp);
+
+			
+			filter = filterTemp;
+			console.log(filter);
+			filter = [...filter];
+			console.log("removing", removedFilter);
+			console.log("after removed, new filter", filter);
+			console.log(dataChanged.length);
+			dataChanged = data;
+			dataChanged = [...dataChanged];
+			console.log(data.length);
+			console.log(dataChanged.length);
+			if (filter.length != 0) {
+				filter.forEach((f) => {
+					filterData(
+						f.variable,
+						f.includeExclude,
+						f.condition,
+						f.value1,
+						f.value2
+					);
+				});
+			}
+		}
+
 		specChanged++;
 	}
 
@@ -426,12 +532,14 @@
 						{dndState}
 						{originalDndState}
 						{flipDurationMs}
+						{filter}
 						{handleDndConsider}
 						{handleDndFinalize}
 						{encodingToData}
 						{changeMark}
 						{changeAggregation}
 						{filterData}
+						{removeFilter}
 						{logTransform}
 						{clearLogTransform}
 						{logOddsTransform}
@@ -442,7 +550,7 @@
 					{#if Object.keys(vlSpec.encoding).length != 0}
 						{#key specChanged}
 							vlSpec has changed
-							<ChartPanel bind:data bind:vlSpec />
+							<ChartPanel bind:dataChanged bind:vlSpec />
 						{/key}
 					{/if}
 				</Column>

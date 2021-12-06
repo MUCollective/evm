@@ -6,11 +6,11 @@
 	import * as VegaEmbed from 'vega-embed';
 
 	// from App.svelte
-	export let data: any;
+	export let dataChanged: any;
 	export let vlSpec: VisualizationSpec;
 	export let options:EmbedOptions = {"renderer": "svg"};
 
-	let dataset = { table: data };
+	let dataset = { table: dataChanged };
 
 
 
