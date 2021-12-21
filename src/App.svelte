@@ -28,6 +28,7 @@
 	// data should be a {}[] format (pure dataset), this will be wrapped by {"table": data} in the ChartPanel component.
 	export let data: any;
 	export let dataChanged: any;
+	export let dataTrans: any;
 
 	export let vlSpec: VisualizationSpec;
 	// export let facet: any;
@@ -45,8 +46,12 @@
 	export let originalDndState: { id: string; name: string; items: any[] }[];
 
 	export let filter: any;
+	export let transformation: any;
 
 	$: specChanged = 0;
+	
+	export let dataTransformed: any;
+
 	let prevSpec: VisualizationSpec = vlSpec;
 	console.log("PREV prevSpec", prevSpec);
 	onMount(async () => {
@@ -55,6 +60,8 @@
 		console.log("loaded data", data);
 		dataChanged = data;
 		dataChanged = [...dataChanged];
+		dataTrans = data;
+		dataTrans = [...dataTrans];
 		// populate dropzone items with variable names from data
 		Object.keys(data[0]).forEach((d, i) => {
 			dndState[0].items.push({
@@ -343,13 +350,14 @@
 	function removeFilter(index, clearAll = false) {
 		dataChanged = data;
 		dataChanged = [...dataChanged];
+		var filterTemp;
 		if (clearAll) {
 			filter = [];
 		} else {
 			console.log(filter);
 			// var removedFilter = filter.splice(index, 1);
 			var removedFilter = filter[index];
-			var filterTemp;
+
 			if (index != 0) {
 				console.log("filter.slice(0, index)", filter.slice(0, index));
 				console.log(
@@ -359,16 +367,26 @@
 				filterTemp = filter
 					.slice(0, index)
 					.concat(filter.slice(index, filter.length));
-				
 			} else {
 				filterTemp = filter.slice(1);
 			}
 			console.log("filterTemp", filterTemp);
+			console.log("filter", filter);
 
-			
-			filter = filterTemp;
+			Promise.all([filterTemp]).then((values) => {
+				filterTemp = values[0];
+				console.log("filterTemp",filterTemp);
+				filter = [...filterTemp];
+				console.log(filter);
+				// filter = [...filter];
+				console.log("removing", removedFilter);
+				console.log("after removed, new filter", filter);
+			});
+
+			// filter = filterTemp;
+			filter = [...filterTemp];
 			console.log(filter);
-			filter = [...filter];
+			// filter = [...filter];
 			console.log("removing", removedFilter);
 			console.log("after removed, new filter", filter);
 			console.log(dataChanged.length);
@@ -392,45 +410,55 @@
 		specChanged++;
 	}
 
-	function logTransform(filterVar: any) {
-		console.log("log transform");
-		var varSample = data[0][filterVar];
-		console.log(varSample);
-		console.log(dndState[1].items[0]);
-		if (typeof varSample == "number") {
-			if (
-				dndState[1].items[0] != "undefined" &&
-				dndState[1].items[0].name == filterVar
-			) {
-				console.log("changing x");
-				vlSpec.encoding.x.scale = { type: "log" };
-			} else if (
-				dndState[2].items[0] != "undefined" &&
-				dndState[2].items[0].name == filterVar
-			) {
-				vlSpec.encoding.y.scale = { type: "log" };
-			}
-			vlSpec = { ...vlSpec };
-			specChanged++;
-		}
-	}
 
-	function clearLogTransform() {
-		console.log(vlSpec.encoding.x.scale);
-		if (vlSpec.encoding.x.scale != "undefined") {
-			delete vlSpec.encoding.x.scale;
-		}
-		if (vlSpec.encoding.y.scale != "undefined") {
-			delete vlSpec.encoding.y.scale;
-		}
-		console.log(vlSpec);
-		vlSpec = { ...vlSpec };
+	function transformData(transVar, transform) {
+		dataTrans = dataChanged;
+		dataTrans = [...dataTrans];
+		console.log("transVar", transVar, "transform", transform);
+		transformation.push({
+			variable: transVar,
+			transformation: transform
+		});
+		transformation = [...transformation];
+		console.log(transformation);
+		transformation.forEach(t => {
+			transformHelper(transVar, transform);
+		});
 		specChanged++;
 	}
 
-	function logOddsTransform(logOdds) {}
+	function transformHelper(variable, t){
+		console.log("transformHelper");
+		console.log(dataTrans[0]);
+		var before = [];
+		var after = [];
+		dataTrans.forEach(e => {
+			// console.log('in for each loop', "e", e[variable]);
+			if (t == "log") {
+				if (typeof e[variable] == "number") {
+					// dataTransformed.push({
+					// 	variable: variable
+					// });
+					before.push(e[variable]);
+					after.push(Math.log(e[variable]));
+					e[variable] = Math.log(e[variable]);
+				}
+			}
+		});
+		dataTransformed[variable] = {before: before, after: after};
+		console.log(dataTransformed);
+		dataTrans = [...dataTrans];
+		dataChanged = [...dataTrans];
+	};
 
-	function clearLogOddsTransform() {}
+	function removeTrans(index, clearAll = false) {
+		if (clearAll) {
+
+		}
+	}
+
+
+
 
 	function encodingToData(variable: any, shelfId: any, item: any) {
 		console.log("variable", variable, "shelfId", shelfId, "item", item);
@@ -533,6 +561,7 @@
 						{originalDndState}
 						{flipDurationMs}
 						{filter}
+						{transformation}
 						{handleDndConsider}
 						{handleDndFinalize}
 						{encodingToData}
@@ -540,10 +569,8 @@
 						{changeAggregation}
 						{filterData}
 						{removeFilter}
-						{logTransform}
-						{clearLogTransform}
-						{logOddsTransform}
-						{clearLogOddsTransform}
+						{transformData}
+						{removeTrans}
 					/>
 				</Column>
 				<Column style="width: 100%;">
@@ -551,6 +578,7 @@
 						{#key specChanged}
 							vlSpec has changed
 							<ChartPanel bind:dataChanged bind:vlSpec />
+							<!-- <ChartPanel bind:dataTrans bind:vlSpec /> -->
 						{/key}
 					{/if}
 				</Column>

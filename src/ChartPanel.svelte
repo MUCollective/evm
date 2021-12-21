@@ -7,10 +7,12 @@
 
 	// from App.svelte
 	export let dataChanged: any;
+	// export let dataTrans: any;
 	export let vlSpec: VisualizationSpec;
 	export let options:EmbedOptions = {"renderer": "svg"};
 
 	let dataset = { table: dataChanged };
+	// let dataset = { table: dataTrans };
 
 
 

@@ -21,11 +21,11 @@
     export let changeAggregation;
     export let filterData;
     export let removeFilter;
-    export let logTransform;
-    export let clearLogTransform;
-    export let logOddsTransform;
+    export let transformData;
+    export let removeTrans;
 
     export let filter: any;
+    export let transformation: any;
 
     let mark;
     let aggregateX;
@@ -34,7 +34,11 @@
     let log;
     let logOdds;
     let clearLogOddsTransform;
+
     let showAddingFilter = false;
+    let showAddingTransform = false;
+    let transVar;
+    let transCondition;
 
     let includeOrExclude = "include";
     function onChange(event) {
@@ -85,6 +89,7 @@
                             >
                                 {item.name}
                                 <button
+                                    class="single-char"
                                     on:click={encodingToData(
                                         item.name,
                                         shelf.id,
@@ -140,115 +145,149 @@
     </select>
 
     <h3>Filter</h3>
+    <div class="add-and-clear">
+        <button class="single-char" on:click={() => (showAddingFilter = true)}
+            >+
+        </button>
+        <button on:click={removeFilter(0, true)}>clear all filters </button>
+    </div>
+
     current filters:
-    <button on:click={() => (showAddingFilter = true)}>+ </button>
-    <button on:click={removeFilter(0, true)}>clear all filters </button>
     <!-- {#key filter.length} -->
+
     {#if filter.length != 0}
         {#each filter as f, i}
-            <!-- {console.log(f)} -->
-            <br />
-            index = {i}
-            {f.includeExclude}
-            {f.variable}
-            {f.condition}
-            {f.value1}
-            <button on:click={removeFilter(i)}>&times; </button>
-            <br />
+            <div class="current">
+                {f.includeExclude}
+                {f.variable}
+                {f.condition}
+                {f.value1}
+                <button class="single-char" on:click={removeFilter(i)}
+                    >&times;
+                </button>
+            </div>
         {/each}
     {:else}
-        <br />
-        None
+        <div class="current">No filter currently applied.</div>
     {/if}
-    <!-- {/key} -->
-    <br />
-    {#if showAddingFilter}
-        variable:
-        <select bind:value={filterVar}>
-            <option disabled selected value> -- variable -- </option>
-            {#each originalDndState[0].items as item}
-                <option value={item.name}>{item.name}</option>
-            {/each}
+
+<!-- {/key} -->
+<br />
+{#if showAddingFilter}
+    variable:
+    <select bind:value={filterVar}>
+        <option disabled selected value> -- variable -- </option>
+        {#each originalDndState[0].items as item}
+            <option value={item.name}>{item.name}</option>
+        {/each}
+    </select>
+    {#if filterVar}
+        <br />
+        <label>
+            <input
+                checked={includeOrExclude === "include"}
+                on:change={onChange}
+                type="radio"
+                name="includeExclude"
+                value="include"
+            /> include
+        </label>
+        <label>
+            <input
+                checked={includeOrExclude === "exclude"}
+                on:change={onChange}
+                type="radio"
+                name="includeExclude"
+                value="exclude"
+            /> exclude
+        </label>
+        <select bind:value={condition}>
+            <option disabled selected value> -- condition -- </option>
+            <option value="greater">greater than</option>
+            <option value="greaterEqual">greater than or equal to</option>
+            <option value="less">less than</option>
+            <option value="lessEqual">less than or equal to</option>
+            <option value="equal">equal to</option>
+            <option value="between">between</option>
         </select>
-        {#if filterVar}
-            <br />
-            <label>
-                <input
-                    checked={includeOrExclude === "include"}
-                    on:change={onChange}
-                    type="radio"
-                    name="includeExclude"
-                    value="include"
-                /> include
-            </label>
-            <label>
-                <input
-                    checked={includeOrExclude === "exclude"}
-                    on:change={onChange}
-                    type="radio"
-                    name="includeExclude"
-                    value="exclude"
-                /> exclude
-            </label>
-            <br />
-            <select bind:value={condition}>
-                <option disabled selected value> -- condition -- </option>
-                <option value="greater">greater than</option>
-                <option value="greaterEqual">greater than or equal to</option>
-                <option value="less">less than</option>
-                <option value="lessEqual">less than or equal to</option>
-                <option value="equal">equal to</option>
-                <option value="between">between</option>
-            </select>
-            {#if condition == "greater" || condition == "greaterEqual" || condition == "less" || condition == "lessEqual" || condition == "equal"}
-                <input bind:value={conditionValue1} />
-            {:else if condition == "between"}
-                min: <input bind:value={conditionValue1} />
-                max: <input bind:value={conditionValue2} />
-            {/if}
-            {#if condition && conditionValue1}
-                <button
-                    on:click={filterData(
-                        filterVar,
-                        includeOrExclude,
-                        condition,
-                        conditionValue1,
-                        conditionValue2
-                    )}
-                    on:click={() => (showAddingFilter = false)}
-                >
-                    &#10003;
-                </button>
-            {/if}
+        {#if condition == "greater" || condition == "greaterEqual" || condition == "less" || condition == "lessEqual" || condition == "equal"}
+            <input bind:value={conditionValue1} />
+        {:else if condition == "between"}
+            min: <input bind:value={conditionValue1} />
+            max: <input bind:value={conditionValue2} />
+        {/if}
+        {#if condition && conditionValue1}
+            <button
+                on:click={filterData(
+                    filterVar,
+                    includeOrExclude,
+                    condition,
+                    conditionValue1,
+                    conditionValue2
+                )}
+                on:click={() => (showAddingFilter = false)}
+            >
+                &#10003;
+            </button>
         {/if}
     {/if}
+{/if}
 
-    <!-- there's no filter right now -->
+<!-- there's no filter right now -->
 
-    <!-- TODO: ask alex what to filter on !!!!!!!!! -->
-
-    <h3>Transform</h3>
-    log transform:
-    <select bind:value={log} on:change={logTransform(log)}>
-        <option disabled selected value> -- variable -- </option>
-        {#each originalDndState[0].items as item}
-            <option value={item.name}>{item.name}</option>
-        {/each}
-    </select>
-    <button
-        on:click={clearLogTransform()}
-        on:click={() => (log = "-- variable --")}
-        >&times;
+<h3>Transform</h3>
+<div class="add-and-clear">
+    <button class="single-char" on:click={() => (showAddingTransform = true)}
+        >+
     </button>
+    <button on:click={removeTrans(0, true)}>clear all filters </button>
+</div>
 
-    <br />
-    log odds transform:
-    <select bind:value={logOdds} on:change={logOddsTransform(logOdds)}>
+current:
+
+{#if transformation.length != 0}
+    {#each transformation as t, i}
+        <div class="current">
+            <!-- {console.log(f)} -->
+            <br />
+            {t.variable}
+            {t.transformation}
+            transform
+            <button class="single-char" on:click={removeTrans(i)}
+                >&times;</button
+            >
+            <br />
+        </div>
+    {/each}
+{:else}
+    <div class="current">No filter currently applied.</div>
+{/if}
+<!-- {/key} -->
+<br />
+{#if showAddingTransform}
+    variable:
+    <select bind:value={transVar}>
         <option disabled selected value> -- variable -- </option>
         {#each originalDndState[0].items as item}
             <option value={item.name}>{item.name}</option>
         {/each}
     </select>
+    {#if transVar}
+        <select bind:value={transCondition}>
+            <option disabled selected value> -- transformation -- </option>
+            <option value="log">log transform</option>
+            <option value="logOdds">log odds transform</option>
+        </select>
+        {#if transCondition}
+            <button
+                on:click={transformData(transVar, transCondition)}
+                on:click={() => (showAddingTransform = false)}
+            >
+                &#10003;
+            </button>
+        {/if}
+    {/if}
+{/if}
 </div>
 
 <style>
@@ -315,5 +354,30 @@
 
     .drop-field {
         width: 100%;
+    }
+
+    select {
+        background-color: rgba(237, 237, 237, 0.8);
+        margin-bottom: 0.3rem;
+        border-radius: 0.3rem;
+        width: auto;
+        padding: 0.2rem 0.5rem;
+        font-size: 11px;
+    }
+
+    button {
+        border-radius: 0.3rem;
+        font-size: small;
+        padding: revert;
+    }
+
+    .current {
+        background: rgba(55, 65, 92, 0.2);
+        font-style: italic;
+        border-radius: 0.3rem;
+    }
+
+    input {
+        padding: initial;
     }
 </style>

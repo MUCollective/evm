@@ -10,7 +10,10 @@ const app = new App({
 		flipDurationMs: 300,
 		data: null,
 		dataChanged: null,
+		dataTrans:null,
 		filter: [],
+		transformation: [],
+		dataTransformed: [],
 		dndState: [
 			{
 				id: "variables",
