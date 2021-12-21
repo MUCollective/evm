@@ -31,9 +31,6 @@
     let aggregateX;
     let aggregateY;
     let filterVar;
-    let log;
-    let logOdds;
-    let clearLogOddsTransform;
 
     let showAddingFilter = false;
     let showAddingTransform = false;
@@ -44,12 +41,6 @@
     function onChange(event) {
         includeOrExclude = event.currentTarget.value;
     }
-
-    // function removeFilter(index) {
-    //     filter.splice(index, 1);
-    //     filter = [...filter];
-    //     console.log(filter)
-    // }
 
     let condition;
     let conditionValue1;
@@ -145,14 +136,15 @@
     </select>
 
     <h3>Filter</h3>
-    <div class="add-and-clear">
+    <div class="add-and-clear" style="display: inline-block;">
+        current filters
         <button class="single-char" on:click={() => (showAddingFilter = true)}
             >+
         </button>
-        <button on:click={removeFilter(0, true)}>clear all filters </button>
+        <button on:click={removeFilter(0, true)}>clear all </button>
     </div>
 
-    current filters:
+    
     <!-- {#key filter.length} -->
 
     {#if filter.length != 0}
@@ -236,14 +228,15 @@
 <!-- there's no filter right now -->
 
 <h3>Transform</h3>
-<div class="add-and-clear">
+<div class="add-and-clear" style="display: inline-block;">
+    current
     <button class="single-char" on:click={() => (showAddingTransform = true)}
         >+
     </button>
-    <button on:click={removeTrans(0, true)}>clear all filters </button>
+    <button on:click={removeTrans(0, true)}>clear all </button>
 </div>
 
-current:
+
 
 {#if transformation.length != 0}
     {#each transformation as t, i}
@@ -260,7 +253,7 @@ current:
         </div>
     {/each}
 {:else}
-    <div class="current">No filter currently applied.</div>
+    <div class="current">No transformation currently applied.</div>
 {/if}
 <!-- {/key} -->
 <br />

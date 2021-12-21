@@ -5,12 +5,21 @@
     // props
     export let bootstrap: any;
     export let model: any;
+
+    let models;
 </script>
 
 <!-- model panel -->
 <div class="model-panel card">
     <h3>Model</h3>
-    <p>Show me a model</p>
+    <div class="title">
+        <p>current models</p>
+        <div class="add-and-clear">
+            <button class="single-char">+</button>
+            <button>clear all</button>
+        </div>
+    </div>
+
     <!-- Model bar goes here -->
     <div class="button-wrap">
         <Button on:click={bootstrap}>What if this pattern was noise?</Button>
@@ -44,5 +53,21 @@
         padding: 0px;
         margin-bottom: 20px;
         height: 40px;
+    }
+
+    button {
+        border-radius: 0.3rem;
+        font-size: small;
+        padding: revert;
+    }
+
+    .current {
+        background: rgba(55, 65, 92, 0.2);
+        font-style: italic;
+        border-radius: 0.3rem;
+    }
+
+    .title p, .title div{
+        display: inline-block;
     }
 </style>
