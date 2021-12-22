@@ -3,31 +3,81 @@
     import { Grid, Row, Column, Button } from "carbon-components-svelte";
 
     // props
-    export let bootstrap: any;
-    export let model: any;
+    // export let bootstrap: any;
+    // export let model: any;
 
-    let models;
+    export let models: any;
+    export let addModel;
+    export let removeModel;
+
+    let showAddingModel = false;
+    let modelExpression;
 </script>
 
 <!-- model panel -->
 <div class="model-panel card">
     <h3>Model</h3>
-    <div class="title">
-        <p>current models</p>
-        <div class="add-and-clear">
-            <button class="single-char">+</button>
-            <button>clear all</button>
-        </div>
+
+    <div class="add-and-clear" style="margin-top: 0px;">
+        current models
+        <button class="single-char" on:click={() => (showAddingModel = true)}
+            >+</button
+        >
+        <button on:click={removeModel(0, true)}>clear all</button>
     </div>
+    {#if showAddingModel}
+        <input bind:value={modelExpression} style="padding: initial;"/>
+        {#if modelExpression}
+            <button
+                on:click={addModel(modelExpression)}
+                on:click={() => (showAddingModel = false)}
+            >
+                &#10003;
+            </button>
+        {/if}
+    {/if}
+
+    {#if models.length != 0}
+        {#each models as f, i}
+            <div class="current">
+                {f.exp}
+                <button class="single-char" on:click={removeModel(i)}
+                    >&times;
+                </button>
+            </div>
+        {/each}
+    {:else}
+        <div class="current">No filter currently applied.</div>
+    {/if}
 
     <!-- Model bar goes here -->
-    <div class="button-wrap">
-        <Button on:click={bootstrap}>What if this pattern was noise?</Button>
+    <br>
+    <div class="model-suggestions">
+        <div class="button-wrap">
+            <Button>Add model for current visualization.</Button>
+        </div>
+        <div class="button-wrap">
+            <Button>Suggest an adjacent model y ~ x + w</Button>
+        </div>
+        <div class="button-wrap">
+            <Button>Is this just noise?</Button>
+        </div>
     </div>
-    <div class="button-wrap">
-        <Button on:click={model}>Create a model for the current chart.</Button>
+    <div class="discrepancies">
+        <h4>Show me discrepancies</h4>
+        <div class="button-wrap">
+            <Button>Mismatched distributions</Button>
+        </div>
+        <div class="button-wrap">
+            <Button>Gaps & Hotspots</Button>
+        </div>
+        <div class="button-wrap">
+            <Button>Outliers</Button>
+        </div>
+        <div class="button-wrap">
+            <Button>Out of range predicitons</Button>
+        </div>
     </div>
-    <!-- Other automated what ifs suggested below -->
 </div>
 
 <style>
@@ -49,11 +99,13 @@
         margin-left: 0.5rem;
         margin-right: 0.5rem;
     }
+
     .button-wrap {
         padding: 0px;
         margin-bottom: 20px;
         height: 40px;
     }
+
 
     button {
         border-radius: 0.3rem;
@@ -67,7 +119,8 @@
         border-radius: 0.3rem;
     }
 
-    .title p, .title div{
+    .title p,
+    .title div {
         display: inline-block;
     }
 </style>

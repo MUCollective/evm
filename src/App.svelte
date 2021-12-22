@@ -51,6 +51,7 @@
 	$: specChanged = 0;
 	
 	export let dataTransformed: any;
+	export let models: any;
 
 	let prevSpec: VisualizationSpec = vlSpec;
 	console.log("PREV prevSpec", prevSpec);
@@ -366,7 +367,7 @@
 				);
 				filterTemp = filter
 					.slice(0, index)
-					.concat(filter.slice(index, filter.length));
+					.concat(filter.slice(index+1, filter.length));
 			} else {
 				filterTemp = filter.slice(1);
 			}
@@ -457,6 +458,52 @@
 		}
 	}
 
+	function addModel(expression) {
+		models.push({
+			exp: expression
+		});
+		models = [...models];
+		console.log("models", models);
+	}
+
+	function removeModel(index, removeAll = false) {
+		var modelTemp;
+		if (removeAll) {
+			models = [];
+		} else {
+			console.log(models);
+			// var removedFilter = filter.splice(index, 1);
+			var removedModel = models[index];
+
+			if (index != 0) {
+				console.log("filter.slice(0, index)", models.slice(0, index));
+				console.log("filter.slice(0, index-1)", models.slice(0, index-1));
+				console.log(
+					"filter.slice(index, filter.length)",
+					models.slice(index, models.length)
+				);
+				modelTemp = models
+					.slice(0, index)
+					.concat(models.slice(index+1, models.length));
+				console.log("modelTemp", modelTemp);
+			} else {
+				modelTemp = models.slice(1);
+				console.log("removing first one", modelTemp);
+			}
+		}
+		Promise.all([modelTemp]).then((values) => {
+			console.log("values", values);
+			modelTemp = values[0];
+				console.log("filterTemp",modelTemp);
+				models = [...modelTemp];
+				console.log(models);
+				// filter = [...filter];
+				console.log("removing", removedModel);
+				console.log("after removed, new filter", models);
+			});
+		models = [...modelTemp];
+
+	}
 
 
 
@@ -583,7 +630,7 @@
 					{/if}
 				</Column>
 				<Column style="min-width: 250px; max-width: 250px;">
-					<ModelPanel {bootstrap} {model} />
+					<ModelPanel {models} {addModel} {removeModel}/>
 				</Column>
 			</Row>
 		</Grid>

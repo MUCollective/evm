@@ -14,6 +14,7 @@ const app = new App({
 		filter: [],
 		transformation: [],
 		dataTransformed: [],
+		models: [],
 		dndState: [
 			{
 				id: "variables",
