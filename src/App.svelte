@@ -1,4 +1,15 @@
 <script lang="ts">
+	// trying openCPU
+	ocpu.seturl("//kalealex.ocpu.io/modelcheck/R");
+	async function calculateEstimatesPerStudy(data) {
+		// pass data to vectorized unit conversion function in R
+		const url = await ocpu.rpc("logistic_model_check", {
+			jsonData: JSON.stringify(data),
+		});
+
+		return url.split("\n")[0];
+	}
+
 	// from libraries
 	import { Grid, Row, Column } from "carbon-components-svelte";
 	import { onMount } from "svelte";
@@ -49,7 +60,7 @@
 	export let transformation: any;
 
 	$: specChanged = 0;
-	
+
 	export let dataTransformed: any;
 	export let models: any;
 
@@ -75,6 +86,8 @@
 		originalDndState = deepCopy(dndState);
 		console.log("originalDndState", originalDndState);
 		console.log(dataChanged);
+		console.log("calculateEstimatesPerStudy calculateEstimatesPerStudy calculateEstimatesPerStudy");
+		console.log(calculateEstimatesPerStudy(data));
 	});
 
 	// originalDndState = deepCopy(dndState);
@@ -367,7 +380,7 @@
 				);
 				filterTemp = filter
 					.slice(0, index)
-					.concat(filter.slice(index+1, filter.length));
+					.concat(filter.slice(index + 1, filter.length));
 			} else {
 				filterTemp = filter.slice(1);
 			}
@@ -376,7 +389,7 @@
 
 			Promise.all([filterTemp]).then((values) => {
 				filterTemp = values[0];
-				console.log("filterTemp",filterTemp);
+				console.log("filterTemp", filterTemp);
 				filter = [...filterTemp];
 				console.log(filter);
 				// filter = [...filter];
@@ -411,29 +424,28 @@
 		specChanged++;
 	}
 
-
 	function transformData(transVar, transform) {
 		dataTrans = dataChanged;
 		dataTrans = [...dataTrans];
 		console.log("transVar", transVar, "transform", transform);
 		transformation.push({
 			variable: transVar,
-			transformation: transform
+			transformation: transform,
 		});
 		transformation = [...transformation];
 		console.log(transformation);
-		transformation.forEach(t => {
+		transformation.forEach((t) => {
 			transformHelper(transVar, transform);
 		});
 		specChanged++;
 	}
 
-	function transformHelper(variable, t){
+	function transformHelper(variable, t) {
 		console.log("transformHelper");
 		console.log(dataTrans[0]);
 		var before = [];
 		var after = [];
-		dataTrans.forEach(e => {
+		dataTrans.forEach((e) => {
 			// console.log('in for each loop', "e", e[variable]);
 			if (t == "log") {
 				if (typeof e[variable] == "number") {
@@ -446,21 +458,20 @@
 				}
 			}
 		});
-		dataTransformed[variable] = {before: before, after: after};
+		dataTransformed[variable] = { before: before, after: after };
 		console.log(dataTransformed);
 		dataTrans = [...dataTrans];
 		dataChanged = [...dataTrans];
-	};
+	}
 
 	function removeTrans(index, clearAll = false) {
 		if (clearAll) {
-
 		}
 	}
 
 	function addModel(expression) {
 		models.push({
-			exp: expression
+			exp: expression,
 		});
 		models = [...models];
 		console.log("models", models);
@@ -477,14 +488,17 @@
 
 			if (index != 0) {
 				console.log("filter.slice(0, index)", models.slice(0, index));
-				console.log("filter.slice(0, index-1)", models.slice(0, index-1));
+				console.log(
+					"filter.slice(0, index-1)",
+					models.slice(0, index - 1)
+				);
 				console.log(
 					"filter.slice(index, filter.length)",
 					models.slice(index, models.length)
 				);
 				modelTemp = models
 					.slice(0, index)
-					.concat(models.slice(index+1, models.length));
+					.concat(models.slice(index + 1, models.length));
 				console.log("modelTemp", modelTemp);
 			} else {
 				modelTemp = models.slice(1);
@@ -494,18 +508,15 @@
 		Promise.all([modelTemp]).then((values) => {
 			console.log("values", values);
 			modelTemp = values[0];
-				console.log("filterTemp",modelTemp);
-				models = [...modelTemp];
-				console.log(models);
-				// filter = [...filter];
-				console.log("removing", removedModel);
-				console.log("after removed, new filter", models);
-			});
+			console.log("filterTemp", modelTemp);
+			models = [...modelTemp];
+			console.log(models);
+			// filter = [...filter];
+			console.log("removing", removedModel);
+			console.log("after removed, new filter", models);
+		});
 		models = [...modelTemp];
-
 	}
-
-
 
 	function encodingToData(variable: any, shelfId: any, item: any) {
 		console.log("variable", variable, "shelfId", shelfId, "item", item);
@@ -578,6 +589,12 @@
 
 	// console.log(document.getElementsByClassName("vega-embed"));
 </script>
+
+<svelte:head>
+	<!-- OpenCPU client library -->
+	<script src="./script/jquery-3.6.0.js"></script>
+	<script src="./script/opencpu-0.5.js"></script>
+</svelte:head>
 
 <main>
 	<Header {name} />
