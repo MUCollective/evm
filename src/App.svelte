@@ -1,15 +1,4 @@
 <script lang="ts">
-	// trying openCPU
-	ocpu.seturl("//kalealex.ocpu.io/modelcheck/R");
-	async function calculateEstimatesPerStudy(data) {
-		// pass data to vectorized unit conversion function in R
-		const url = await ocpu.rpc("logistic_model_check", {
-			jsonData: JSON.stringify(data),
-		});
-
-		return url.split("\n")[0];
-	}
-
 	// from libraries
 	import { Grid, Row, Column } from "carbon-components-svelte";
 	import { onMount } from "svelte";
@@ -42,6 +31,7 @@
 	export let dataTrans: any;
 
 	export let vlSpec: VisualizationSpec;
+	export let vlSpecModel: VisualizationSpec;
 	// export let facet: any;
 	// should be a valid vega-lite spec
 	// if you update "data", then the data set for the visualization is updated.
@@ -63,6 +53,10 @@
 
 	export let dataTransformed: any;
 	export let models: any;
+
+	export let modelData: any;
+	export let showModel: boolean;
+	showModel = false;
 
 	let prevSpec: VisualizationSpec = vlSpec;
 	console.log("PREV prevSpec", prevSpec);
@@ -86,8 +80,18 @@
 		originalDndState = deepCopy(dndState);
 		console.log("originalDndState", originalDndState);
 		console.log(dataChanged);
-		console.log("calculateEstimatesPerStudy calculateEstimatesPerStudy calculateEstimatesPerStudy");
-		console.log(calculateEstimatesPerStudy(data));
+		console.log(
+			"calculateEstimatesPerStudy calculateEstimatesPerStudy calculateEstimatesPerStudy"
+		);
+		// ocpu.seturl("//kalealex.ocpu.io/modelcheck/R");
+		// const test2 = ocpu.rpc(
+		// 	"normal_model_check",
+		// 	{ mu_spec: "mpg ~ 1", data: JSON.stringify(data) },
+		// 	function (output) {
+		// 		console.log(output);
+		// 	}
+		// );
+		// console.log(test2);
 	});
 
 	// originalDndState = deepCopy(dndState);
@@ -469,14 +473,6 @@
 		}
 	}
 
-	function addModel(expression) {
-		models.push({
-			exp: expression,
-		});
-		models = [...models];
-		console.log("models", models);
-	}
-
 	function removeModel(index, removeAll = false) {
 		var modelTemp;
 		if (removeAll) {
@@ -516,6 +512,31 @@
 			console.log("after removed, new filter", models);
 		});
 		models = [...modelTemp];
+		showModel = false;
+	}
+
+
+	function addModel(mu, sigma) {
+		ocpu.seturl("//kalealex.ocpu.io/modelcheck/R");
+		models.push({
+			exp: [mu, sigma]
+		});
+		models = [...models];
+		console.log("models", models);
+		var testingNormal = ocpu.rpc(
+			"normal_model_check",
+			{ mu_spec: mu, sigma_spec: sigma, data: JSON.stringify(data) },
+			function (output) {
+				console.log(output);
+				modelData = JSON.parse(output.data);
+				console.log(modelData);
+				modelData = [...modelData];
+				console.log(modelData[0]);
+				showModel = true;
+			}
+		);
+		console.log(testingNormal);
+		vlSpecModel = {... vlSpec};
 	}
 
 	function encodingToData(variable: any, shelfId: any, item: any) {
@@ -639,15 +660,19 @@
 				</Column>
 				<Column style="width: 100%;">
 					{#if Object.keys(vlSpec.encoding).length != 0}
-						{#key specChanged}
-							vlSpec has changed
-							<ChartPanel bind:dataChanged bind:vlSpec />
-							<!-- <ChartPanel bind:dataTrans bind:vlSpec /> -->
-						{/key}
+						{#if showModel == true}
+							<ChartPanel bind:modelData bind:vlSpecModel />
+						{:else}
+							{#key specChanged}
+								vlSpec has changed
+								<ChartPanel bind:dataChanged bind:vlSpec />
+								<!-- <ChartPanel bind:dataTrans bind:vlSpec /> -->
+							{/key}
+						{/if}
 					{/if}
 				</Column>
 				<Column style="min-width: 250px; max-width: 250px;">
-					<ModelPanel {models} {addModel} {removeModel}/>
+					<ModelPanel {models} {addModel} {removeModel} />
 				</Column>
 			</Row>
 		</Grid>

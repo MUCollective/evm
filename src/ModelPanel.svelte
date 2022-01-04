@@ -11,13 +11,15 @@
     export let removeModel;
 
     let showAddingModel = false;
-    let modelExpression;
+    let muSpec;
+    let sigmaSpec = "~1";
+    let modelType;
+    let showModels = false;
 </script>
 
 <!-- model panel -->
 <div class="model-panel card">
     <h3>Model</h3>
-    
 
     <div class="add-and-clear" style="margin-top: 0px;">
         current models
@@ -27,21 +29,32 @@
         <button on:click={removeModel(0, true)}>clear all</button>
     </div>
     {#if showAddingModel}
-        <input bind:value={modelExpression} style="padding: initial;"/>
-        {#if modelExpression}
-            <button
-                on:click={addModel(modelExpression)}
-                on:click={() => (showAddingModel = false)}
-            >
-                &#10003;
-            </button>
+        <select bind:value={modelType}>
+            <option disabled selected value> -- select model -- </option>
+            <option value="normal">normal model</option>
+            <option value="bar">logistic model</option>
+            <option value="circle">poisson model</option>
+        </select>
+        <br>
+        mu spec: <input bind:value={muSpec} style="padding: initial;" />
+        sigma spec: <input bind:value={sigmaSpec} style="padding: initial;" />
+        {#if muSpec}
+            <!-- {#if sigmaSpec != "~1"} -->
+                <button
+                    on:click={addModel(muSpec, sigmaSpec)}
+                    on:click={() => (showAddingModel = false)}
+                >
+                    &#10003;
+                </button>
         {/if}
     {/if}
 
     {#if models.length != 0}
         {#each models as f, i}
             <div class="current">
-                {f.exp}
+                muSpec: {f.exp[0]}
+                <br>
+                sigmaSpec: {f.exp[1]}
                 <button class="single-char" on:click={removeModel(i)}
                     >&times;
                 </button>
@@ -52,11 +65,23 @@
     {/if}
 
     <!-- Model bar goes here -->
-    <br>
+    <br />
     <div class="model-suggestions">
         <div class="button-wrap">
-            <Button>Add model for current visualization.</Button>
+            <Button on:click={() => (showModels = true)}
+                >Add model for current visualization.</Button
+            >
         </div>
+        {#if showModels == true}
+            <div class="suggestions" />
+            placeholder ...
+            <div class="sample">
+                normal model 12345
+                <button on:click={() => (showModels = false)}>
+                    &#10003;
+                </button>
+            </div>
+        {/if}
         <div class="button-wrap">
             <Button>Suggest an adjacent model y ~ x + w</Button>
         </div>
@@ -106,7 +131,6 @@
         margin-bottom: 20px;
         height: 40px;
     }
-
 
     button {
         border-radius: 0.3rem;
