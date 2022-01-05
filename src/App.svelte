@@ -54,7 +54,6 @@
 	export let dataTransformed: any;
 	export let models: any;
 
-	export let modelData: any;
 	export let showModel: boolean;
 	showModel = false;
 
@@ -515,28 +514,62 @@
 		showModel = false;
 	}
 
-
-	function addModel(mu, sigma) {
+	async function callModel(mu, sigma, model="normal") {
 		ocpu.seturl("//kalealex.ocpu.io/modelcheck/R");
 		models.push({
-			exp: [mu, sigma]
+			exp: [mu, sigma],
 		});
 		models = [...models];
-		console.log("models", models);
-		var testingNormal = ocpu.rpc(
+		var modelData;
+
+		var res = await ocpu.rpc(
 			"normal_model_check",
-			{ mu_spec: mu, sigma_spec: sigma, data: JSON.stringify(data) },
+			{ mu_spec: mu, sigma_spec: sigma, data: JSON.stringify(data)},
 			function (output) {
-				console.log(output);
 				modelData = JSON.parse(output.data);
-				console.log(modelData);
-				modelData = [...modelData];
-				console.log(modelData[0]);
-				showModel = true;
+				return output.data;
 			}
 		);
-		console.log(testingNormal);
-		vlSpecModel = {... vlSpec};
+		return modelData;
+
+		// var res = await ocpu.rpc(
+		// 	"normal_model_check",
+		// 	{ mu_spec: mu, sigma_spec: sigma, data: JSON.stringify(data)}
+		// );
+		// return res;
+	}
+
+	async function addModel(mu, sigma, model="normal") {
+		callModel(mu, sigma, model).then(function(output) {
+			console.log(output);
+
+		});
+		
+		// var testingNormal = await ocpu.rpc(
+		// 	"normal_model_check",
+		// 	{ mu_spec: mu, sigma_spec: sigma, data: JSON.stringify(data) },
+		// 	function (output) {
+		// 		// var modelData;
+		// 		console.log(output);
+		// 		var modelData = JSON.parse(output.data);
+		// 		console.log(modelData[0]);
+		// 		console.log(modelData[1]);
+
+		// 		showModel = true;
+
+
+		// 		return JSON.parse(output.data);
+		// 	}
+		// );
+
+		// var temp = Promise.resolve(testingNormal);
+
+		// Promise.all([temp]).then((values) => {
+		// 	console.log(values);
+		// 	console.log(modelData);
+		// });
+
+		// vlSpecModel = { ...vlSpec };
 	}
 
 	function encodingToData(variable: any, shelfId: any, item: any) {
@@ -661,7 +694,7 @@
 				<Column style="width: 100%;">
 					{#if Object.keys(vlSpec.encoding).length != 0}
 						{#if showModel == true}
-							<ChartPanel bind:modelData bind:vlSpecModel />
+							<ChartPanel bind:dataChanged bind:vlSpec />
 						{:else}
 							{#key specChanged}
 								vlSpec has changed
