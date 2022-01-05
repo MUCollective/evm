@@ -522,15 +522,17 @@
 		models = [...models];
 		var modelData;
 
-		var res = await ocpu.rpc(
+		return new Promise(function() {
+			ocpu.rpc(
 			"normal_model_check",
-			{ mu_spec: mu, sigma_spec: sigma, data: JSON.stringify(data)},
-			function (output) {
-				modelData = JSON.parse(output.data);
-				return output.data;
-			}
-		);
-		return modelData;
+			{ mu_spec: mu, sigma_spec: sigma, data: JSON.stringify(data)}
+			// function (output) {
+			// 	console.log(JSON.parse(output.data));
+			// 	modelData = JSON.parse(output.data);
+			// 	return output.data
+			// }
+			)});
+		// return modelData;
 
 		// var res = await ocpu.rpc(
 		// 	"normal_model_check",
@@ -541,9 +543,12 @@
 
 	async function addModel(mu, sigma, model="normal") {
 		callModel(mu, sigma, model).then(function(output) {
+			console.log("should have something here");
 			console.log(output);
 
 		});
+
+		// console.log(callModel(mu, sigma, model));
 		
 		// var testingNormal = await ocpu.rpc(
 		// 	"normal_model_check",
