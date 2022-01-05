@@ -54,8 +54,8 @@
 	export let dataTransformed: any;
 	export let models: any;
 
-	export let showModel: boolean;
-	showModel = false;
+	// export let showModel: boolean;
+	// showModel = false;
 
 	let prevSpec: VisualizationSpec = vlSpec;
 	console.log("PREV prevSpec", prevSpec);
@@ -511,70 +511,122 @@
 			console.log("after removed, new filter", models);
 		});
 		models = [...modelTemp];
-		showModel = false;
+		// showModel = false;
 	}
 
-	async function callModel(mu, sigma, model="normal") {
+	// call model on server
+	async function callModel(mu, sigma, useData, model="normal") {
 		ocpu.seturl("//kalealex.ocpu.io/modelcheck/R");
+
+		const url = await ocpu.rpc(
+			"normal_model_check",
+			{ mu_spec: mu, sigma_spec: sigma, data: JSON.stringify(useData)}
+		);
+
+		return(url.split('\n')[0]);
+	}
+
+	// merge dataframes containing model results on server
+	async function mergeModels(oldData, newData) {
+		ocpu.seturl("//kalealex.ocpu.io/modelcheck/R");
+
+		const url = await ocpu.rpc(
+			"merge_modelchecks",
+			{ df_old: JSON.stringify(oldData), df_new: JSON.stringify(newData)}
+		);
+
+		return(url.split('\n')[0]);
+	}
+
+	// fetch data from open cpu given a url
+  	async function fetchData(url) {
+		const newData = await fetch("https://cloud.opencpu.org/" + url + "/json").then(function(response) {
+			return response.json();
+		}).then(function(result) {
+			return JSON.parse(result.data);
+		}).catch(function(err) {
+			console.log(err);
+		});
+
+		return newData;
+	}
+
+	async function addModel(mu, sigma, model="normal") {
+		// add the model to our queue
 		models.push({
 			exp: [mu, sigma],
 		});
 		models = [...models];
-		var modelData;
 
-		return new Promise(function() {
-			ocpu.rpc(
-			"normal_model_check",
-			{ mu_spec: mu, sigma_spec: sigma, data: JSON.stringify(data)}
-			// function (output) {
-			// 	console.log(JSON.parse(output.data));
-			// 	modelData = JSON.parse(output.data);
-			// 	return output.data
-			// }
-			)});
-		// return modelData;
+		// figure out what to do next based on current state
+		// TODO: we probably also need an if to deal with the edge case where we need to rerun everything
+		if (dataChanged[0].hasOwnProperty('modelcheck_group') && dataChanged.some((row) => row.modelcheck_group !== "data")) {
+			// data already contains model predictions...
+			// filter other model predictions out of the dataset
+			let dataOnly = deepCopy(dataChanged);
+			dataOnly = dataOnly.filter((row) => row.modelcheck_group === "data");
+			
+			// call the new model, and merge its results with dataChanged
+			callModel(mu, sigma, dataOnly, model).then(function(response) {
+				console.log("this should be a url");
+				console.log(response);
+				return fetchData(response);
+			}).then(function(modelData) {
+				console.log("this should be a the data with model predictions");
+				console.log(modelData);
+				// merge old model data from dataChanged with new model data from modelData
+				mergeModels(dataChanged, modelData).then(function(response) {
+					console.log("this should be a url");
+					console.log(response);
+					return fetchData(response);
+				}).then(function(mergedData) {
+					console.log("this should be a the data with predictions from both old and new models");
+					console.log(mergedData);
+					// update dataChanged
+					dataChanged = deepCopy(mergedData);
+					dataChanged = [...dataChanged];
+					// update vlSpec
+					// TODO: eventually we need contingencies to deal with xOffset and yOffset
+					// TODO: may need additional logic in case the previous spec still works, and we don't need to update vlSpec
+					vlSpec.encoding.color = vlSpec.encoding.color ? vlSpec.encoding.color : {"field": null};
+					vlSpec.encoding.color.field = "modelcheck_group";
+					vlSpec = {...vlSpec};
+					specChanged++;
+				}).catch(function(err) {
+					console.log(err);
+				});
+			}).catch(function(err) {
+				console.log(err);
+			});
+		} else {
+			// data contains no model predictions...
+			// call the new model
+			callModel(mu, sigma, dataChanged, model).then(function(response) {
+				console.log("this should be a url");
+				console.log(response);
+				return fetchData(response);
+			}).then(function(modelData) {
+				console.log("this should be a the data with model predictions");
+				console.log(modelData);
+				// update dataChanged
+				dataChanged = deepCopy(modelData);
+				dataChanged = [...dataChanged];
+				// update vlSpec
+				// TODO: eventually we need contingencies to deal with xOffset and yOffset
+				vlSpec.encoding.color = vlSpec.encoding.color ? vlSpec.encoding.color : {"field": null};
+				vlSpec.encoding.color.field = "modelcheck_group";
+				vlSpec = {...vlSpec};
+				specChanged++;
+				// showModel = true;
 
-		// var res = await ocpu.rpc(
-		// 	"normal_model_check",
-		// 	{ mu_spec: mu, sigma_spec: sigma, data: JSON.stringify(data)}
-		// );
-		// return res;
-	}
-
-	async function addModel(mu, sigma, model="normal") {
-		callModel(mu, sigma, model).then(function(output) {
-			console.log("should have something here");
-			console.log(output);
-
-		});
-
-		// console.log(callModel(mu, sigma, model));
-		
-		// var testingNormal = await ocpu.rpc(
-		// 	"normal_model_check",
-		// 	{ mu_spec: mu, sigma_spec: sigma, data: JSON.stringify(data) },
-		// 	function (output) {
-		// 		// var modelData;
-		// 		console.log(output);
-		// 		var modelData = JSON.parse(output.data);
-		// 		console.log(modelData[0]);
-		// 		console.log(modelData[1]);
-
-		// 		showModel = true;
-
-
-		// 		return JSON.parse(output.data);
-		// 	}
-		// );
-
-		// var temp = Promise.resolve(testingNormal);
-
-		// Promise.all([temp]).then((values) => {
-		// 	console.log(values);
-		// 	console.log(modelData);
-		// });
-
-		// vlSpecModel = { ...vlSpec };
+			// 	return dataChanged;
+			// }).then(function(testResult) {
+			// 	console.log("dataChanged contains predictions?");
+			// 	console.log(testResult);
+			}).catch(function(err) {
+				console.log(err);
+			});
+		}
 	}
 
 	function encodingToData(variable: any, shelfId: any, item: any) {
@@ -698,15 +750,18 @@
 				</Column>
 				<Column style="width: 100%;">
 					{#if Object.keys(vlSpec.encoding).length != 0}
-						{#if showModel == true}
+						{#key specChanged}
+							<ChartPanel bind:dataChanged bind:vlSpec />
+						{/key}
+						<!-- {#if showModel == true}
 							<ChartPanel bind:dataChanged bind:vlSpec />
 						{:else}
 							{#key specChanged}
 								vlSpec has changed
 								<ChartPanel bind:dataChanged bind:vlSpec />
-								<!-- <ChartPanel bind:dataTrans bind:vlSpec /> -->
-							{/key}
-						{/if}
+								<ChartPanel bind:dataTrans bind:vlSpec />
+							{/key} 
+						{/if} -->
 					{/if}
 				</Column>
 				<Column style="min-width: 250px; max-width: 250px;">
