@@ -564,7 +564,35 @@
 			// data already contains model predictions...
 			// filter other model predictions out of the dataset
 			let dataOnly = deepCopy(dataChanged);
-			dataOnly = dataOnly.filter((row) => row.modelcheck_group === "data");
+			dataOnly = dataOnly.filter((row) => row.modelcheck_group === "data" && row.draw === 1);
+			dataOnly = dataOnly.map((row) => {
+				let obj = Object.assign({}, row);
+				delete obj["mu.expectation"]
+				delete obj["logitmu.expectation"]
+				delete obj["logmu.expectation"]
+				delete obj["se.expectation"]
+				delete obj["logitmu.se"]
+				delete obj["logse.expectation"]
+				delete obj["logmu.se"]
+				delete obj["logsigma.expectation"]
+				delete obj["logsigma.se"]
+				delete obj["df"]
+				delete obj["se.residual"]
+				delete obj["draw"]
+				delete obj["t"]
+				delete obj["x"]
+				delete obj["t1"]
+				delete obj["t2"]
+				delete obj["mu"]
+				delete obj["logitmu"]
+				delete obj["logmu"]
+				delete obj["sigma"]
+				delete obj["logsigma"]
+				delete obj["modelcheck_group"]
+				return obj;
+			});
+			// console.log("does our filtering strategy work?");
+			// console.log(dataOnly);
 			
 			// call the new model, and merge its results with dataChanged
 			callModel(mu, sigma, dataOnly, model).then(function(response) {

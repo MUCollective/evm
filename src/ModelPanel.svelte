@@ -61,7 +61,7 @@
             </div>
         {/each}
     {:else}
-        <div class="current">No filter currently applied.</div>
+        <div class="current">No model currently applied.</div>
     {/if}
 
     <!-- Model bar goes here -->
