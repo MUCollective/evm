@@ -4,32 +4,26 @@
 	import { onMount } from "svelte";
 	import * as d3 from "d3";
 	import type { VisualizationSpec } from "vega-embed";
-
 	export let counter: number = 0;
-
 	// app components
 	import Header from "./Header.svelte";
 	import DataPanel from "./DataPanel.svelte";
 	import ChartPanel from "./ChartPanel.svelte";
 	import EncodingPanel from "./EncodingPanel.svelte";
 	import ModelPanel from "./ModelPanel.svelte";
-
 	import { writable, get } from "svelte/store";
 	import type { forEach } from "vega-lite/build/src/encoding";
-
 	// props
 	export let name: string;
 	export let mounted: boolean;
 	export let charting: boolean; // not used?
 	export let modeling: boolean;
-
 	// export const chartX = writable("origin");
 	// props for Vega-Lite
 	// data should be a {}[] format (pure dataset), this will be wrapped by {"table": data} in the ChartPanel component.
 	export let data: any;
 	export let dataChanged: any;
 	export let dataTrans: any;
-
 	export let vlSpec: VisualizationSpec;
 	export let vlSpecModel: VisualizationSpec;
 	// export let facet: any;
@@ -38,25 +32,18 @@
 	// if you update "vlSpec", then the Vega-Lite spec is updated.
 	// if you want multiple vega-lite visualizations, then make it into an array,
 	// then duplicate "VegaLite" panel with the "vlSpec" argument changed.
-
 	export const visUpdate = writable(vlSpec);
-
 	// controls the rendering of drag and drop elements
 	export let dndState: { id: string; name: string; items: any[] }[];
 	export let flipDurationMs: number;
 	export let originalDndState: { id: string; name: string; items: any[] }[];
-
 	export let filter: any;
 	export let transformation: any;
-
 	$: specChanged = 0;
-
 	export let dataTransformed: any;
 	export let models: any;
-
 	// export let showModel: boolean;
 	// showModel = false;
-
 	let prevSpec: VisualizationSpec = vlSpec;
 	console.log("PREV prevSpec", prevSpec);
 	onMount(async () => {
@@ -92,7 +79,6 @@
 		// );
 		// console.log(test2);
 	});
-
 	// originalDndState = deepCopy(dndState);
 	// helper functions for drag and drop
 	// passed to sub-components
@@ -188,14 +174,12 @@
 			console.log("vlspec:", vlSpec);
 		}
 	}
-
 	function changeMark(selected: any) {
 		vlSpec.mark = selected;
 		vlSpec = { ...vlSpec };
 		specChanged++;
 		console.log("CHANGING MARK,", selected, vlSpec);
 	}
-
 	function changeAggregation(aggr: any, shelfId: any) {
 		if (shelfId == "x-drop" && typeof vlSpec.encoding.x != "undefined") {
 			if (aggr == "none") {
@@ -262,7 +246,6 @@
 		vlSpec = { ...vlSpec };
 		specChanged++;
 	}
-
 	// var filterCount = 0;
 	function filterData(
 		varToFilter,
@@ -295,10 +278,8 @@
 		});
 		console.log(dataChanged);
 		console.log(dndState);
-
 		specChanged++;
 	}
-
 	function filterHelper(
 		varToFilter,
 		includeOrExclude,
@@ -363,7 +344,6 @@
 		dataChanged = [...dataChanged];
 		console.log(dataChanged);
 	}
-
 	function removeFilter(index, clearAll = false) {
 		dataChanged = data;
 		dataChanged = [...dataChanged];
@@ -374,7 +354,6 @@
 			console.log(filter);
 			// var removedFilter = filter.splice(index, 1);
 			var removedFilter = filter[index];
-
 			if (index != 0) {
 				console.log("filter.slice(0, index)", filter.slice(0, index));
 				console.log(
@@ -389,7 +368,6 @@
 			}
 			console.log("filterTemp", filterTemp);
 			console.log("filter", filter);
-
 			Promise.all([filterTemp]).then((values) => {
 				filterTemp = values[0];
 				console.log("filterTemp", filterTemp);
@@ -399,7 +377,6 @@
 				console.log("removing", removedFilter);
 				console.log("after removed, new filter", filter);
 			});
-
 			// filter = filterTemp;
 			filter = [...filterTemp];
 			console.log(filter);
@@ -423,10 +400,8 @@
 				});
 			}
 		}
-
 		specChanged++;
 	}
-
 	function transformData(transVar, transform) {
 		dataTrans = dataChanged;
 		dataTrans = [...dataTrans];
@@ -442,7 +417,6 @@
 		});
 		specChanged++;
 	}
-
 	function transformHelper(variable, t) {
 		console.log("transformHelper");
 		console.log(dataTrans[0]);
@@ -466,12 +440,10 @@
 		dataTrans = [...dataTrans];
 		dataChanged = [...dataTrans];
 	}
-
 	function removeTrans(index, clearAll = false) {
 		if (clearAll) {
 		}
 	}
-
 	function removeModel(index, removeAll = false) {
 		var modelTemp;
 		if (removeAll) {
@@ -480,7 +452,6 @@
 			console.log(models);
 			// var removedFilter = filter.splice(index, 1);
 			var removedModel = models[index];
-
 			if (index != 0) {
 				console.log("filter.slice(0, index)", models.slice(0, index));
 				console.log(
@@ -513,31 +484,24 @@
 		models = [...modelTemp];
 		// showModel = false;
 	}
-
 	// call model on server
 	async function callModel(mu, sigma, useData, model="normal") {
 		ocpu.seturl("//kalealex.ocpu.io/modelcheck/R");
-
 		const url = await ocpu.rpc(
 			"normal_model_check",
 			{ mu_spec: mu, sigma_spec: sigma, data: JSON.stringify(useData)}
 		);
-
 		return(url.split('\n')[0]);
 	}
-
 	// merge dataframes containing model results on server
 	async function mergeModels(oldData, newData) {
 		ocpu.seturl("//kalealex.ocpu.io/modelcheck/R");
-
 		const url = await ocpu.rpc(
 			"merge_modelchecks",
 			{ df_old: JSON.stringify(oldData), df_new: JSON.stringify(newData)}
 		);
-
 		return(url.split('\n')[0]);
 	}
-
 	// fetch data from open cpu given a url
   	async function fetchData(url) {
 		const newData = await fetch("https://cloud.opencpu.org/" + url + "/json").then(function(response) {
@@ -547,17 +511,14 @@
 		}).catch(function(err) {
 			console.log(err);
 		});
-
 		return newData;
 	}
-
 	async function addModel(mu, sigma, model="normal") {
 		// add the model to our queue
 		models.push({
 			exp: [mu, sigma],
 		});
 		models = [...models];
-
 		// figure out what to do next based on current state
 		// TODO: we probably also need an if to deal with the edge case where we need to rerun everything
 		if (dataChanged[0].hasOwnProperty('modelcheck_group') && dataChanged.some((row) => row.modelcheck_group !== "data")) {
@@ -583,6 +544,8 @@
 					console.log("this should be a the data with predictions from both old and new models");
 					console.log(mergedData);
 					// update dataChanged
+					mergedData = mergedData.filter((row) => row.draw === 1);
+					mergedData = [...mergedData];
 					dataChanged = deepCopy(mergedData);
 					dataChanged = [...dataChanged];
 					// update vlSpec
@@ -608,6 +571,8 @@
 			}).then(function(modelData) {
 				console.log("this should be a the data with model predictions");
 				console.log(modelData);
+				modelData = modelData.filter((row) => row.draw === 1);
+				modelData = [...modelData];
 				// update dataChanged
 				dataChanged = deepCopy(modelData);
 				dataChanged = [...dataChanged];
@@ -618,7 +583,6 @@
 				vlSpec = {...vlSpec};
 				specChanged++;
 				// showModel = true;
-
 			// 	return dataChanged;
 			// }).then(function(testResult) {
 			// 	console.log("dataChanged contains predictions?");
@@ -628,12 +592,10 @@
 			});
 		}
 	}
-
 	function encodingToData(variable: any, shelfId: any, item: any) {
 		console.log("variable", variable, "shelfId", shelfId, "item", item);
 		console.log("before any changes", vlSpec.encoding);
 		console.log(typeof dndState[0]);
-
 		console.log(item);
 		const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
 		console.log("why doesn't it change", dndState[shelfIdx]);
@@ -663,11 +625,9 @@
 		if (shelfId == "col-drop") {
 			delete vlSpec.encoding.column;
 		}
-
 		vlSpec = { ...vlSpec };
 		specChanged++;
 	}
-
 	// helper functions for modeling
 	function bootstrap(e: any) {
 		console.log(e);
@@ -677,27 +637,20 @@
 		console.log(e);
 		modeling = true;
 	}
-
 	function deepCopy(inObject) {
 		let outObject, value, key;
-
 		if (typeof inObject !== "object" || inObject === null) {
 			return inObject; // Return the value if inObject is not an object
 		}
-
 		// Create an array or object to hold the values
 		outObject = Array.isArray(inObject) ? [] : {};
-
 		for (key in inObject) {
 			value = inObject[key];
-
 			// Recursively (deep) copy for nested objects, including arrays
 			outObject[key] = deepCopy(value);
 		}
-
 		return outObject;
 	}
-
 	// console.log(document.getElementsByClassName("vega-embed"));
 </script>
 
@@ -786,7 +739,6 @@
 		/* disable scrolling */
 		/* overflow: hidden; */
 	}
-
 	@media (min-width: 640px) {
 		main {
 			max-width: none;
