@@ -35,12 +35,12 @@
             <option value="logistic">logistic model</option>
             <option value="poisson">poisson model</option>
             <option value="ordinal">ordinal model</option>
-            <option value="multinominal">multinominal model</option>
-            <option value="negbinominal">negbinominal model</option>
+            <option value="multinomial">multinominal model</option>
+            <option value="negbinomial">negbinominal model</option>
         </select>
         <br />
         mu spec: <input bind:value={muSpec} style="padding: initial;" />
-        {#if modelType == "negbinominal" || modelType == "normal"}
+        {#if modelType == "negbinomial" || modelType == "normal"}
         <br />
             sigma spec: <input
                 bind:value={sigmaSpec}
@@ -56,7 +56,7 @@
         {#if muSpec}
             <!-- {#if sigmaSpec != "~1"} -->
             <button
-                on:click={addModel(muSpec, sigmaSpec)}
+                on:click={addModel(muSpec, sigmaSpec, modelType)}
                 on:click={() => (showAddingModel = false)}
             >
                 &#10003;
@@ -67,6 +67,8 @@
     {#if models.length != 0}
         {#each models as f, i}
             <div class="current">
+                model: {f.exp[2]}
+                <br />
                 muSpec: {f.exp[0]}
                 <br />
                 sigmaSpec: {f.exp[1]}

@@ -69,15 +69,6 @@
 		console.log(
 			"calculateEstimatesPerStudy calculateEstimatesPerStudy calculateEstimatesPerStudy"
 		);
-		// ocpu.seturl("//kalealex.ocpu.io/modelcheck/R");
-		// const test2 = ocpu.rpc(
-		// 	"normal_model_check",
-		// 	{ mu_spec: "mpg ~ 1", data: JSON.stringify(data) },
-		// 	function (output) {
-		// 		console.log(output);
-		// 	}
-		// );
-		// console.log(test2);
 	});
 	function handleDndConsider(shelfId: any, e: any) {
 		const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
@@ -492,6 +483,11 @@
 				disp_spec: sigma,
 				data: JSON.stringify(useData),
 			});
+		} else if (model == "multinomial") {
+			url = await ocpu.rpc("multinomial_model_check", {
+				spec: mu,
+				data: JSON.stringify(useData),
+			});
 		} else {
 			const model_name = model + "_model_check";
 			console.log(model_name);
@@ -503,6 +499,7 @@
 
 		return url.split("\n")[0];
 	}
+
 	// merge dataframes containing model results on server
 	async function mergeModels(oldData, newData) {
 		ocpu.seturl("//kalealex.ocpu.io/modelcheck/R");
@@ -512,6 +509,7 @@
 		});
 		return url.split("\n")[0];
 	}
+
 	// fetch data from open cpu given a url
 	async function fetchData(url) {
 		const newData = await fetch(
@@ -529,6 +527,7 @@
 		return newData;
 	}
 
+	// add model to the vis canvas
 	async function addModel(mu, sigma, model = "normal") {
 		// add the model to our queue
 		models.push({
