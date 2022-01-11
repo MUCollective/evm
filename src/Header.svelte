@@ -1,5 +1,7 @@
 <script lang="ts">
 	export let name: string;
+
+	let src = "./logo.png"
 </script>
 
 
@@ -21,5 +23,5 @@
 </style>
 
 <div id="header" style="margin: 0px 0px 20px 0px;">
-	<h1 class="full-width">{name}</h1>
+	<img src="./logo.png" alt="header"/>
 </div>

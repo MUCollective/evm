@@ -14,6 +14,8 @@
 	let dataset = { table: dataChanged };
 	// let dataset = { table: dataTrans };
 
+	console.log(vlSpec);
+
 
 
 </script>

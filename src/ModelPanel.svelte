@@ -32,20 +32,35 @@
         <select bind:value={modelType}>
             <option disabled selected value> -- select model -- </option>
             <option value="normal">normal model</option>
-            <option value="bar">logistic model</option>
-            <option value="circle">poisson model</option>
+            <option value="logistic">logistic model</option>
+            <option value="poisson">poisson model</option>
+            <option value="ordinal">ordinal model</option>
+            <option value="multinominal">multinominal model</option>
+            <option value="negbinominal">negbinominal model</option>
         </select>
-        <br>
+        <br />
         mu spec: <input bind:value={muSpec} style="padding: initial;" />
-        sigma spec: <input bind:value={sigmaSpec} style="padding: initial;" />
+        {#if modelType == "negbinominal" || modelType == "normal"}
+        <br />
+            sigma spec: <input
+                bind:value={sigmaSpec}
+                style="padding: initial;"
+            />
+        {:else if modelType == "ordinal"}
+        <br />
+            disp spec: <input
+                bind:value={sigmaSpec}
+                style="padding: initial;"
+            />
+        {/if}
         {#if muSpec}
             <!-- {#if sigmaSpec != "~1"} -->
-                <button
-                    on:click={addModel(muSpec, sigmaSpec)}
-                    on:click={() => (showAddingModel = false)}
-                >
-                    &#10003;
-                </button>
+            <button
+                on:click={addModel(muSpec, sigmaSpec)}
+                on:click={() => (showAddingModel = false)}
+            >
+                &#10003;
+            </button>
         {/if}
     {/if}
 
@@ -53,7 +68,7 @@
         {#each models as f, i}
             <div class="current">
                 muSpec: {f.exp[0]}
-                <br>
+                <br />
                 sigmaSpec: {f.exp[1]}
                 <button class="single-char" on:click={removeModel(i)}
                     >&times;

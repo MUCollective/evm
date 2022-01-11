@@ -79,9 +79,6 @@
 		// );
 		// console.log(test2);
 	});
-	// originalDndState = deepCopy(dndState);
-	// helper functions for drag and drop
-	// passed to sub-components
 	function handleDndConsider(shelfId: any, e: any) {
 		const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
 		dndState[shelfIdx].items = e.detail.items;
@@ -95,11 +92,6 @@
 				dndState[shelfIdx].items[dndState[shelfIdx].items.length - 1]
 					.name
 			);
-			// {id: 'x-drop', name: 'x', items: Array(1)}
-			// id: "x-drop"
-			// items: Array(1)
-			// 0: {id: 0, idx: 0, name: 'name'}
-			// current {id: 'x-drop', name: 'x', items: Array(2)}
 			var varName = e.detail.items[0].name;
 			console.log("compare", varName);
 			if (
@@ -485,140 +477,250 @@
 		// showModel = false;
 	}
 	// call model on server
-	async function callModel(mu, sigma, useData, model="normal") {
+	async function callModel(mu, sigma = "~ 1", useData, model = "normal") {
 		ocpu.seturl("//kalealex.ocpu.io/modelcheck/R");
-		const url = await ocpu.rpc(
-			"normal_model_check",
-			{ mu_spec: mu, sigma_spec: sigma, data: JSON.stringify(useData)}
-		);
-		return(url.split('\n')[0]);
+		var url;
+		if (model == "normal") {
+			url = await ocpu.rpc("normal_model_check", {
+				mu_spec: mu,
+				sigma_spec: sigma,
+				data: JSON.stringify(useData),
+			});
+		} else if (model == "ordinal") {
+			url = await ocpu.rpc("ordinal_model_check", {
+				mu_spec: mu,
+				disp_spec: sigma,
+				data: JSON.stringify(useData),
+			});
+		} else {
+			const model_name = model + "_model_check";
+			console.log(model_name);
+			url = await ocpu.rpc(model_name, {
+				mu_spec: mu,
+				data: JSON.stringify(useData),
+			});
+		}
+
+		return url.split("\n")[0];
 	}
 	// merge dataframes containing model results on server
 	async function mergeModels(oldData, newData) {
 		ocpu.seturl("//kalealex.ocpu.io/modelcheck/R");
-		const url = await ocpu.rpc(
-			"merge_modelchecks",
-			{ df_old: JSON.stringify(oldData), df_new: JSON.stringify(newData)}
-		);
-		return(url.split('\n')[0]);
+		const url = await ocpu.rpc("merge_modelchecks", {
+			df_old: JSON.stringify(oldData),
+			df_new: JSON.stringify(newData),
+		});
+		return url.split("\n")[0];
 	}
 	// fetch data from open cpu given a url
-  	async function fetchData(url) {
-		const newData = await fetch("https://cloud.opencpu.org/" + url + "/json").then(function(response) {
-			return response.json();
-		}).then(function(result) {
-			return JSON.parse(result.data);
-		}).catch(function(err) {
-			console.log(err);
-		});
+	async function fetchData(url) {
+		const newData = await fetch(
+			"https://cloud.opencpu.org/" + url + "/json"
+		)
+			.then(function (response) {
+				return response.json();
+			})
+			.then(function (result) {
+				return JSON.parse(result.data);
+			})
+			.catch(function (err) {
+				console.log(err);
+			});
 		return newData;
 	}
-	async function addModel(mu, sigma, model="normal") {
+
+	async function addModel(mu, sigma, model = "normal") {
 		// add the model to our queue
 		models.push({
-			exp: [mu, sigma],
+			exp: [mu, sigma, model],
 		});
 		models = [...models];
 		// figure out what to do next based on current state
 		// TODO: we probably also need an if to deal with the edge case where we need to rerun everything
-		if (dataChanged[0].hasOwnProperty('modelcheck_group') && dataChanged.some((row) => row.modelcheck_group !== "data")) {
+		if (
+			dataChanged[0].hasOwnProperty("modelcheck_group") &&
+			dataChanged.some((row) => row.modelcheck_group !== "data")
+		) {
 			// data already contains model predictions...
 			// filter other model predictions out of the dataset
 			let dataOnly = deepCopy(dataChanged);
-			dataOnly = dataOnly.filter((row) => row.modelcheck_group === "data" && row.draw === 1);
+			dataOnly = dataOnly.filter(
+				(row) => row.modelcheck_group === "data" && row.draw === 1
+			);
 			dataOnly = dataOnly.map((row) => {
 				let obj = Object.assign({}, row);
-				delete obj["mu.expectation"]
-				delete obj["logitmu.expectation"]
-				delete obj["logmu.expectation"]
-				delete obj["se.expectation"]
-				delete obj["logitmu.se"]
-				delete obj["logse.expectation"]
-				delete obj["logmu.se"]
-				delete obj["logsigma.expectation"]
-				delete obj["logsigma.se"]
-				delete obj["df"]
-				delete obj["se.residual"]
-				delete obj["draw"]
-				delete obj["t"]
-				delete obj["x"]
-				delete obj["t1"]
-				delete obj["t2"]
-				delete obj["mu"]
-				delete obj["logitmu"]
-				delete obj["logmu"]
-				delete obj["sigma"]
-				delete obj["logsigma"]
-				delete obj["modelcheck_group"]
+				delete obj["mu.expectation"];
+				delete obj["logitmu.expectation"];
+				delete obj["logmu.expectation"];
+				delete obj["se.expectation"];
+				delete obj["logitmu.se"];
+				delete obj["logse.expectation"];
+				delete obj["logmu.se"];
+				delete obj["logsigma.expectation"];
+				delete obj["logsigma.se"];
+				delete obj["df"];
+				delete obj["se.residual"];
+				delete obj["draw"];
+				delete obj["t"];
+				delete obj["x"];
+				delete obj["t1"];
+				delete obj["t2"];
+				delete obj["mu"];
+				delete obj["logitmu"];
+				delete obj["logmu"];
+				delete obj["sigma"];
+				delete obj["logsigma"];
+				delete obj["modelcheck_group"];
 				return obj;
 			});
 			// console.log("does our filtering strategy work?");
 			// console.log(dataOnly);
-			
+
 			// call the new model, and merge its results with dataChanged
-			callModel(mu, sigma, dataOnly, model).then(function(response) {
-				console.log("this should be a url");
-				console.log(response);
-				return fetchData(response);
-			}).then(function(modelData) {
-				console.log("this should be a the data with model predictions");
-				console.log(modelData);
-				// merge old model data from dataChanged with new model data from modelData
-				mergeModels(dataChanged, modelData).then(function(response) {
+			callModel(mu, sigma, dataOnly, model)
+				.then(function (response) {
 					console.log("this should be a url");
 					console.log(response);
 					return fetchData(response);
-				}).then(function(mergedData) {
-					console.log("this should be a the data with predictions from both old and new models");
-					console.log(mergedData);
+				})
+				.then(function (modelData) {
+					console.log(
+						"this should be a the data with model predictions"
+					);
+					console.log(modelData);
+					// merge old model data from dataChanged with new model data from modelData
+					mergeModels(dataChanged, modelData)
+						.then(function (response) {
+							console.log("this should be a url");
+							console.log(response);
+							return fetchData(response);
+						})
+						.then(function (mergedData) {
+							console.log(
+								"this should be a the data with predictions from both old and new models"
+							);
+							console.log(mergedData);
+							// update dataChanged
+							mergedData = mergedData.filter(
+								(row) => row.draw === 1
+							);
+							mergedData = [...mergedData];
+							dataChanged = deepCopy(mergedData);
+							dataChanged = [...dataChanged];
+							// update vlSpec
+							// TODO: eventually we need contingencies to deal with xOffset and yOffset
+							// TODO: may need additional logic in case the previous spec still works, and we don't need to update vlSpec
+							console.log("change vlSpec for model");
+							console.log(vlSpec);
+							vlSpec.encoding.color = vlSpec.encoding.color
+								? vlSpec.encoding.color
+								: { field: null };
+							vlSpec.encoding.color.field = "modelcheck_group";
+
+							// quant + nominal
+							if (vlSpec.mark == "bar") {
+								if (vlSpec.encoding.x.type == "nominal") {
+									vlSpec.encoding.xOffset = vlSpec.encoding
+										.xOffset
+										? vlSpec.encoding.xOffset
+										: { field: null };
+									vlSpec.encoding.xOffset.field =
+										"modelcheck_group";
+								} else {
+									vlSpec.encoding.yOffset = vlSpec.encoding
+										.yOffset
+										? vlSpec.encoding.yOffset
+										: { field: null };
+									vlSpec.encoding.yOffset.field =
+										"modelcheck_group";
+								}
+							}
+							vlSpec = { ...vlSpec };
+							console.log("after change");
+							console.log(vlSpec);
+							specChanged++;
+						})
+						.catch(function (err) {
+							console.log(err);
+						});
+				})
+				.catch(function (err) {
+					console.log(err);
+				});
+		} else {
+			// data contains NO model predictions...
+			// call the new model
+			callModel(mu, sigma, dataChanged, model)
+				.then(function (response) {
+					console.log("this should be a url");
+					console.log(response);
+					return fetchData(response);
+				})
+				.then(function (modelData) {
+					console.log(
+						"this should be a the data with model predictions"
+					);
+					console.log(modelData);
+					modelData = modelData.filter((row) => row.draw === 1);
+					modelData = [...modelData];
 					// update dataChanged
-					mergedData = mergedData.filter((row) => row.draw === 1);
-					mergedData = [...mergedData];
-					dataChanged = deepCopy(mergedData);
+					dataChanged = deepCopy(modelData);
 					dataChanged = [...dataChanged];
 					// update vlSpec
 					// TODO: eventually we need contingencies to deal with xOffset and yOffset
-					// TODO: may need additional logic in case the previous spec still works, and we don't need to update vlSpec
-					vlSpec.encoding.color = vlSpec.encoding.color ? vlSpec.encoding.color : {"field": null};
+					console.log("change vlSpec for model");
+					console.log(vlSpec);
+					vlSpec.encoding.color = vlSpec.encoding.color
+						? vlSpec.encoding.color
+						: { field: null };
 					vlSpec.encoding.color.field = "modelcheck_group";
-					vlSpec = {...vlSpec};
+					vlSpec.encoding.y = vlSpec.encoding.y
+						? vlSpec.encoding.y
+						: { field: null };
+					vlSpec.encoding.y.field = "modelcheck_group";
+					// quant + nominal
+					if (vlSpec.mark == "bar") {
+						console.log("12345");
+						if (vlSpec.encoding.x.type == "nominal") {
+							vlSpec.encoding.xOffset = vlSpec.encoding.xOffset
+								? vlSpec.encoding.xOffset
+								: { field: null };
+							vlSpec.encoding.xOffset.field = "modelcheck_group";
+						} else {
+							vlSpec.encoding.yOffset = vlSpec.encoding.yOffset
+								? vlSpec.encoding.yOffset
+								: { field: null };
+							vlSpec.encoding.yOffset.field = "modelcheck_group";
+						}
+					}
+					vlSpec = { ...vlSpec };
+					console.log("after change");
+					console.log(vlSpec);
 					specChanged++;
-				}).catch(function(err) {
+					// showModel = true;
+					// 	return dataChanged;
+					// }).then(function(testResult) {
+					// 	console.log("dataChanged contains predictions?");
+					// 	console.log(testResult);
+				})
+				.catch(function (err) {
 					console.log(err);
 				});
-			}).catch(function(err) {
-				console.log(err);
-			});
-		} else {
-			// data contains no model predictions...
-			// call the new model
-			callModel(mu, sigma, dataChanged, model).then(function(response) {
-				console.log("this should be a url");
-				console.log(response);
-				return fetchData(response);
-			}).then(function(modelData) {
-				console.log("this should be a the data with model predictions");
-				console.log(modelData);
-				modelData = modelData.filter((row) => row.draw === 1);
-				modelData = [...modelData];
-				// update dataChanged
-				dataChanged = deepCopy(modelData);
-				dataChanged = [...dataChanged];
-				// update vlSpec
-				// TODO: eventually we need contingencies to deal with xOffset and yOffset
-				vlSpec.encoding.color = vlSpec.encoding.color ? vlSpec.encoding.color : {"field": null};
-				vlSpec.encoding.color.field = "modelcheck_group";
-				vlSpec = {...vlSpec};
-				specChanged++;
-				// showModel = true;
-			// 	return dataChanged;
-			// }).then(function(testResult) {
-			// 	console.log("dataChanged contains predictions?");
-			// 	console.log(testResult);
-			}).catch(function(err) {
-				console.log(err);
-			});
 		}
+		if (typeof vlSpec.encoding.x == "undefined") {
+			vlSpec.encoding.x = vlSpec.encoding.x
+				? vlSpec.encoding.x
+				: { field: null };
+			vlSpec.encoding.x.field = "modelcheck_group";
+		}
+		if (typeof vlSpec.encoding.y == "undefined") {
+			vlSpec.encoding.y = vlSpec.encoding.y
+				? vlSpec.encoding.y
+				: { field: null };
+			vlSpec.encoding.y.field = "modelcheck_group";
+		}
+		vlSpec = { ...vlSpec };
+		specChanged++;
 	}
 	function encodingToData(variable: any, shelfId: any, item: any) {
 		console.log("variable", variable, "shelfId", shelfId, "item", item);
@@ -656,6 +758,10 @@
 		vlSpec = { ...vlSpec };
 		specChanged++;
 	}
+
+	// filter, transform, model
+	function orderOfOperation() {}
+
 	// helper functions for modeling
 	function bootstrap(e: any) {
 		console.log(e);
@@ -679,7 +785,6 @@
 		}
 		return outObject;
 	}
-	// console.log(document.getElementsByClassName("vega-embed"));
 </script>
 
 <svelte:head>
@@ -734,15 +839,6 @@
 						{#key specChanged}
 							<ChartPanel bind:dataChanged bind:vlSpec />
 						{/key}
-						<!-- {#if showModel == true}
-							<ChartPanel bind:dataChanged bind:vlSpec />
-						{:else}
-							{#key specChanged}
-								vlSpec has changed
-								<ChartPanel bind:dataChanged bind:vlSpec />
-								<ChartPanel bind:dataTrans bind:vlSpec />
-							{/key} 
-						{/if} -->
 					{/if}
 				</Column>
 				<Column style="min-width: 250px; max-width: 250px;">
