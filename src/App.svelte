@@ -500,6 +500,17 @@
 		return url.split("\n")[0];
 	}
 
+	async function calculate_residuals(useData) {
+		ocpu.seturl("//kalealex.ocpu.io/modelcheck/R");
+		var url;
+		console.log("in cal residual", useData);
+		url = await ocpu.rpc("calc_residuals", {
+			df: JSON.stringify(useData),
+			outcome_name: "residual",
+		});
+		return url.split("\n")[0];
+	}
+
 	// merge dataframes containing model results on server
 	async function mergeModels(oldData, newData) {
 		ocpu.seturl("//kalealex.ocpu.io/modelcheck/R");
@@ -704,6 +715,19 @@
 				})
 				.catch(function (err) {
 					console.log(err);
+				});
+
+			calculate_residuals(dataChanged)
+				.then(function (response) {
+					console.log("this should be a url");
+					console.log(response);
+					return fetchData(response);
+				})
+				.then(function (modelData) {
+					console.log(
+						"this should be a the data with model predictions"
+					);
+					console.log(modelData);
 				});
 		}
 		if (typeof vlSpec.encoding.x == "undefined") {
