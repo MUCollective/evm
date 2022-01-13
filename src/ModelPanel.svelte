@@ -11,9 +11,9 @@
     export let removeModel;
 
     let showAddingModel = false;
-    let muSpec;
+    let muSpec = "mpg ~ 1";
     let sigmaSpec = "~1";
-    let modelType;
+    let modelType = "normal";
     let showModels = false;
 </script>
 

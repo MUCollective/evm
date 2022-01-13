@@ -506,7 +506,7 @@
 		console.log("in cal residual", useData);
 		url = await ocpu.rpc("calc_residuals", {
 			df: JSON.stringify(useData),
-			outcome_name: "residual",
+			outcome_name: "mpg",
 		});
 		return url.split("\n")[0];
 	}
@@ -684,11 +684,12 @@
 						? vlSpec.encoding.color
 						: { field: null };
 					vlSpec.encoding.color.field = "modelcheck_group";
-					vlSpec.encoding.y = vlSpec.encoding.y
-						? vlSpec.encoding.y
-						: { field: null };
-					vlSpec.encoding.y.field = "modelcheck_group";
+					// vlSpec.encoding.y = vlSpec.encoding.y
+					// 	? vlSpec.encoding.y
+					// 	: { field: null };
+					// vlSpec.encoding.y.field = "modelcheck_group";
 					// quant + nominal
+					/* 
 					if (vlSpec.mark == "bar") {
 						console.log("12345");
 						if (vlSpec.encoding.x.type == "nominal") {
@@ -702,7 +703,7 @@
 								: { field: null };
 							vlSpec.encoding.yOffset.field = "modelcheck_group";
 						}
-					}
+					} */
 					vlSpec = { ...vlSpec };
 					console.log("after change");
 					console.log(vlSpec);
@@ -712,31 +713,38 @@
 					// }).then(function(testResult) {
 					// 	console.log("dataChanged contains predictions?");
 					// 	console.log(testResult);
+
+					// calculate_residuals(dataChanged)
+					// 	.then(function (response) {
+					// 		console.log("this should be a url");
+					// 		console.log(response);
+					// 		return fetchData(response);
+					// 	})
+					// 	.then(function (modelData) {
+					// 		console.log(
+					// 			"this should be a the data with residual"
+					// 		);
+					// 		console.log(modelData);
+					// 		modelData = modelData.filter(
+					// 			(row) => row.draw === 1
+					// 		);
+					// 		modelData = [...modelData];
+					// 		// update dataChanged
+					// 		dataChanged = deepCopy(modelData);
+					// 		dataChanged = [...dataChanged];
+					// 	});
 				})
 				.catch(function (err) {
 					console.log(err);
 				});
-
-			calculate_residuals(dataChanged)
-				.then(function (response) {
-					console.log("this should be a url");
-					console.log(response);
-					return fetchData(response);
-				})
-				.then(function (modelData) {
-					console.log(
-						"this should be a the data with model predictions"
-					);
-					console.log(modelData);
-				});
 		}
+
 		if (typeof vlSpec.encoding.x == "undefined") {
 			vlSpec.encoding.x = vlSpec.encoding.x
 				? vlSpec.encoding.x
 				: { field: null };
 			vlSpec.encoding.x.field = "modelcheck_group";
-		}
-		if (typeof vlSpec.encoding.y == "undefined") {
+		} else if (typeof vlSpec.encoding.y == "undefined") {
 			vlSpec.encoding.y = vlSpec.encoding.y
 				? vlSpec.encoding.y
 				: { field: null };
@@ -744,6 +752,7 @@
 		}
 		vlSpec = { ...vlSpec };
 		specChanged++;
+		console.log(dataChanged);
 	}
 	function encodingToData(variable: any, shelfId: any, item: any) {
 		console.log("variable", variable, "shelfId", shelfId, "item", item);
