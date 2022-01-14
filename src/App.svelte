@@ -46,6 +46,14 @@
 	// showModel = false;
 	let prevSpec: VisualizationSpec = vlSpec;
 	console.log("PREV prevSpec", prevSpec);
+
+	let showPredictionOrResidual = "prediction";
+
+	function onChange(event) {
+		showPredictionOrResidual = event.currentTarget.value;
+		console.log(showPredictionOrResidual);
+	}
+
 	onMount(async () => {
 		// load data
 		data = await d3.json("./data/cars.json");
@@ -431,6 +439,7 @@
 		var modelTemp;
 		if (removeAll) {
 			models = [];
+			modeling = false;
 		} else {
 			console.log(models);
 			// var removedFilter = filter.splice(index, 1);
@@ -545,6 +554,7 @@
 			exp: [mu, sigma, model],
 		});
 		models = [...models];
+		modeling = true;
 		// figure out what to do next based on current state
 		// TODO: we probably also need an if to deal with the edge case where we need to rerun everything
 		if (
@@ -684,55 +694,11 @@
 						? vlSpec.encoding.color
 						: { field: null };
 					vlSpec.encoding.color.field = "modelcheck_group";
-					// vlSpec.encoding.y = vlSpec.encoding.y
-					// 	? vlSpec.encoding.y
-					// 	: { field: null };
-					// vlSpec.encoding.y.field = "modelcheck_group";
-					// quant + nominal
-					/* 
-					if (vlSpec.mark == "bar") {
-						console.log("12345");
-						if (vlSpec.encoding.x.type == "nominal") {
-							vlSpec.encoding.xOffset = vlSpec.encoding.xOffset
-								? vlSpec.encoding.xOffset
-								: { field: null };
-							vlSpec.encoding.xOffset.field = "modelcheck_group";
-						} else {
-							vlSpec.encoding.yOffset = vlSpec.encoding.yOffset
-								? vlSpec.encoding.yOffset
-								: { field: null };
-							vlSpec.encoding.yOffset.field = "modelcheck_group";
-						}
-					} */
+
 					vlSpec = { ...vlSpec };
 					console.log("after change");
 					console.log(vlSpec);
 					specChanged++;
-					// showModel = true;
-					// 	return dataChanged;
-					// }).then(function(testResult) {
-					// 	console.log("dataChanged contains predictions?");
-					// 	console.log(testResult);
-
-					// calculate_residuals(dataChanged)
-					// 	.then(function (response) {
-					// 		console.log("this should be a url");
-					// 		console.log(response);
-					// 		return fetchData(response);
-					// 	})
-					// 	.then(function (modelData) {
-					// 		console.log(
-					// 			"this should be a the data with residual"
-					// 		);
-					// 		console.log(modelData);
-					// 		modelData = modelData.filter(
-					// 			(row) => row.draw === 1
-					// 		);
-					// 		modelData = [...modelData];
-					// 		// update dataChanged
-					// 		dataChanged = deepCopy(modelData);
-					// 		dataChanged = [...dataChanged];
-					// 	});
 				})
 				.catch(function (err) {
 					console.log(err);
@@ -754,6 +720,39 @@
 		specChanged++;
 		console.log(dataChanged);
 	}
+
+	function showResidual() {
+		console.log("residual!!!!!!!");
+		calculate_residuals(dataChanged)
+			.then(function (response) {
+				console.log("this should be a url");
+				console.log(response);
+				return fetchData(response);
+			})
+			.then(function (residualData) {
+				console.log("this should be a the data with residual");
+				residualData = residualData.filter((row) => row.draw === 1);
+				residualData = [...residualData];
+				console.log(residualData);
+				// update dataChanged
+				dataChanged = residualData;
+				dataChanged = [...dataChanged];
+				if (vlSpec.encoding.x.field == "modelcheck_group") {
+					vlSpec.encoding.x.scale = vlSpec.encoding.x.scale ? vlSpec.encoding.x.scale : {domain : null};
+					vlSpec.encoding.x.scale.domain = ["data", "res| normal| mpg ~ 1| ~1"];
+				} else if (vlSpec.encoding.y.field == "modelcheck_group") {
+					vlSpec.encoding.y.scale = vlSpec.encoding.y.scale ? vlSpec.encoding.y.scale : {domain : null};
+					vlSpec.encoding.y.scale.domain = ["data", "res| normal| mpg ~ 1| ~1"];
+				}
+				vlSpec = {... vlSpec};
+
+				specChanged++;
+			});
+
+		
+		console.log(vlSpec);
+	}
+
 	function encodingToData(variable: any, shelfId: any, item: any) {
 		console.log("variable", variable, "shelfId", shelfId, "item", item);
 		console.log("before any changes", vlSpec.encoding);
@@ -794,15 +793,6 @@
 	// filter, transform, model
 	function orderOfOperation() {}
 
-	// helper functions for modeling
-	function bootstrap(e: any) {
-		console.log(e);
-		modeling = true;
-	}
-	function model(e: any) {
-		console.log(e);
-		modeling = true;
-	}
 	function deepCopy(inObject) {
 		let outObject, value, key;
 		if (typeof inObject !== "object" || inObject === null) {
@@ -867,9 +857,37 @@
 					/>
 				</Column>
 				<Column style="width: 100%;">
+					{#if modeling}
+						<label>
+							<input
+								checked={showPredictionOrResidual ===
+									"prediction"}
+								on:change={onChange}
+								type="radio"
+								name="includeExclude"
+								value="prediction"
+							/> prediction
+						</label>
+						<label>
+							<input
+								checked={showPredictionOrResidual ===
+									"residual"}
+								on:change={onChange}
+								on:click={showResidual}
+								type="radio"
+								name="includeExclude"
+								value="residual"
+							/> residual
+						</label>
+					{/if}
+
 					{#if Object.keys(vlSpec.encoding).length != 0}
 						{#key specChanged}
-							<ChartPanel bind:dataChanged bind:vlSpec />
+							<ChartPanel
+								bind:dataChanged
+								bind:vlSpec
+								bind:modeling
+							/>
 						{/key}
 					{/if}
 				</Column>
