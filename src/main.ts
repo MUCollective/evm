@@ -15,6 +15,7 @@ const app = new App({
 		transformation: [],
 		dataTransformed: [],
 		models: [],
+		residualList: [],
 		dndState: [
 			{
 				id: "variables",

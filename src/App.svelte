@@ -1,6 +1,6 @@
 <script lang="ts">
 	// from libraries
-	import { Grid, Row, Column } from "carbon-components-svelte";
+	import { Grid, Row, Column, RadioTile } from "carbon-components-svelte";
 	import { onMount } from "svelte";
 	import * as d3 from "d3";
 	import type { VisualizationSpec } from "vega-embed";
@@ -45,9 +45,11 @@
 	// export let showModel: boolean;
 	// showModel = false;
 	let prevSpec: VisualizationSpec = vlSpec;
+
+	export let residualList: any;
 	console.log("PREV prevSpec", prevSpec);
 
-	let showPredictionOrResidual = "prediction";
+	export let showPredictionOrResidual = "prediction";
 
 	function onChange(event) {
 		showPredictionOrResidual = event.currentTarget.value;
@@ -549,6 +551,10 @@
 
 	// add model to the vis canvas
 	async function addModel(mu, sigma, model = "normal") {
+		showPredictionOrResidual = "prediction";
+		if (residualList.length !== 0) {
+			console.log("show not show residuals!!!");
+		}
 		// add the model to our queue
 		models.push({
 			exp: [mu, sigma, model],
@@ -723,34 +729,78 @@
 
 	function showResidual() {
 		console.log("residual!!!!!!!");
-		calculate_residuals(dataChanged)
-			.then(function (response) {
-				console.log("this should be a url");
-				console.log(response);
-				return fetchData(response);
-			})
-			.then(function (residualData) {
-				console.log("this should be a the data with residual");
-				residualData = residualData.filter((row) => row.draw === 1);
-				residualData = [...residualData];
-				console.log(residualData);
-				// update dataChanged
-				dataChanged = residualData;
-				dataChanged = [...dataChanged];
-				if (vlSpec.encoding.x.field == "modelcheck_group") {
-					vlSpec.encoding.x.scale = vlSpec.encoding.x.scale ? vlSpec.encoding.x.scale : {domain : null};
-					vlSpec.encoding.x.scale.domain = ["data", "res| normal| mpg ~ 1| ~1"];
-				} else if (vlSpec.encoding.y.field == "modelcheck_group") {
-					vlSpec.encoding.y.scale = vlSpec.encoding.y.scale ? vlSpec.encoding.y.scale : {domain : null};
-					vlSpec.encoding.y.scale.domain = ["data", "res| normal| mpg ~ 1| ~1"];
-				}
-				vlSpec = {... vlSpec};
+		if (residualList.length !== 0) {
+			console.log("there are residuals");
+			console.log(models);
+		} else {
+			calculate_residuals(dataChanged)
+				.then(function (response) {
+					console.log("this should be a url for residual");
+					console.log(response);
+					return fetchData(response);
+				})
+				.then(function (residualData) {
+					console.log("this should be a the data with residual");
+					// delete vlSpec.encoding.color;
+					residualData = residualData.filter(
+						(row) =>
+							row.draw === 1 &&
+							(row.modelcheck_group.startsWith("res") ||
+								row.modelcheck_group.startsWith("data"))
+					);
+					residualData = [...residualData];
+					const model_name = residualData[1].modelcheck_group;
+					var resData = { [model_name]: [] };
+					for (let i = 1; i < residualData.length; i += 2) {
+						resData[model_name].push(residualData[i]);
+					}
+					residualList.push(resData);
+					residualList = [...residualList];
+					console.log("residualList");
+					console.log(residualList);
+					dataChanged = residualData;
+					dataChanged = [...dataChanged];
+					if (vlSpec.encoding.x.field == "modelcheck_group") {
+						vlSpec.encoding.x.scale = vlSpec.encoding.x.scale
+							? vlSpec.encoding.x.scale
+							: { domain: null };
+						vlSpec.encoding.x.scale.domain = [
+							"data",
+							"res| normal| mpg ~ 1| ~1",
+						];
+					} else if (vlSpec.encoding.y.field == "modelcheck_group") {
+						vlSpec.encoding.y.scale = vlSpec.encoding.y.scale
+							? vlSpec.encoding.y.scale
+							: { domain: null };
+						vlSpec.encoding.y.scale.domain = [
+							"data",
+							"res| normal| mpg ~ 1| ~1",
+						];
+					}
+					vlSpec = { ...vlSpec };
 
-				specChanged++;
-			});
+					specChanged++;
+				});
+		}
 
-		
 		console.log(vlSpec);
+	}
+
+	function unshowResidual() {
+		if (typeof vlSpec.encoding.x.scale !== "undefined") {
+			delete vlSpec.encoding.x.scale.domain;
+		} else if (typeof vlSpec.encoding.y.scale !== "undefined") {
+			delete vlSpec.encoding.y.scale.domain;
+		}
+		console.log("unshow residual");
+		console.log(residualList);
+		console.log(dataChanged);
+		dataChanged = dataChanged.filter((row) =>
+			row.modelcheck_group.startsWith("data")
+		);
+		dataChanged = [...dataChanged];
+		console.log(dataChanged);
+		specChanged++;
 	}
 
 	function encodingToData(variable: any, shelfId: any, item: any) {
@@ -863,6 +913,7 @@
 								checked={showPredictionOrResidual ===
 									"prediction"}
 								on:change={onChange}
+								on:click={unshowResidual}
 								type="radio"
 								name="includeExclude"
 								value="prediction"
@@ -887,12 +938,18 @@
 								bind:dataChanged
 								bind:vlSpec
 								bind:modeling
+								bind:showPredictionOrResidual
 							/>
 						{/key}
 					{/if}
 				</Column>
 				<Column style="min-width: 250px; max-width: 250px;">
-					<ModelPanel {models} {addModel} {removeModel} />
+					<ModelPanel
+						{models}
+						{addModel}
+						{removeModel}
+						bind:showPredictionOrResidual
+					/>
 				</Column>
 			</Row>
 		</Grid>

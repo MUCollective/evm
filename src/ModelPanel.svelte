@@ -9,6 +9,7 @@
     export let models: any;
     export let addModel;
     export let removeModel;
+    export let showPredictionOrResidual;
 
     let showAddingModel = false;
     let muSpec = "mpg ~ 1";
@@ -58,6 +59,7 @@
             <button
                 on:click={addModel(muSpec, sigmaSpec, modelType)}
                 on:click={() => (showAddingModel = false)}
+                on:click={showPredictionOrResidual = "prediction"}
             >
                 &#10003;
             </button>

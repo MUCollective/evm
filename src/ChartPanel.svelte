@@ -17,7 +17,7 @@
 
 	console.log(vlSpec);
 
-	let showPredictionOrResidual = "prediction";
+	export let showPredictionOrResidual;
 
 	function onChange(event) {
 		showPredictionOrResidual = event.currentTarget.value;
