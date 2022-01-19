@@ -729,78 +729,46 @@
 
 	function showResidual() {
 		console.log("residual!!!!!!!");
-		if (residualList.length !== 0) {
-			console.log("there are residuals");
-			console.log(models);
-		} else {
-			calculate_residuals(dataChanged)
-				.then(function (response) {
-					console.log("this should be a url for residual");
-					console.log(response);
-					return fetchData(response);
-				})
-				.then(function (residualData) {
-					console.log("this should be a the data with residual");
-					// delete vlSpec.encoding.color;
-					residualData = residualData.filter(
-						(row) =>
-							row.draw === 1 &&
-							(row.modelcheck_group.startsWith("res") ||
-								row.modelcheck_group.startsWith("data"))
-					);
-					residualData = [...residualData];
-					const model_name = residualData[1].modelcheck_group;
-					var resData = { [model_name]: [] };
-					for (let i = 1; i < residualData.length; i += 2) {
-						resData[model_name].push(residualData[i]);
-					}
-					residualList.push(resData);
-					residualList = [...residualList];
-					console.log("residualList");
-					console.log(residualList);
-					dataChanged = residualData;
-					dataChanged = [...dataChanged];
-					if (vlSpec.encoding.x.field == "modelcheck_group") {
-						vlSpec.encoding.x.scale = vlSpec.encoding.x.scale
-							? vlSpec.encoding.x.scale
-							: { domain: null };
-						vlSpec.encoding.x.scale.domain = [
-							"data",
-							"res| normal| mpg ~ 1| ~1",
-						];
-					} else if (vlSpec.encoding.y.field == "modelcheck_group") {
-						vlSpec.encoding.y.scale = vlSpec.encoding.y.scale
-							? vlSpec.encoding.y.scale
-							: { domain: null };
-						vlSpec.encoding.y.scale.domain = [
-							"data",
-							"res| normal| mpg ~ 1| ~1",
-						];
-					}
-					vlSpec = { ...vlSpec };
-
-					specChanged++;
-				});
-		}
+		// if (residualList.length !== 0) {
+		// 	console.log("there are residuals");
+		// 	console.log(models);
+		// } else {
+		calculate_residuals(dataChanged)
+			.then(function (response) {
+				console.log("this should be a url for residual");
+				console.log(response);
+				return fetchData(response);
+			})
+			.then(function (residualData) {
+				console.log("this should be a the data with residual");
+				// delete vlSpec.encoding.color;
+				residualData = residualData.filter(
+					(row) =>
+						row.draw === 1 && row.modelcheck_group.startsWith("res")
+				);
+				residualData = [...residualData];
+				const tempData = deepCopy(dataChanged);
+				dataChanged = residualData;
+				dataChanged = [...dataChanged];
+				specChanged++;
+				return tempData;
+			})
+			.then(function (tempData) {
+				dataChanged = tempData;
+				dataChanged = [...dataChanged];
+				console.log(dataChanged);
+			});
+		// }
 
 		console.log(vlSpec);
 	}
 
 	function unshowResidual() {
-		if (typeof vlSpec.encoding.x.scale !== "undefined") {
-			delete vlSpec.encoding.x.scale.domain;
-		} else if (typeof vlSpec.encoding.y.scale !== "undefined") {
-			delete vlSpec.encoding.y.scale.domain;
-		}
-		console.log("unshow residual");
-		console.log(residualList);
-		console.log(dataChanged);
-		dataChanged = dataChanged.filter((row) =>
-			row.modelcheck_group.startsWith("data")
-		);
-		dataChanged = [...dataChanged];
-		console.log(dataChanged);
-		specChanged++;
+			console.log("unshowResidual");
+			console.log(dataChanged);
+			dataChanged = [...dataChanged];
+			specChanged++;
+		// }
 	}
 
 	function encodingToData(variable: any, shelfId: any, item: any) {
