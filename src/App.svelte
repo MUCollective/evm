@@ -515,6 +515,7 @@
 		ocpu.seturl("//kalealex.ocpu.io/modelcheck/R");
 		var url;
 		console.log("in cal residual", useData);
+		console.log(models);
 		url = await ocpu.rpc("calc_residuals", {
 			df: JSON.stringify(useData),
 			outcome_name: "mpg",
@@ -741,6 +742,7 @@
 			})
 			.then(function (residualData) {
 				console.log("this should be a the data with residual");
+				console.log(residualData);
 				// delete vlSpec.encoding.color;
 				residualData = residualData.filter(
 					(row) =>
@@ -750,7 +752,12 @@
 				const tempData = deepCopy(dataChanged);
 				dataChanged = residualData;
 				dataChanged = [...dataChanged];
+				console.log("this should have only residuals");
+				console.log(dataChanged);
+				console.log(vlSpec.encoding.color);
+				console.log(specChanged);
 				specChanged++;
+				console.log(specChanged);
 				return tempData;
 			})
 			.then(function (tempData) {
