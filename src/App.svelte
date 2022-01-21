@@ -628,9 +628,9 @@
 							);
 							console.log(mergedData);
 							// update dataChanged
-							mergedData = mergedData.filter(
-								(row) => row.draw === 1
-							);
+							// mergedData = mergedData.filter(
+							// 	(row) => row.draw === 1
+							// );
 							mergedData = [...mergedData];
 							dataChanged = deepCopy(mergedData);
 							dataChanged = [...dataChanged];
@@ -688,7 +688,7 @@
 						"this should be a the data with model predictions"
 					);
 					console.log(modelData);
-					modelData = modelData.filter((row) => row.draw === 1);
+					// modelData = modelData.filter((row) => row.draw === 1);
 					modelData = [...modelData];
 					// update dataChanged
 					dataChanged = deepCopy(modelData);
@@ -747,7 +747,7 @@
 				// delete vlSpec.encoding.color;
 				residualData = residualData.filter(
 					(row) =>
-						row.draw === 1 && row.modelcheck_group.startsWith("res")
+						row.modelcheck_group.startsWith("res") //&& row.draw === 1
 				);
 				residualData = [...residualData];
 				// console.log("residual after filter", uniqueModelcheckGroups(residualData));
