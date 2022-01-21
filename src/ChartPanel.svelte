@@ -12,32 +12,75 @@
 	export let modeling: boolean;
 	export let showPredictionOrResidual;
 
-	// process input data
+	// process input data, looking for signs that we have a model to show
 	let dataset = { table: dataChanged };
 	let distinctModelGroups = distinctValues(dataset.table, "modelcheck_group");
-	const distinctDraws = distinctValues(dataset.table, "draw");
-	console.log("modelcheck groups in the chart data", distinctModelGroups);
-
-	// color for modelcheck
-	// add "data" if needed
-	if (!distinctModelGroups.includes("data")) {
-		distinctModelGroups.unshift("data");
+	if (distinctModelGroups.includes("undefined")) { 
+		distinctModelGroups.pop(); // remove "undefined" if needed
 	}
-	// make sure color exists
-	vlSpec.encoding.color = vlSpec.encoding.color
-		? vlSpec.encoding.color
-		: { field: null, type: "nominal" };
-	// make sure scale exists with field domain
-	vlSpec.encoding.color.scale = vlSpec.encoding.color.scale 
-		? vlSpec.encoding.color.scale 
-		: { domain: null };
-	vlSpec.encoding.color.scale.domain = distinctModelGroups;
+	let haveModelToShow = distinctModelGroups.some((elem) => elem.startsWith("normal|") || elem.startsWith("res|"));
+	console.log("modelcheck groups in the chart data", distinctModelGroups);
+	console.log("model to show?", haveModelToShow);
 
-	console.log(vlSpec);
+	// color and offset for modelcheck
+	if (modeling && haveModelToShow) {
+		// add "data" if needed (to maintain consistent colors for model predictions vs residuals)
+		if (!distinctModelGroups.includes("data")) {
+			distinctModelGroups.unshift("data");
+		}
+
+		// make sure color exists and encode modelcheck_group
+		vlSpec.encoding.color = vlSpec.encoding.color
+			? vlSpec.encoding.color
+			: { field: null, type: null };
+		vlSpec.encoding.color.field = "modelcheck_group";
+		vlSpec.encoding.color.type = "nominal";
+
+		// make sure scale exists with field domain set to distinctModelGroups
+		vlSpec.encoding.color.scale = vlSpec.encoding.color.scale 
+			? vlSpec.encoding.color.scale 
+			: { domain: null };
+		vlSpec.encoding.color.scale.domain = distinctModelGroups;
+	
+		// assign offsets for nominal axes, but not for quant axes
+		if (vlSpec.mark == "bar" || vlSpec.mark == "tick") { 
+			if (typeof vlSpec.encoding.x == "undefined" || vlSpec.encoding.x.type == "nominal") {
+				vlSpec.encoding.xOffset = vlSpec.encoding.xOffset
+					? vlSpec.encoding.xOffset
+					: { field: null, type: null };
+				vlSpec.encoding.xOffset.field = "modelcheck_group";
+				vlSpec.encoding.xOffset.type = "nominal";
+			} else if (typeof vlSpec.encoding.y == "undefined" || vlSpec.encoding.y.type == "nominal") { 
+				vlSpec.encoding.yOffset = vlSpec.encoding.yOffset
+					? vlSpec.encoding.yOffset
+					: { field: null, type: null };
+				vlSpec.encoding.yOffset.field = "modelcheck_group";
+				vlSpec.encoding.yOffset.type = "nominal";
+			}
+		}
+		// // assign empty x or y to show modelcheck_group (as an alternative to offsets above)
+		// if (typeof vlSpec.encoding.x == "undefined") {
+		// 	vlSpec.encoding.x = vlSpec.encoding.x
+		// 		? vlSpec.encoding.x
+		// 		: { field: null, type: null };
+		// 	vlSpec.encoding.x.field = "modelcheck_group";
+		// 	vlSpec.encoding.x.type = "nominal";
+		// } else if (typeof vlSpec.encoding.y == "undefined") {
+		// 	vlSpec.encoding.y = vlSpec.encoding.y
+		// 		? vlSpec.encoding.y
+		// 		: { field: null, type: null };
+		// 	vlSpec.encoding.y.field = "modelcheck_group";
+		// 	vlSpec.encoding.y.type = "nominal";
+		// }
+
+		vlSpec = { ...vlSpec };
+	}
+
+	console.log("vega-lite spec", vlSpec);
 
 	// convert vega-lite spec to vega to add HOPs?
 	let vgSpec = vegaLite.compile(vlSpec).spec; 
-	if (modeling) {
+	if (modeling && haveModelToShow) {
 		// make sure signals exist
 		vgSpec.signals = vgSpec.signals
 			? vgSpec.signals
@@ -66,9 +109,11 @@
 				"expr": "datum.draw == sample"
 			}
 		];
+
+		// TODO: set axis limits to account for min and max across draws
 	}
 
-	console.log(vgSpec);
+	console.log("vega spec", vgSpec);
 
 	// function onChange(event) {
 	// 	showPredictionOrResidual = event.currentTarget.value;

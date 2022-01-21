@@ -628,43 +628,41 @@
 							);
 							console.log(mergedData);
 							// update dataChanged
-							// mergedData = mergedData.filter(
-							// 	(row) => row.draw === 1
-							// );
+							// mergedData = mergedData.filter((row) => row.draw === 1);
 							mergedData = [...mergedData];
 							dataChanged = deepCopy(mergedData);
 							dataChanged = [...dataChanged];
 							// update vlSpec
 							// TODO: eventually we need contingencies to deal with xOffset and yOffset
 							// TODO: may need additional logic in case the previous spec still works, and we don't need to update vlSpec
-							console.log("change vlSpec for model");
-							console.log(vlSpec);
-							vlSpec.encoding.color = vlSpec.encoding.color
-								? vlSpec.encoding.color
-								: { field: null, type: "nominal" };
-							vlSpec.encoding.color.field = "modelcheck_group";
+							// console.log("change vlSpec for model");
+							// console.log(vlSpec);
+							// vlSpec.encoding.color = vlSpec.encoding.color
+							// 	? vlSpec.encoding.color
+							// 	: { field: null, type: null };
+							// vlSpec.encoding.color.field = "modelcheck_group";
+							// vlSpec.encoding.color.type = "nominal";
 
-							// quant + nominal
-							if (vlSpec.mark == "bar") {
-								if (vlSpec.encoding.x.type == "nominal") {
-									vlSpec.encoding.xOffset = vlSpec.encoding
-										.xOffset
-										? vlSpec.encoding.xOffset
-										: { field: null };
-									vlSpec.encoding.xOffset.field =
-										"modelcheck_group";
-								} else {
-									vlSpec.encoding.yOffset = vlSpec.encoding
-										.yOffset
-										? vlSpec.encoding.yOffset
-										: { field: null };
-									vlSpec.encoding.yOffset.field =
-										"modelcheck_group";
-								}
-							}
-							vlSpec = { ...vlSpec };
-							console.log("after change");
-							console.log(vlSpec);
+							// // quant + nominal
+							// if (vlSpec.mark == "bar") {
+							// 	if (vlSpec.encoding.x.type == "nominal") {
+							// 		vlSpec.encoding.xOffset = vlSpec.encoding.xOffset
+							// 			? vlSpec.encoding.xOffset
+							// 			: { field: null, type: null };
+							// 		vlSpec.encoding.xOffset.field = "modelcheck_group";
+							// 		vlSpec.encoding.xOffset.type = "nominal";
+							// 	} else {
+							// 		vlSpec.encoding.yOffset = vlSpec.encoding
+							// 			.yOffset
+							// 			? vlSpec.encoding.yOffset
+							// 			: { field: null, type: null };
+							// 		vlSpec.encoding.yOffset.field = "modelcheck_group";
+							// 		vlSpec.encoding.yOffset.type = "nominal";
+							// 	}
+							// }
+							// vlSpec = { ...vlSpec };
+							// console.log("after change");
+							// console.log(vlSpec);
 							specChanged++;
 						})
 						.catch(function (err) {
@@ -695,16 +693,17 @@
 					dataChanged = [...dataChanged];
 					// update vlSpec
 					// TODO: eventually we need contingencies to deal with xOffset and yOffset
-					console.log("change vlSpec for model");
-					console.log(vlSpec);
-					vlSpec.encoding.color = vlSpec.encoding.color
-						? vlSpec.encoding.color
-						: { field: null, type: "nominal" };
-					vlSpec.encoding.color.field = "modelcheck_group";
+					// console.log("change vlSpec for model");
+					// console.log(vlSpec);
+					// vlSpec.encoding.color = vlSpec.encoding.color
+					// 	? vlSpec.encoding.color
+					// 	: { field: null, type: null };
+					// vlSpec.encoding.color.field = "modelcheck_group";
+					// vlSpec.encoding.color.type = "nominal";
 
-					vlSpec = { ...vlSpec };
-					console.log("after change");
-					console.log(vlSpec);
+					// vlSpec = { ...vlSpec };
+					// console.log("after change");
+					// console.log(vlSpec);
 					specChanged++;
 				})
 				.catch(function (err) {
@@ -712,18 +711,20 @@
 				});
 		}
 
-		if (typeof vlSpec.encoding.x == "undefined") {
-			vlSpec.encoding.x = vlSpec.encoding.x
-				? vlSpec.encoding.x
-				: { field: null };
-			vlSpec.encoding.x.field = "modelcheck_group";
-		} else if (typeof vlSpec.encoding.y == "undefined") {
-			vlSpec.encoding.y = vlSpec.encoding.y
-				? vlSpec.encoding.y
-				: { field: null };
-			vlSpec.encoding.y.field = "modelcheck_group";
-		}
-		vlSpec = { ...vlSpec };
+		// if (typeof vlSpec.encoding.x == "undefined") {
+		// 	vlSpec.encoding.x = vlSpec.encoding.x
+		// 		? vlSpec.encoding.x
+		// 		: { field: null, type: null };
+		// 	vlSpec.encoding.x.field = "modelcheck_group";
+		// 	vlSpec.encoding.x.type = "nominal";
+		// } else if (typeof vlSpec.encoding.y == "undefined") {
+		// 	vlSpec.encoding.y = vlSpec.encoding.y
+		// 		? vlSpec.encoding.y
+		// 		: { field: null, type: null };
+		// 	vlSpec.encoding.y.field = "modelcheck_group";
+		// 	vlSpec.encoding.y.type = "nominal";
+		// }
+		// vlSpec = { ...vlSpec };
 		specChanged++;
 		console.log(dataChanged);
 	}
@@ -755,8 +756,8 @@
 				dataChanged = residualData;
 				dataChanged = [...dataChanged];
 				// console.log("residual after reassignment to dataChanged", uniqueModelcheckGroups(dataChanged));
-				// console.log("this should have only residuals");
-				// console.log(dataChanged);
+				console.log("this should have only residuals");
+				console.log(dataChanged);
 				// console.log(vlSpec.encoding.color);
 				// console.log(specChanged);
 				specChanged++;
