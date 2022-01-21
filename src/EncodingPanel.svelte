@@ -113,7 +113,7 @@
         <option value="geoshape">geoshape</option>
     </select>
 
-    <h3>Aggregation</h3>
+    <!-- <h3>Aggregation</h3>
     <select
         bind:value={aggregateX}
         on:change={changeAggregation(aggregateX, "x-drop")}
@@ -133,7 +133,7 @@
         <option value="count">count</option>
         <option value="sum">sum</option>
         <option value="mean">mean</option>
-    </select>
+    </select> -->
 
     <h3>Filter</h3>
     <div class="add-and-clear" style="display: inline-block;">

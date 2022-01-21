@@ -86,11 +86,11 @@
     <!-- Model bar goes here -->
     <br />
     <div class="model-suggestions">
-        <div class="button-wrap">
+        <!-- <div class="button-wrap">
             <Button on:click={() => (showModels = true)}
                 >Add model for current visualization.</Button
             >
-        </div>
+        </div> -->
         {#if showModels == true}
             <div class="suggestions" />
             placeholder ...
@@ -102,13 +102,13 @@
             </div>
         {/if}
         <div class="button-wrap">
-            <Button>Suggest an adjacent model y ~ x + w</Button>
+            <Button>Suggest a visualization-adjacent model to check</Button>
         </div>
-        <div class="button-wrap">
+        <!-- <div class="button-wrap">
             <Button>Is this just noise?</Button>
-        </div>
+        </div> -->
     </div>
-    <div class="discrepancies">
+    <!-- <div class="discrepancies">
         <h4>Show me discrepancies</h4>
         <div class="button-wrap">
             <Button>Mismatched distributions</Button>
@@ -122,7 +122,7 @@
         <div class="button-wrap">
             <Button>Out of range predicitons</Button>
         </div>
-    </div>
+    </div> -->
 </div>
 
 <style>

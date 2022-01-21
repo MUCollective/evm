@@ -11,6 +11,22 @@
 
 	let dataset = { table: dataChanged };
 	// let dataset = { table: dataTrans };
+	let distinctModelGroups = uniqueModelcheckGroups(dataset.table);
+	console.log("modelcheck groups in the chart data", distinctModelGroups);
+
+	// add "data" if needed
+	if (!distinctModelGroups.includes("data")) {
+		distinctModelGroups.unshift("data");
+	}
+	// make sure color exists
+	vlSpec.encoding.color = vlSpec.encoding.color
+		? vlSpec.encoding.color
+		: { field: null, type: "nominal" };
+	// make sure scale exists with field domain
+	vlSpec.encoding.color.scale = vlSpec.encoding.color.scale 
+		? vlSpec.encoding.color.scale 
+		: { domain: null };
+	vlSpec.encoding.color.scale.domain = distinctModelGroups;
 
 	console.log(vlSpec);
 
@@ -20,6 +36,19 @@
 	// 	showPredictionOrResidual = event.currentTarget.value;
 	// 	console.log(showPredictionOrResidual);
 	// }
+	function uniqueModelcheckGroups(dataObj) {
+		var lookup = {};
+		var result = [];
+		for (var item, i = 0; item = dataObj[i++];) {
+			var name = item.modelcheck_group;
+
+			if (!(name in lookup)) {
+				lookup[name] = 1;
+				result.push(name);
+			}
+		}
+		return result;
+	}
 </script>
 
 <!-- data panel -->

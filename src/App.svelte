@@ -641,7 +641,7 @@
 							console.log(vlSpec);
 							vlSpec.encoding.color = vlSpec.encoding.color
 								? vlSpec.encoding.color
-								: { field: null };
+								: { field: null, type: "nominal" };
 							vlSpec.encoding.color.field = "modelcheck_group";
 
 							// quant + nominal
@@ -699,7 +699,7 @@
 					console.log(vlSpec);
 					vlSpec.encoding.color = vlSpec.encoding.color
 						? vlSpec.encoding.color
-						: { field: null };
+						: { field: null, type: "nominal" };
 					vlSpec.encoding.color.field = "modelcheck_group";
 
 					vlSpec = { ...vlSpec };
@@ -743,26 +743,31 @@
 			.then(function (residualData) {
 				console.log("this should be a the data with residual");
 				console.log(residualData);
+				// console.log("residual output", uniqueModelcheckGroups(residualData));
 				// delete vlSpec.encoding.color;
 				residualData = residualData.filter(
 					(row) =>
 						row.draw === 1 && row.modelcheck_group.startsWith("res")
 				);
 				residualData = [...residualData];
+				// console.log("residual after filter", uniqueModelcheckGroups(residualData));
 				const tempData = deepCopy(dataChanged);
 				dataChanged = residualData;
 				dataChanged = [...dataChanged];
-				console.log("this should have only residuals");
-				console.log(dataChanged);
-				console.log(vlSpec.encoding.color);
-				console.log(specChanged);
+				// console.log("residual after reassignment to dataChanged", uniqueModelcheckGroups(dataChanged));
+				// console.log("this should have only residuals");
+				// console.log(dataChanged);
+				// console.log(vlSpec.encoding.color);
+				// console.log(specChanged);
 				specChanged++;
-				console.log(specChanged);
+				// console.log(specChanged);
+				// console.log("data object in vlSpec", vlSpec.data);
 				return tempData;
 			})
 			.then(function (tempData) {
 				dataChanged = tempData;
 				dataChanged = [...dataChanged];
+				// console.log("restored dataChanged from tempData", uniqueModelcheckGroups(dataChanged));
 				console.log(dataChanged);
 			});
 		// }
@@ -832,6 +837,20 @@
 		}
 		return outObject;
 	}
+
+	// function uniqueModelcheckGroups(dataObj) {
+	// 	var lookup = {};
+	// 	var result = [];
+	// 	for (var item, i = 0; item = dataObj[i++];) {
+	// 		var name = item.modelcheck_group;
+
+	// 		if (!(name in lookup)) {
+	// 			lookup[name] = 1;
+	// 			result.push(name);
+	// 		}
+	// 	}
+	// 	return result;
+	// }
 </script>
 
 <svelte:head>
