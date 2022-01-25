@@ -40,22 +40,20 @@
 	export let filter: any;
 	export let transformation: any;
 	$: specChanged = 0;
+	$: showLoadingIcon = false;
 	export let dataTransformed: any;
 	export let models: any;
 	// export let showModel: boolean;
 	// showModel = false;
 	let prevSpec: VisualizationSpec = vlSpec;
-
 	export let residualList: any;
 	console.log("PREV prevSpec", prevSpec);
-
 	export let showPredictionOrResidual = "prediction";
 
 	function onChange(event) {
 		showPredictionOrResidual = event.currentTarget.value;
 		console.log(showPredictionOrResidual);
 	}
-
 	onMount(async () => {
 		// load data
 		data = await d3.json("./data/cars.json");
@@ -480,6 +478,7 @@
 	}
 	// call model on server
 	async function callModel(mu, sigma = "~ 1", useData, model = "normal") {
+		showLoadingIcon = true;
 		ocpu.seturl("//kalealex.ocpu.io/modelcheck/R");
 		var url;
 		if (model == "normal") {
@@ -507,11 +506,10 @@
 				data: JSON.stringify(useData),
 			});
 		}
-
 		return url.split("\n")[0];
 	}
-
 	async function calculate_residuals(useData) {
+		showLoadingIcon = true;
 		ocpu.seturl("//kalealex.ocpu.io/modelcheck/R");
 		var url;
 		console.log("in cal residual", useData);
@@ -522,7 +520,6 @@
 		});
 		return url.split("\n")[0];
 	}
-
 	// merge dataframes containing model results on server
 	async function mergeModels(oldData, newData) {
 		ocpu.seturl("//kalealex.ocpu.io/modelcheck/R");
@@ -532,7 +529,6 @@
 		});
 		return url.split("\n")[0];
 	}
-
 	// fetch data from open cpu given a url
 	async function fetchData(url) {
 		const newData = await fetch(
@@ -549,7 +545,6 @@
 			});
 		return newData;
 	}
-
 	// add model to the vis canvas
 	async function addModel(mu, sigma, model = "normal") {
 		showPredictionOrResidual = "prediction";
@@ -600,12 +595,10 @@
 				delete obj["modelcheck_group"];
 				return obj;
 			});
-			// console.log("does our filtering strategy work?");
-			// console.log(dataOnly);
-
 			// call the new model, and merge its results with dataChanged
 			callModel(mu, sigma, dataOnly, model)
 				.then(function (response) {
+					showLoadingIcon = true;
 					console.log("this should be a url");
 					console.log(response);
 					return fetchData(response);
@@ -642,7 +635,6 @@
 							// 	: { field: null, type: null };
 							// vlSpec.encoding.color.field = "modelcheck_group";
 							// vlSpec.encoding.color.type = "nominal";
-
 							// // quant + nominal
 							// if (vlSpec.mark == "bar") {
 							// 	if (vlSpec.encoding.x.type == "nominal") {
@@ -663,6 +655,7 @@
 							// vlSpec = { ...vlSpec };
 							// console.log("after change");
 							// console.log(vlSpec);
+							showLoadingIcon = false;
 							specChanged++;
 						})
 						.catch(function (err) {
@@ -677,6 +670,7 @@
 			// call the new model
 			callModel(mu, sigma, dataChanged, model)
 				.then(function (response) {
+					showLoadingIcon = true;
 					console.log("this should be a url");
 					console.log(response);
 					return fetchData(response);
@@ -700,17 +694,16 @@
 					// 	: { field: null, type: null };
 					// vlSpec.encoding.color.field = "modelcheck_group";
 					// vlSpec.encoding.color.type = "nominal";
-
 					// vlSpec = { ...vlSpec };
 					// console.log("after change");
 					// console.log(vlSpec);
+					showLoadingIcon = false;
 					specChanged++;
 				})
 				.catch(function (err) {
 					console.log(err);
 				});
 		}
-
 		// if (typeof vlSpec.encoding.x == "undefined") {
 		// 	vlSpec.encoding.x = vlSpec.encoding.x
 		// 		? vlSpec.encoding.x
@@ -725,10 +718,10 @@
 		// 	vlSpec.encoding.y.type = "nominal";
 		// }
 		// vlSpec = { ...vlSpec };
+		// showLoadingIcon = false;
 		specChanged++;
-		console.log(dataChanged);
+		// console.log(dataChanged);
 	}
-
 	function showResidual() {
 		console.log("residual!!!!!!!");
 		// if (residualList.length !== 0) {
@@ -737,6 +730,7 @@
 		// } else {
 		calculate_residuals(dataChanged)
 			.then(function (response) {
+				showLoadingIcon = true;
 				console.log("this should be a url for residual");
 				console.log(response);
 				return fetchData(response);
@@ -747,8 +741,7 @@
 				// console.log("residual output", uniqueModelcheckGroups(residualData));
 				// delete vlSpec.encoding.color;
 				residualData = residualData.filter(
-					(row) =>
-						row.modelcheck_group.startsWith("res") //&& row.draw === 1
+					(row) => row.modelcheck_group.startsWith("res") //&& row.draw === 1
 				);
 				residualData = [...residualData];
 				// console.log("residual after filter", uniqueModelcheckGroups(residualData));
@@ -760,6 +753,7 @@
 				console.log(dataChanged);
 				// console.log(vlSpec.encoding.color);
 				// console.log(specChanged);
+				showLoadingIcon = false;
 				specChanged++;
 				// console.log(specChanged);
 				// console.log("data object in vlSpec", vlSpec.data);
@@ -772,18 +766,16 @@
 				console.log(dataChanged);
 			});
 		// }
-
 		console.log(vlSpec);
 	}
-
 	function unshowResidual() {
-			console.log("unshowResidual");
-			console.log(dataChanged);
-			dataChanged = [...dataChanged];
-			specChanged++;
+		console.log("unshowResidual");
+		console.log(dataChanged);
+		dataChanged = [...dataChanged];
+		showLoadingIcon = false;
+		specChanged++;
 		// }
 	}
-
 	function encodingToData(variable: any, shelfId: any, item: any) {
 		console.log("variable", variable, "shelfId", shelfId, "item", item);
 		console.log("before any changes", vlSpec.encoding);
@@ -820,10 +812,8 @@
 		vlSpec = { ...vlSpec };
 		specChanged++;
 	}
-
 	// filter, transform, model
 	function orderOfOperation() {}
-
 	function deepCopy(inObject) {
 		let outObject, value, key;
 		if (typeof inObject !== "object" || inObject === null) {
@@ -838,13 +828,11 @@
 		}
 		return outObject;
 	}
-
 	// function uniqueModelcheckGroups(dataObj) {
 	// 	var lookup = {};
 	// 	var result = [];
 	// 	for (var item, i = 0; item = dataObj[i++];) {
 	// 		var name = item.modelcheck_group;
-
 	// 		if (!(name in lookup)) {
 	// 			lookup[name] = 1;
 	// 			result.push(name);
@@ -928,14 +916,20 @@
 					{/if}
 
 					{#if Object.keys(vlSpec.encoding).length != 0}
-						{#key specChanged}
-							<ChartPanel
-								bind:dataChanged
-								bind:vlSpec
-								bind:modeling
-								bind:showPredictionOrResidual
-							/>
-						{/key}
+						{#if showLoadingIcon == true}
+						<h3 style="margin-top: 0;">Visualization Canvas</h3>
+						<p style="font-style: italic;">updating visualization...</p>
+							
+						{:else}
+							{#key specChanged}
+								<ChartPanel
+									bind:dataChanged
+									bind:vlSpec
+									bind:modeling
+									bind:showPredictionOrResidual
+								/>
+							{/key}
+						{/if}
 					{/if}
 				</Column>
 				<Column style="min-width: 250px; max-width: 250px;">
