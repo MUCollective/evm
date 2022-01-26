@@ -763,7 +763,7 @@
 				dataChanged = tempData;
 				dataChanged = [...dataChanged];
 				// console.log("restored dataChanged from tempData", uniqueModelcheckGroups(dataChanged));
-				console.log(dataChanged);
+				// console.log(dataChanged);
 			});
 		// }
 		console.log(vlSpec);
