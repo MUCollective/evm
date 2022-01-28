@@ -927,6 +927,7 @@
 									bind:vlSpec
 									bind:modeling
 									bind:showPredictionOrResidual
+									bind:models
 								/>
 							{/key}
 						{/if}
