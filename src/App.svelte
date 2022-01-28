@@ -687,16 +687,6 @@
 					dataChanged = [...dataChanged];
 					// update vlSpec
 					// TODO: eventually we need contingencies to deal with xOffset and yOffset
-					// console.log("change vlSpec for model");
-					// console.log(vlSpec);
-					// vlSpec.encoding.color = vlSpec.encoding.color
-					// 	? vlSpec.encoding.color
-					// 	: { field: null, type: null };
-					// vlSpec.encoding.color.field = "modelcheck_group";
-					// vlSpec.encoding.color.type = "nominal";
-					// vlSpec = { ...vlSpec };
-					// console.log("after change");
-					// console.log(vlSpec);
 					showLoadingIcon = false;
 					specChanged++;
 				})
@@ -704,21 +694,6 @@
 					console.log(err);
 				});
 		}
-		// if (typeof vlSpec.encoding.x == "undefined") {
-		// 	vlSpec.encoding.x = vlSpec.encoding.x
-		// 		? vlSpec.encoding.x
-		// 		: { field: null, type: null };
-		// 	vlSpec.encoding.x.field = "modelcheck_group";
-		// 	vlSpec.encoding.x.type = "nominal";
-		// } else if (typeof vlSpec.encoding.y == "undefined") {
-		// 	vlSpec.encoding.y = vlSpec.encoding.y
-		// 		? vlSpec.encoding.y
-		// 		: { field: null, type: null };
-		// 	vlSpec.encoding.y.field = "modelcheck_group";
-		// 	vlSpec.encoding.y.type = "nominal";
-		// }
-		// vlSpec = { ...vlSpec };
-		// showLoadingIcon = false;
 		specChanged++;
 		// console.log(dataChanged);
 	}
@@ -917,10 +892,10 @@
 
 					{#if Object.keys(vlSpec.encoding).length != 0}
 						{#if showLoadingIcon == true}
-						<h3 style="margin-top: 0;">Visualization Canvas</h3>
+						<!-- <h3 style="margin-top: 0;">Visualization Canvas</h3> -->
 						<p style="font-style: italic;">updating visualization...</p>
-							
-						{:else}
+						{/if}
+						
 							{#key specChanged}
 								<ChartPanel
 									bind:dataChanged
@@ -930,7 +905,7 @@
 									bind:models
 								/>
 							{/key}
-						{/if}
+						
 					{/if}
 				</Column>
 				<Column style="min-width: 250px; max-width: 250px;">
