@@ -153,54 +153,7 @@
 			expr: "datum.draw == sample",
 		});
 		// add faceting
-		// vgSpec.facet = {column : {field: "modelcheck_group", type: "nominal"}}
-		// vgSpec.scales = [];
-		// vgSpec.scales.push({
-		// 		name: "yscale",
-		// 		type: "band",
-		// 		domain: { data: "table", field: "modelcheck_group" },
-		// 		range: [0, 250]
-		// 	});
-		// vgSpec.scales = [
-		// 	{
-		// 		name: "yscale",
-		// 		type: "band",
-		// 		domain: { data: "table", field: "modelcheck_group" },
-		// 		range: "height"
-		// 	},
-		// 	{
-		// 		name: "xscale",
-		// 		type: "linear",
-		// 		domain: { data: "table", field: "value" },
-		// 		range: "width"
-		// 	},
-		// 	{
-		// 		name: "color",
-		// 		type: "ordinal",
-		// 		domain: { data: "table", field: "modelcheck_group" },
-		// 		range: {scheme: "categoty20"}
-		// 	}
-		// ];
-		// vgSpec.marks.type = "group";
-		// const facet = {
-		// 	data: vgSpec.data[0],
-		// 	name: "facet",
-		// 	groupby: "modelcheck_group",
-		// };
-		// vgSpec.marks.from = facet;
-		// const enter = { y: { scale: "yscale" }, field: "data: vgSpec.data[0]" };
-		// vgSpec.marks.encode = enter;
-		// vgSpec.marks.signals = [
-		// 	{ name: "height", update: "bandwidth('yscale')" },
-		// ];
-		// vgSpec.marks.scales = [
-		// 	{
-		// 		name: "pos",
-		// 		type: "band",
-		// 		range: "height",
-		// 		domain: { data: "facet", field: "modelcheck_group" },
-		// 	},
-		// ];
+		
 
 		console.log("vgSpec.data", vgSpec.data);
 		console.log("vgSpec", vgSpec);
