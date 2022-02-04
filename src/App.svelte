@@ -4,15 +4,16 @@
 	import { onMount } from "svelte";
 	import * as d3 from "d3";
 	import type { VisualizationSpec } from "vega-embed";
-	export let counter: number = 0;
 	// app components
 	import Header from "./Header.svelte";
 	import DataPanel from "./DataPanel.svelte";
 	import ChartPanel from "./ChartPanel.svelte";
 	import EncodingPanel from "./EncodingPanel.svelte";
 	import ModelPanel from "./ModelPanel.svelte";
+	import SaveOutput from "./SaveOutput.svelte";
 	import { writable, get } from "svelte/store";
 	import type { forEach } from "vega-lite/build/src/encoding";
+
 	// props
 	export let name: string;
 	export let mounted: boolean;
@@ -815,6 +816,24 @@
 	// 	}
 	// 	return result;
 	// }
+
+	function saveFile(fileName) {
+        // var a = document.createElement("a");
+        // a.href = file;
+        // a.setAttribute("download", fileName);
+        // a.click();
+        console.log("what????");
+        var output = [];
+        output["data"] = JSON.stringify(dataChanged);
+        output["spec"] = JSON.stringify(vlSpec);
+        console.log(output);
+        // var bb = new Blob(output, { type: 'text/plain' });
+        // var a = document.createElement('a');
+        // a.download = fileName + '.json';
+        // a.href = window.URL.createObjectURL(bb);
+        // a.textContent = 'Download ready';
+        // a.click(); 
+    }
 </script>
 
 <svelte:head>
@@ -892,22 +911,26 @@
 
 					{#if Object.keys(vlSpec.encoding).length != 0}
 						{#if showLoadingIcon == true}
-						<!-- <h3 style="margin-top: 0;">Visualization Canvas</h3> -->
-						<p style="font-style: italic;">updating visualization...</p>
+							<!-- <h3 style="margin-top: 0;">Visualization Canvas</h3> -->
+							<p style="font-style: italic;">
+								updating visualization...
+							</p>
 						{/if}
-						
-							{#key specChanged}
-								<ChartPanel
-									bind:dataChanged
-									bind:vlSpec
-									bind:modeling
-									bind:showPredictionOrResidual
-									bind:models
-								/>
-							{/key}
-						
+
+						{#key specChanged} 
+							<ChartPanel
+								bind:dataChanged
+								bind:vlSpec
+								bind:modeling
+								bind:showPredictionOrResidual
+								bind:models
+							/>
+						{/key}
 					{/if}
 				</Column>
+				<!-- <div><button>save</button></div> -->
+				<!-- <SaveOutput bind:dataChanged bind:vlSpec/> -->
+				<!-- <button on:click={saveFile("data_and_spec")}></button> -->
 				<Column style="min-width: 250px; max-width: 250px;">
 					<ModelPanel
 						{models}

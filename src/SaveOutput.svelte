@@ -13,6 +13,7 @@
         var output = [];
         output["data"] = JSON.stringify(dataChanged);
         output["spec"] = JSON.stringify(vlSpec);
+        console.log(output);
         // var bb = new Blob(output, { type: 'text/plain' });
         // var a = document.createElement('a');
         // a.download = fileName + '.json';
@@ -20,6 +21,8 @@
         // a.textContent = 'Download ready';
         // a.click(); 
     }
+
+    console.log(typeof downloadFile);
 </script>
 
 <!-- data panel -->

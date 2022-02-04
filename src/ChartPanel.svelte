@@ -108,13 +108,13 @@
 		if (typeof vlSpec.encoding.x != "undefined") {
 			vlSpec.encoding.x.scale = vlSpec.encoding.x.scale
 				? vlSpec.encoding.x.scale
-				: { domain: null};
+				: { domain: null };
 			vlSpec.encoding.x.scale.domain = [minX, maxX];
 		}
 		if (typeof vlSpec.encoding.y != "undefined") {
 			vlSpec.encoding.y.scale = vlSpec.encoding.y.scale
 				? vlSpec.encoding.y.scale
-				: { domain: null};
+				: { domain: null };
 			vlSpec.encoding.y.scale.domain = [minY, maxY];
 		}
 
@@ -124,8 +124,10 @@
 	console.log("vega-lite spec", vlSpec);
 
 	// convert vega-lite spec to vega to add HOPs?
-	let vgSpec = vegaLite.compile(vlSpec).spec;
+	console.log("vegaLite.compile(vlSpec)", vegaLite.compile(vlSpec));
+
 	console.log("vgSpec vegaLite.compile(vlSpec).spec");
+	let vgSpec = vegaLite.compile(vlSpec).spec;
 	console.log(vgSpec);
 	if (modeling && haveModelToShow) {
 		// make sure signals exist
@@ -141,7 +143,6 @@
 				},
 			],
 		});
-		console.log("vgSpec.signals", vgSpec.signals);
 		// make sure transform exists
 		vgSpec.data[0].transform = vgSpec.data[0].transform
 			? vgSpec.data[0].transform
@@ -151,8 +152,58 @@
 			type: "filter",
 			expr: "datum.draw == sample",
 		});
+		// add faceting
+		// vgSpec.facet = {column : {field: "modelcheck_group", type: "nominal"}}
+		// vgSpec.scales = [];
+		// vgSpec.scales.push({
+		// 		name: "yscale",
+		// 		type: "band",
+		// 		domain: { data: "table", field: "modelcheck_group" },
+		// 		range: [0, 250]
+		// 	});
+		// vgSpec.scales = [
+		// 	{
+		// 		name: "yscale",
+		// 		type: "band",
+		// 		domain: { data: "table", field: "modelcheck_group" },
+		// 		range: "height"
+		// 	},
+		// 	{
+		// 		name: "xscale",
+		// 		type: "linear",
+		// 		domain: { data: "table", field: "value" },
+		// 		range: "width"
+		// 	},
+		// 	{
+		// 		name: "color",
+		// 		type: "ordinal",
+		// 		domain: { data: "table", field: "modelcheck_group" },
+		// 		range: {scheme: "categoty20"}
+		// 	}
+		// ];
+		// vgSpec.marks.type = "group";
+		// const facet = {
+		// 	data: vgSpec.data[0],
+		// 	name: "facet",
+		// 	groupby: "modelcheck_group",
+		// };
+		// vgSpec.marks.from = facet;
+		// const enter = { y: { scale: "yscale" }, field: "data: vgSpec.data[0]" };
+		// vgSpec.marks.encode = enter;
+		// vgSpec.marks.signals = [
+		// 	{ name: "height", update: "bandwidth('yscale')" },
+		// ];
+		// vgSpec.marks.scales = [
+		// 	{
+		// 		name: "pos",
+		// 		type: "band",
+		// 		range: "height",
+		// 		domain: { data: "facet", field: "modelcheck_group" },
+		// 	},
+		// ];
 
-		// TODO: set axis limits to account for min and max across draws
+		console.log("vgSpec.data", vgSpec.data);
+		console.log("vgSpec", vgSpec);
 	}
 
 	// function onChange(event) {
