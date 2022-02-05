@@ -55,6 +55,7 @@
 		showPredictionOrResidual = event.currentTarget.value;
 		console.log(showPredictionOrResidual);
 	}
+
 	onMount(async () => {
 		// load data
 		data = await d3.json("./data/cars.json");
@@ -79,10 +80,12 @@
 			"calculateEstimatesPerStudy calculateEstimatesPerStudy calculateEstimatesPerStudy"
 		);
 	});
+
 	function handleDndConsider(shelfId: any, e: any) {
 		const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
 		dndState[shelfIdx].items = e.detail.items;
 	}
+
 	function handleDndFinalize(shelfId: any, e: any) {
 		if (e.srcElement.id != "variables") {
 			const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
@@ -118,25 +121,39 @@
 			dndState = [...dndState];
 			prevSpec = deepCopy(vlSpec);
 			if (e.detail.items.length != 0) {
-				var varSample = data[0][varName];
-				console.log("varSample", varSample);
-				console.log(data[0]);
-				console.log(varName, data[0][varName]);
-				var varType;
-				if (typeof varSample == "number") {
+				// var varSample = data[0][varName];
+				// console.log("varSample", varSample);
+				// console.log(data[0]);
+				// console.log(varName, data[0][varName]);
+				// var varType;
+				// if (typeof varSample == "number") {
+				// 	varType = "quantitative";
+				// } else if (typeof varSample == "string") {
+				// 	varType = "nominal";
+				// }
+				var varType, 
+					varValues = data.map((row) => row[varName]),
+					varUnique = [... new Set(varValues)];
+				console.log(varName);
+				console.log("varUnique", varUnique);
+				if (typeof varUnique[0] == "number" && varUnique.length > 9) {
 					varType = "quantitative";
-				} else if (typeof varSample == "string") {
+				} else if (typeof varUnique[0] == "number") {
+					varType = "ordinal";
+				} else {
 					varType = "nominal";
 				}
+
 				const tempEncoding = {
-					field: e.detail.items[0].name,
+					field: varName,
 					type: varType,
 				};
-				if (varType == "nominal") {
-					tempEncoding.aggregate = "count";
-					vlSpec.mark = "bar";
-				}
+				// if (varType == "nominal") {
+				// 	tempEncoding.aggregate = "count";
+				// 	vlSpec.mark = "bar";
+				// }
 				console.log(tempEncoding);
+
 				if (shelfId == "x-drop") {
 					vlSpec.encoding.x = tempEncoding;
 				}
@@ -152,26 +169,48 @@
 					console.log("facet", vlSpec);
 				}
 			}
-			// continuous x continuous scatter plot
+			// determine marks for bivariate charts
 			if (vlSpec.encoding.x && vlSpec.encoding.y) {
-				if (
-					vlSpec.encoding.x.type == vlSpec.encoding.y.type &&
-					vlSpec.encoding.x.type == "quantitative"
-				) {
+
+				if (vlSpec.encoding.x.type == vlSpec.encoding.y.type) {
+					// case scatterplot
 					vlSpec.mark = "point";
+				} else if (vlSpec.encoding.x.type == "quantitative" && (vlSpec.encoding.y.type == "nominal" || vlSpec.encoding.y.type == "ordinal")) {
+					// case strips along x-axis
+					vlSpec.mark = { type: "tick", orient: "vertical" };
+				} else if (vlSpec.encoding.y.type == "quantitative" && (vlSpec.encoding.x.type == "nominal" || vlSpec.encoding.x.type == "ordinal")) {
+					// case strips along x-axis
+					vlSpec.mark = { type: "tick", orient: "horizontal" };
 				}
+			// determine marks for univariate charts
+			} else if ((vlSpec.encoding.x || vlSpec.encoding.y) && !(vlSpec.encoding.x && vlSpec.encoding.y)) {
+				if (vlSpec.encoding.x && (vlSpec.encoding.x.type == "nominal" || vlSpec.encoding.x.type == "ordinal")) {
+					// case bars along x-axis
+					vlSpec.mark = { type: "bar", orient: "vertical" };
+					vlSpec.encoding.y = { field: varName,  aggregate: "count"};		
+				} else if (vlSpec.encoding.y && (vlSpec.encoding.y.type == "nominal" || vlSpec.encoding.y.type == "ordinal")) {
+					// case bars along y-axis
+					vlSpec.mark = { type: "bar", orient: "horizontal" };
+					vlSpec.encoding.x = { field: varName,  aggregate: "count"};	
+				}
+			} else {
+				// remove encodings
+				delete vlSpec.encoding.x
+				delete vlSpec.encoding.y
 			}
 			vlSpec = { ...vlSpec };
 			specChanged++;
 			console.log("vlspec:", vlSpec);
 		}
 	}
+
 	function changeMark(selected: any) {
 		vlSpec.mark = selected;
 		vlSpec = { ...vlSpec };
 		specChanged++;
 		console.log("CHANGING MARK,", selected, vlSpec);
 	}
+
 	function changeAggregation(aggr: any, shelfId: any) {
 		if (shelfId == "x-drop" && typeof vlSpec.encoding.x != "undefined") {
 			if (aggr == "none") {
@@ -238,6 +277,7 @@
 		vlSpec = { ...vlSpec };
 		specChanged++;
 	}
+
 	// var filterCount = 0;
 	function filterData(
 		varToFilter,
@@ -272,6 +312,7 @@
 		console.log(dndState);
 		specChanged++;
 	}
+
 	function filterHelper(
 		varToFilter,
 		includeOrExclude,
@@ -336,6 +377,7 @@
 		dataChanged = [...dataChanged];
 		console.log(dataChanged);
 	}
+
 	function removeFilter(index, clearAll = false) {
 		dataChanged = data;
 		dataChanged = [...dataChanged];
@@ -394,6 +436,7 @@
 		}
 		specChanged++;
 	}
+
 	function transformData(transVar, transform) {
 		dataTrans = dataChanged;
 		dataTrans = [...dataTrans];
@@ -409,6 +452,7 @@
 		});
 		specChanged++;
 	}
+
 	function transformHelper(variable, t) {
 		console.log("transformHelper");
 		console.log(dataTrans[0]);
@@ -432,10 +476,12 @@
 		dataTrans = [...dataTrans];
 		dataChanged = [...dataTrans];
 	}
+
 	function removeTrans(index, clearAll = false) {
 		if (clearAll) {
 		}
 	}
+
 	function removeModel(index, removeAll = false) {
 		var modelTemp;
 		if (removeAll) {
@@ -477,6 +523,7 @@
 		models = [...modelTemp];
 		// showModel = false;
 	}
+
 	// call model on server
 	async function callModel(mu, sigma = "~ 1", useData, model = "normal") {
 		showLoadingIcon = true;
@@ -509,6 +556,7 @@
 		}
 		return url.split("\n")[0];
 	}
+
 	async function calculate_residuals(useData) {
 		showLoadingIcon = true;
 		ocpu.seturl("//kalealex.ocpu.io/modelcheck/R");
@@ -521,6 +569,7 @@
 		});
 		return url.split("\n")[0];
 	}
+
 	// merge dataframes containing model results on server
 	async function mergeModels(oldData, newData) {
 		ocpu.seturl("//kalealex.ocpu.io/modelcheck/R");
@@ -530,6 +579,7 @@
 		});
 		return url.split("\n")[0];
 	}
+
 	// fetch data from open cpu given a url
 	async function fetchData(url) {
 		const newData = await fetch(
@@ -546,6 +596,7 @@
 			});
 		return newData;
 	}
+
 	// add model to the vis canvas
 	async function addModel(mu, sigma, model = "normal") {
 		showPredictionOrResidual = "prediction";
@@ -698,6 +749,7 @@
 		specChanged++;
 		// console.log(dataChanged);
 	}
+
 	function showResidual() {
 		console.log("residual!!!!!!!");
 		// if (residualList.length !== 0) {
@@ -744,6 +796,7 @@
 		// }
 		console.log(vlSpec);
 	}
+
 	function unshowResidual() {
 		console.log("unshowResidual");
 		console.log(dataChanged);
@@ -752,6 +805,7 @@
 		specChanged++;
 		// }
 	}
+
 	function encodingToData(variable: any, shelfId: any, item: any) {
 		console.log("variable", variable, "shelfId", shelfId, "item", item);
 		console.log("before any changes", vlSpec.encoding);
@@ -771,14 +825,20 @@
 		console.log("now?????", dndState[shelfIdx]);
 		console.log(dndState);
 		dndState = [...dndState];
-		if (shelfId == "x-drop" || shelfId == "y-drop") {
-			if (shelfId == "x-drop") {
-				delete vlSpec.encoding.x;
-			} else {
-				delete vlSpec.encoding.y;
+		if (shelfId == "x-drop") {
+			delete vlSpec.encoding.x;
+			if (vlSpec.encoding.y && vlSpec.encoding.y.aggregate) {
+				delete vlSpec.encoding.y; // clear aggregation for bar chart
+			}
+			vlSpec.mark = "tick";
+		} else if (shelfId == "y-drop") {
+			delete vlSpec.encoding.y;
+			if (vlSpec.encoding.x && vlSpec.encoding.x.aggregate) {
+				delete vlSpec.encoding.x; // clear aggregation for bar chart
 			}
 			vlSpec.mark = "tick";
 		}
+		
 		if (shelfId == "row-drop") {
 			delete vlSpec.encoding.row;
 		}
@@ -788,8 +848,10 @@
 		vlSpec = { ...vlSpec };
 		specChanged++;
 	}
+
 	// filter, transform, model
-	function orderOfOperation() {}
+	// function orderOfOperation() {}
+
 	function deepCopy(inObject) {
 		let outObject, value, key;
 		if (typeof inObject !== "object" || inObject === null) {
@@ -817,23 +879,23 @@
 	// 	return result;
 	// }
 
-	function saveFile(fileName) {
-        // var a = document.createElement("a");
-        // a.href = file;
-        // a.setAttribute("download", fileName);
-        // a.click();
-        console.log("what????");
-        var output = [];
-        output["data"] = JSON.stringify(dataChanged);
-        output["spec"] = JSON.stringify(vlSpec);
-        console.log(output);
-        // var bb = new Blob(output, { type: 'text/plain' });
-        // var a = document.createElement('a');
-        // a.download = fileName + '.json';
-        // a.href = window.URL.createObjectURL(bb);
-        // a.textContent = 'Download ready';
-        // a.click(); 
-    }
+	// function saveFile(fileName) {
+    //     // var a = document.createElement("a");
+    //     // a.href = file;
+    //     // a.setAttribute("download", fileName);
+    //     // a.click();
+    //     console.log("what????");
+    //     var output = [];
+    //     output["data"] = JSON.stringify(dataChanged);
+    //     output["spec"] = JSON.stringify(vlSpec);
+    //     console.log(output);
+    //     // var bb = new Blob(output, { type: 'text/plain' });
+    //     // var a = document.createElement('a');
+    //     // a.download = fileName + '.json';
+    //     // a.href = window.URL.createObjectURL(bb);
+    //     // a.textContent = 'Download ready';
+    //     // a.click(); 
+    // }
 </script>
 
 <svelte:head>
@@ -847,16 +909,6 @@
 	{#if mounted}
 		<Grid fullWidth>
 			<Row style="display: flex; flex-wrap: nowrap;">
-				<!-- TODO:
-					+ add Vertical position (drop zone) with it's own shelf id ('y-drop')
-					+ create a json state that controls what renders on all of the shelves, keeping track of items across shelves
-					+ programmatically generate drop zones from a json spec
-					+ figure out why drop zones don't work, why trigger is always "droppedOutsideOfAny" 
-						(problem was that drop zones had no height; added css below to fix)
-					- link Chart to variables in drop zone
-					- format drop zones and draggable blocks similar to Polestar
-					- use css to modify layout to roughly match Polestar, leaving room for the modeling sidebar on the right
-				-->
 				<Column style="min-width: 220px; max-width: 220px;">
 					<DataPanel
 						{dndState}

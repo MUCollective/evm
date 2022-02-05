@@ -97,20 +97,14 @@
     {/each}
 
     <!-- TODO: add aggregate option here -->
-    <h3>Marks</h3>
+    <h3>Mark</h3>
     <select bind:value={mark} on:change={changeMark(mark)}>
         <option disabled selected value> -- change marking -- </option>
-        <option value="area">area</option>
-        <option value="bar">bar</option>
+        <option value="tick">tick</option>
+        <option value="bar">bar</option> 
+        <option value="point">point</option>
         <option value="circle">circle</option>
         <option value="line">line</option>
-        <option value="point">point</option>
-        <option value="rect">rect</option>
-        <option value="rule">rule</option>
-        <option value="square">square</option>
-        <option value="text">text</option>
-        <option value="tick">tick</option>
-        <option value="geoshape">geoshape</option>
     </select>
 
     <!-- <h3>Aggregation</h3>
