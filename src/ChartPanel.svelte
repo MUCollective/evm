@@ -23,6 +23,7 @@
 	);
 	console.log("modelcheck groups in the chart data", distinctModelGroups);
 	console.log("model to show?", haveModelToShow);
+	let outcomeName; 
 
 	// color and offset for modelcheck
 	if (modeling && haveModelToShow) {
@@ -30,6 +31,14 @@
 		if (!distinctModelGroups.includes("data")) {
 			distinctModelGroups.unshift("data");
 		}
+
+		// get outcome name
+		outcomeName = distinctModelGroups[1].substring(
+			distinctModelGroups[1].indexOf("|") + 1, 
+			distinctModelGroups[1].indexOf("~")
+		);
+		outcomeName = outcomeName.trim();
+		console.log("outcome", outcomeName);
 
 		// make sure color exists and encode modelcheck_group
 		vlSpec.encoding.color = vlSpec.encoding.color
@@ -103,7 +112,7 @@
 				}
 			}
 		});
-		console.log(minX, minY, maxX, maxY);
+		console.log("hardcoded domain to prevent rescaling with hops", minX, minY, maxX, maxY);
 		// vlSpec.encoding.<x or y>.scale.range = [<min of outcome>, <max of outcome>]
 		if (typeof vlSpec.encoding.x != "undefined") {
 			vlSpec.encoding.x.scale = vlSpec.encoding.x.scale
@@ -123,40 +132,175 @@
 
 	console.log("vega-lite spec", vlSpec);
 
-	// convert vega-lite spec to vega to add HOPs?
-	console.log("vegaLite.compile(vlSpec)", vegaLite.compile(vlSpec));
-
-	console.log("vgSpec vegaLite.compile(vlSpec).spec");
+	// convert vega-lite spec to vega to add modelchecks
+	// console.log("vegaLite.compile(vlSpec)", vegaLite.compile(vlSpec));
 	let vgSpec = vegaLite.compile(vlSpec).spec;
-	console.log(vgSpec);
+	console.log("vgSpec before changes", vgSpec);
 	if (modeling && haveModelToShow) {
+		// hops:
 		// make sure signals exist
 		vgSpec.signals = vgSpec.signals ? vgSpec.signals : [];
+		// make sure transform exists
+		vgSpec.data[0].transform = vgSpec.data[0].transform ? vgSpec.data[0].transform : [];
 		// add sample parameter for hops
 		vgSpec.signals.push({
 			name: "sample",
 			value: 1,
 			on: [
 				{
-					events: "timer{2000}",
+					events: "timer{1500}",
 					update: "1 + ((sample + 1) % 5)",
 				},
 			],
 		});
-		// make sure transform exists
-		vgSpec.data[0].transform = vgSpec.data[0].transform
-			? vgSpec.data[0].transform
-			: [];
 		// add filtering transform for hops
 		vgSpec.data[0].transform.push({
 			type: "filter",
 			expr: "datum.draw == sample",
 		});
-		// add faceting
-		
 
-		console.log("vgSpec.data", vgSpec.data);
-		console.log("vgSpec", vgSpec);
+		// faceting:
+		// make sure scales exists
+		vgSpec.scales = vgSpec.scales ? vgSpec.scales : [];
+		// make sure axes exists
+		vgSpec.axes = vgSpec.axes ? vgSpec.axes : [];
+		// make sure marks exists
+		vgSpec.marks = vgSpec.marks ? vgSpec.marks : [];
+		// add band scale to position different modelcheck groups, and re-encode data within groups 
+		if (vlSpec.encoding.x.field == outcomeName) {
+			console.log("re-encoding y axis")
+			// add yscale if the outcome var is x
+			vgSpec.scales.push({
+				name: "yscale",
+				type: "band",
+				domain: {"data": "table", "field": "modelcheck_group"},
+				range: "height",
+				padding: 0.2
+			});
+			// we'll neew to replace original x and y scales inside of marks to get nested axes)
+			let originalScales = vgSpec.scales.filter((elem) => elem.name == "x" || elem.name == "y" );
+			originalScales[originalScales.findIndex((elem) => elem.name == "y")].range = { signal: "bandHeight" }; // make height respond to signal
+			// remove original y scale
+			vgSpec.scales = vgSpec.scales.filter((elem) => !(elem.name == "y") );
+			// add axis for modelcheck group
+			vgSpec.axes.push({
+				orient: "left", 
+				scale: "yscale", 
+				tickSize: 0, 
+				labelPadding: 4, 
+				zindex: 1
+			});
+			// remove original y axis and x grid (we re-add them back inside of marks to get nested axes)
+			let originalAxis = vgSpec.axes.filter((elem) => elem.scale == "y" || (elem.scale == "x" && elem.grid) );
+			vgSpec.axes = vgSpec.axes.filter((elem) => !(elem.scale == "y" || (elem.scale == "x" && elem.grid)) );
+			// re-encode data within facets...
+			// borrow encoding info from initial spec
+			let originalEncoding = vgSpec.marks[0].encode.update;
+			// overwrite marks for not to avoid conflicts with compiled spec
+			vgSpec.marks = [ 
+				{
+					// group by modelcheck group to create data sources for each subplot
+					type: "group",
+					from: {
+						facet: {
+							data: "data_0",
+							name: "facet",
+							groupby: "modelcheck_group" // do this!
+						}
+					},
+					// put modelcheck check group on the main axis
+					encode: {
+						enter: {
+							y: { scale: "yscale", field: "modelcheck_group" } 
+						}
+					},
+					// adjust the extent of the subplot area based on the band type scale created above
+					signals: [
+						{ name: "bandHeight", update: "bandwidth('yscale')" }
+					],
+					// re-encode whatever was on the original axis within each facet
+					scales: originalScales,
+					// re-construct marks
+					marks: [
+						{
+							name: "marks",
+							from: { data: "facet" },
+							type: vlSpec.mark.type, // may need to redo orient
+							encode: { update: originalEncoding },
+							axes: originalAxis
+						}
+					]
+				}
+			];
+		} else if (vlSpec.encoding.y.field == outcomeName) {
+			console.log("re-encoding x axis")
+			// add xscale if the outcome var is y
+			vgSpec.scales.push({
+				name: "xscale",
+				type: "band",
+				domain: {"data": "table", "field": "modelcheck_group"},
+				range: "width",
+				padding: 0.2
+			});
+			// we'll neew to replace original x and y scales inside of marks to get nested axes)
+			let originalScales = vgSpec.scales.filter((elem) => elem.name == "x" || elem.name == "y" );
+			originalScales[originalScales.findIndex((elem) => elem.name == "x")].range = { signal: "bandWidth" }; // make width respond to signal
+			// remove original x scale
+			vgSpec.scales = vgSpec.scales.filter((elem) => !(elem.name == "x") );
+			// add axis for modelcheck group
+			vgSpec.axes.push({
+				orient: "bottom", 
+				scale: "xscale", 
+				tickSize: 0, 
+				labelPadding: 4, 
+				zindex: 1
+			});
+			// remove original x axis and y grid (we re-add them back inside of marks to get nested axes)
+			let originalAxis = vgSpec.axes.filter((elem) => elem.scale == "x" || (elem.scale == "y" && elem.grid) );
+			vgSpec.axes = vgSpec.axes.filter((elem) => !(elem.scale == "x" || (elem.scale == "y" && elem.grid)) );
+			// re-encode data within facets...
+			// borrow encoding info from initial spec
+			let originalEncoding = vgSpec.marks[0].encode.update;
+			// overwrite marks for not to avoid conflicts with compiled spec
+			vgSpec.marks = [ 
+				{
+					// group by modelcheck group to create data sources for each subplot
+					type: "group",
+					from: {
+						facet: {
+							data: "data_0",
+							name: "facet",
+							groupby: "modelcheck_group" // do this!
+						}
+					},
+					// put modelcheck check group on the main axis
+					encode: {
+						enter: {
+							x: { scale: "xscale", field: "modelcheck_group" } 
+						}
+					},
+					// adjust the extent of the subplot area based on the band type scale created above
+					signals: [
+						{ name: "bandWidth", update: "bandwidth('xscale')" }
+					],
+					// re-encode whatever was on the original axis within each facet
+					scales: originalScales,
+					// re-construct marks
+					marks: [
+						{
+							name: "marks",
+							from: { data: "facet" },
+							type: vlSpec.mark.type, // may need to redo orient
+							encode: { update: originalEncoding },
+							axes: originalAxis
+						}
+					]
+				}
+			];
+		}
+
+		// console.log("vgSpec.data", vgSpec.data);
+		console.log("vgSpec after changes", vgSpec);
 	}
 
 	// function onChange(event) {

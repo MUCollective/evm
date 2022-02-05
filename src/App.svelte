@@ -53,13 +53,13 @@
 
 	function onChange(event) {
 		showPredictionOrResidual = event.currentTarget.value;
-		console.log(showPredictionOrResidual);
+		// console.log(showPredictionOrResidual);
 	}
 
 	onMount(async () => {
 		// load data
 		data = await d3.json("./data/cars.json");
-		console.log("loaded data", data);
+		// console.log("loaded data", data);
 		dataChanged = data;
 		dataChanged = [...dataChanged];
 		dataTrans = data;
@@ -74,11 +74,11 @@
 		});
 		mounted = true;
 		originalDndState = deepCopy(dndState);
-		console.log("originalDndState", originalDndState);
-		console.log(dataChanged);
-		console.log(
-			"calculateEstimatesPerStudy calculateEstimatesPerStudy calculateEstimatesPerStudy"
-		);
+		// console.log("originalDndState", originalDndState);
+		// console.log(dataChanged);
+		// console.log(
+		// 	"calculateEstimatesPerStudy calculateEstimatesPerStudy calculateEstimatesPerStudy"
+		// );
 	});
 
 	function handleDndConsider(shelfId: any, e: any) {
@@ -90,33 +90,33 @@
 		if (e.srcElement.id != "variables") {
 			const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
 			// 1 if x-row
-			console.log(
-				"current",
-				dndState[shelfIdx].items[dndState[shelfIdx].items.length - 1]
-					.name
-			);
+			// console.log(
+			// 	"current",
+			// 	dndState[shelfIdx].items[dndState[shelfIdx].items.length - 1]
+			// 		.name
+			// );
 			var varName = e.detail.items[0].name;
-			console.log("compare", varName);
+			// console.log("compare", varName);
 			if (
 				dndState[shelfIdx].items[dndState[shelfIdx].items.length - 1]
 					.name != varName
 			) {
-				console.log("HERE !!!!!!!!!!!");
-				console.log(dndState);
+				// console.log("HERE !!!!!!!!!!!");
+				// console.log(dndState);
 				encodingToData(
 					dndState[shelfIdx].name,
 					shelfId,
 					dndState[shelfIdx].items
 				);
-				console.log("what about now !!!!!!!!!!!");
-				console.log(dndState);
+				// console.log("what about now !!!!!!!!!!!");
+				// console.log(dndState);
 			}
-			console.log(
-				"before change dndState[shelfIdx].items",
-				dndState[shelfIdx],
-				dndState[shelfIdx].items
-			);
-			console.log("e.detail.items", e.detail.items);
+			// console.log(
+			// 	"before change dndState[shelfIdx].items",
+			// 	dndState[shelfIdx],
+			// 	dndState[shelfIdx].items
+			// );
+			// console.log("e.detail.items", e.detail.items);
 			dndState[shelfIdx].items = e.detail.items;
 			dndState = [...dndState];
 			prevSpec = deepCopy(vlSpec);
@@ -152,7 +152,7 @@
 				// 	tempEncoding.aggregate = "count";
 				// 	vlSpec.mark = "bar";
 				// }
-				console.log(tempEncoding);
+				// console.log(tempEncoding);
 
 				if (shelfId == "x-drop") {
 					vlSpec.encoding.x = tempEncoding;
@@ -162,11 +162,11 @@
 				}
 				if (shelfId == "row-drop") {
 					vlSpec.encoding.row = { field: e.detail.items[0].name };
-					console.log("facet", vlSpec);
+					// console.log("facet", vlSpec);
 				}
 				if (shelfId == "col-drop") {
 					vlSpec.encoding.column = { field: e.detail.items[0].name };
-					console.log("facet", vlSpec);
+					// console.log("facet", vlSpec);
 				}
 			}
 			// determine marks for bivariate charts
@@ -296,10 +296,10 @@
 			value2: conditionValue2,
 		});
 		filter = [...filter];
-		console.log(filter);
-		console.log(varToFilter);
+		// console.log(filter);
+		// console.log(varToFilter);
 		filter.forEach((f) => {
-			console.log(f);
+			// console.log(f);
 			filterHelper(
 				f.variable,
 				f.includeExclude,
@@ -308,8 +308,8 @@
 				f.value2
 			);
 		});
-		console.log(dataChanged);
-		console.log(dndState);
+		// console.log(dataChanged);
+		// console.log(dndState);
 		specChanged++;
 	}
 
@@ -320,14 +320,14 @@
 		conditionValue1,
 		conditionValue2
 	) {
-		console.log("in filterhepler, dataChanged:", dataChanged);
-		console.log(
-			varToFilter,
-			includeOrExclude,
-			condition,
-			conditionValue1,
-			conditionValue2
-		);
+		// console.log("in filterhepler, dataChanged:", dataChanged);
+		// console.log(
+		// 	varToFilter,
+		// 	includeOrExclude,
+		// 	condition,
+		// 	conditionValue1,
+		// 	conditionValue2
+		// );
 		dataChanged = dataChanged.filter(function (entry) {
 			if (condition == "greater") {
 				if (includeOrExclude == "include") {
@@ -375,7 +375,7 @@
 		});
 		// dataChanged = newData;
 		dataChanged = [...dataChanged];
-		console.log(dataChanged);
+		// console.log(dataChanged);
 	}
 
 	function removeFilter(index, clearAll = false) {
@@ -385,43 +385,43 @@
 		if (clearAll) {
 			filter = [];
 		} else {
-			console.log(filter);
+			// console.log(filter);
 			// var removedFilter = filter.splice(index, 1);
 			var removedFilter = filter[index];
 			if (index != 0) {
-				console.log("filter.slice(0, index)", filter.slice(0, index));
-				console.log(
-					"filter.slice(index, filter.length)",
-					filter.slice(index, filter.length)
-				);
+				// console.log("filter.slice(0, index)", filter.slice(0, index));
+				// console.log(
+				// 	"filter.slice(index, filter.length)",
+				// 	filter.slice(index, filter.length)
+				// );
 				filterTemp = filter
 					.slice(0, index)
 					.concat(filter.slice(index + 1, filter.length));
 			} else {
 				filterTemp = filter.slice(1);
 			}
-			console.log("filterTemp", filterTemp);
-			console.log("filter", filter);
+			// console.log("filterTemp", filterTemp);
+			// console.log("filter", filter);
 			Promise.all([filterTemp]).then((values) => {
 				filterTemp = values[0];
-				console.log("filterTemp", filterTemp);
+				// console.log("filterTemp", filterTemp);
 				filter = [...filterTemp];
-				console.log(filter);
+				// console.log(filter);
 				// filter = [...filter];
-				console.log("removing", removedFilter);
-				console.log("after removed, new filter", filter);
+				// console.log("removing", removedFilter);
+				// console.log("after removed, new filter", filter);
 			});
 			// filter = filterTemp;
 			filter = [...filterTemp];
-			console.log(filter);
+			// console.log(filter);
 			// filter = [...filter];
-			console.log("removing", removedFilter);
-			console.log("after removed, new filter", filter);
-			console.log(dataChanged.length);
+			// console.log("removing", removedFilter);
+			// console.log("after removed, new filter", filter);
+			// console.log(dataChanged.length);
 			dataChanged = data;
 			dataChanged = [...dataChanged];
-			console.log(data.length);
-			console.log(dataChanged.length);
+			// console.log(data.length);
+			// console.log(dataChanged.length);
 			if (filter.length != 0) {
 				filter.forEach((f) => {
 					filterData(
@@ -440,13 +440,13 @@
 	function transformData(transVar, transform) {
 		dataTrans = dataChanged;
 		dataTrans = [...dataTrans];
-		console.log("transVar", transVar, "transform", transform);
+		// console.log("transVar", transVar, "transform", transform);
 		transformation.push({
 			variable: transVar,
 			transformation: transform,
 		});
 		transformation = [...transformation];
-		console.log(transformation);
+		// console.log(transformation);
 		transformation.forEach((t) => {
 			transformHelper(transVar, transform);
 		});
@@ -454,8 +454,8 @@
 	}
 
 	function transformHelper(variable, t) {
-		console.log("transformHelper");
-		console.log(dataTrans[0]);
+		// console.log("transformHelper");
+		// console.log(dataTrans[0]);
 		var before = [];
 		var after = [];
 		dataTrans.forEach((e) => {
@@ -472,7 +472,7 @@
 			}
 		});
 		dataTransformed[variable] = { before: before, after: after };
-		console.log(dataTransformed);
+		// console.log(dataTransformed);
 		dataTrans = [...dataTrans];
 		dataChanged = [...dataTrans];
 	}
@@ -488,34 +488,34 @@
 			models = [];
 			modeling = false;
 		} else {
-			console.log(models);
+			console.log("models object", models);
 			// var removedFilter = filter.splice(index, 1);
 			var removedModel = models[index];
 			if (index != 0) {
-				console.log("filter.slice(0, index)", models.slice(0, index));
-				console.log(
-					"filter.slice(0, index-1)",
-					models.slice(0, index - 1)
-				);
-				console.log(
-					"filter.slice(index, filter.length)",
-					models.slice(index, models.length)
-				);
+				// console.log("filter.slice(0, index)", models.slice(0, index));
+				// console.log(
+				// 	"filter.slice(0, index-1)",
+				// 	models.slice(0, index - 1)
+				// );
+				// console.log(
+				// 	"filter.slice(index, filter.length)",
+				// 	models.slice(index, models.length)
+				// );
 				modelTemp = models
 					.slice(0, index)
 					.concat(models.slice(index + 1, models.length));
-				console.log("modelTemp", modelTemp);
+				// console.log("modelTemp", modelTemp);
 			} else {
 				modelTemp = models.slice(1);
-				console.log("removing first one", modelTemp);
+				// console.log("removing first one", modelTemp);
 			}
 		}
 		Promise.all([modelTemp]).then((values) => {
 			console.log("values", values);
 			modelTemp = values[0];
-			console.log("filterTemp", modelTemp);
+			// console.log("filterTemp", modelTemp);
 			models = [...modelTemp];
-			console.log(models);
+			console.log("models after promise", models);
 			// filter = [...filter];
 			console.log("removing", removedModel);
 			console.log("after removed, new filter", models);
@@ -561,7 +561,7 @@
 		showLoadingIcon = true;
 		ocpu.seturl("//kalealex.ocpu.io/modelcheck/R");
 		var url;
-		console.log("in cal residual", useData);
+		console.log("in calc residual", useData);
 		console.log(models);
 		url = await ocpu.rpc("calc_residuals", {
 			df: JSON.stringify(useData),
@@ -651,8 +651,8 @@
 			callModel(mu, sigma, dataOnly, model)
 				.then(function (response) {
 					showLoadingIcon = true;
-					console.log("this should be a url");
-					console.log(response);
+					// console.log("this should be a url");
+					// console.log(response);
 					return fetchData(response);
 				})
 				.then(function (modelData) {
@@ -663,8 +663,8 @@
 					// merge old model data from dataChanged with new model data from modelData
 					mergeModels(dataChanged, modelData)
 						.then(function (response) {
-							console.log("this should be a url");
-							console.log(response);
+							// console.log("this should be a url");
+							// console.log(response);
 							return fetchData(response);
 						})
 						.then(function (mergedData) {
@@ -723,8 +723,8 @@
 			callModel(mu, sigma, dataChanged, model)
 				.then(function (response) {
 					showLoadingIcon = true;
-					console.log("this should be a url");
-					console.log(response);
+					// console.log("this should be a url");
+					// console.log(response);
 					return fetchData(response);
 				})
 				.then(function (modelData) {
@@ -759,8 +759,8 @@
 		calculate_residuals(dataChanged)
 			.then(function (response) {
 				showLoadingIcon = true;
-				console.log("this should be a url for residual");
-				console.log(response);
+				// console.log("this should be a url for residual");
+				// console.log(response);
 				return fetchData(response);
 			})
 			.then(function (residualData) {
@@ -807,23 +807,23 @@
 	}
 
 	function encodingToData(variable: any, shelfId: any, item: any) {
-		console.log("variable", variable, "shelfId", shelfId, "item", item);
-		console.log("before any changes", vlSpec.encoding);
-		console.log(typeof dndState[0]);
-		console.log(item);
+		// console.log("variable", variable, "shelfId", shelfId, "item", item);
+		// console.log("before any changes", vlSpec.encoding);
+		// console.log(typeof dndState[0]);
+		// console.log(item);
 		const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
-		console.log("why doesn't it change", dndState[shelfIdx]);
+		// console.log("why doesn't it change", dndState[shelfIdx]);
 		dndState[shelfIdx].items = [];
-		console.log(
-			"?????",
-			dndState[shelfIdx],
-			"this should be empty",
-			dndState[shelfIdx].items
-		);
-		console.log(dndState[0]);
+		// console.log(
+		// 	"?????",
+		// 	dndState[shelfIdx],
+		// 	"this should be empty",
+		// 	dndState[shelfIdx].items
+		// );
+		// console.log(dndState[0]);
 		dndState[0].items.push(item[item.length - 1]);
-		console.log("now?????", dndState[shelfIdx]);
-		console.log(dndState);
+		// console.log("now?????", dndState[shelfIdx]);
+		// console.log(dndState);
 		dndState = [...dndState];
 		if (shelfId == "x-drop") {
 			delete vlSpec.encoding.x;
