@@ -174,7 +174,7 @@
 
 				if (vlSpec.encoding.x.type == vlSpec.encoding.y.type) {
 					// case scatterplot
-					vlSpec.mark = "point";
+					vlSpec.mark = { type: "point", size: 30, strokeWidth: 2	};
 				} else if (vlSpec.encoding.x.type == "quantitative" && (vlSpec.encoding.y.type == "nominal" || vlSpec.encoding.y.type == "ordinal")) {
 					// case strips along x-axis
 					vlSpec.mark = { type: "tick", orient: "vertical" };
