@@ -150,7 +150,7 @@
 		});
 
 		// faceting for scatterplots:
-		if (vlSpec.mark.type == "point") {
+		if (vlSpec.mark.type == "point" || vlSpec.mark.type == "circle") {
 			// make sure scales exists
 			vgSpec.scales = vgSpec.scales ? vgSpec.scales : [];
 			// make sure axes exists
@@ -186,14 +186,14 @@
 					yAxisIdx = originalAxis.findIndex((elem) => elem.scale == "y" && !elem.grid),
 					xGridIdx = originalAxis.findIndex((elem) => elem.scale == "x" && elem.grid);
 				originalAxis[yAxisIdx].zindex = 1;
-				originalAxis[xGridIdx].offset = { "signal": "height" };
+				if (vlSpec.mark.type == "point") {
+					originalAxis[xGridIdx].offset = { "signal": "height" };
+				}
 				vgSpec.axes = vgSpec.axes.filter((elem) => !(elem.scale == "y" || elem.grid)); // remove
 				// re-encode data within facets...
 				// borrow encoding info from initial spec
 				let originalEncoding = vgSpec.marks[0].encode.update;
-				if (vlSpec.mark.type == "point") {
-					originalEncoding.shape = { signal: "shape" };
-				}
+				originalEncoding.shape = { signal: "shape" }; // assume point
 				// overwrite marks for not to avoid conflicts with compiled spec
 				vgSpec.marks = [ 
 					{
@@ -232,7 +232,7 @@
 						axes: originalAxis
 					}
 				];
-			} else if (vlSpec.encoding.y.field == outcomeName) {
+			} else { //if (vlSpec.encoding.y.field == outcomeName) or the outcome isn't encoded on either primary position
 				console.log("re-encoding x axis")
 				// double chart width
 				vgSpec.signals.push({ name: "width", update: "width*2" });
@@ -261,7 +261,9 @@
 					xGridIdx = originalAxis.findIndex((elem) => (elem.scale == "x" && elem.grid));
 				originalAxis[xAxisIdx].zindex = 1;
 				originalAxis[xAxisIdx].offset = { "signal": "height" };
-				originalAxis[xGridIdx].offset = { "signal": "height" };
+				if (vlSpec.mark.type == "point") {
+					originalAxis[xGridIdx].offset = { "signal": "height" };
+				}
 				// console.log("original axis changed", originalAxis, xAxisIdx, xGridIdx);
 				// originalAxis[yGridIdx].offset = { "signal": "height" };
 				vgSpec.axes = vgSpec.axes.filter((elem) => !(elem.scale == "x" || elem.grid)); // remove
@@ -341,7 +343,6 @@
 
 <!-- data panel -->
 <div class="chart-panel card" id="chart">
-	<h3>Visualization Canvas</h3>
 	<div id="container">
 		<Vega bind:data={dataset} bind:spec={vgSpec} bind:options />
 		<!-- <VegaLite bind:data={dataset} bind:spec={vlSpec} bind:options /> -->

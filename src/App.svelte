@@ -171,8 +171,7 @@
 			}
 			// determine marks for bivariate charts
 			if (vlSpec.encoding.x && vlSpec.encoding.y) {
-
-				if (vlSpec.encoding.x.type == vlSpec.encoding.y.type) {
+				if (vlSpec.encoding.x.type == vlSpec.encoding.y.type && vlSpec.encoding.x.type == "quantitative") {
 					// case scatterplot
 					vlSpec.mark = { type: "point", size: 30, strokeWidth: 2	};
 				} else if (vlSpec.encoding.x.type == "quantitative" && (vlSpec.encoding.y.type == "nominal" || vlSpec.encoding.y.type == "ordinal")) {
@@ -181,22 +180,27 @@
 				} else if (vlSpec.encoding.y.type == "quantitative" && (vlSpec.encoding.x.type == "nominal" || vlSpec.encoding.x.type == "ordinal")) {
 					// case strips along x-axis
 					vlSpec.mark = { type: "tick", orient: "horizontal" };
+				} else if ((vlSpec.encoding.x.type == "nominal" || vlSpec.encoding.x.type == "ordinal") && (vlSpec.encoding.y.type == "nominal" || vlSpec.encoding.y.type == "ordinal")) {
+					// case 2d histogram
+					vlSpec.mark = { type: "circle" };
+					vlSpec.encoding.size = { field: varName,  aggregate: "count" };	
 				}
 			// determine marks for univariate charts
 			} else if ((vlSpec.encoding.x || vlSpec.encoding.y) && !(vlSpec.encoding.x && vlSpec.encoding.y)) {
 				if (vlSpec.encoding.x && (vlSpec.encoding.x.type == "nominal" || vlSpec.encoding.x.type == "ordinal")) {
 					// case bars along x-axis
 					vlSpec.mark = { type: "bar", orient: "vertical" };
-					vlSpec.encoding.y = { field: varName,  aggregate: "count"};		
+					vlSpec.encoding.y = { field: varName,  aggregate: "count" };		
 				} else if (vlSpec.encoding.y && (vlSpec.encoding.y.type == "nominal" || vlSpec.encoding.y.type == "ordinal")) {
 					// case bars along y-axis
 					vlSpec.mark = { type: "bar", orient: "horizontal" };
-					vlSpec.encoding.x = { field: varName,  aggregate: "count"};	
+					vlSpec.encoding.x = { field: varName,  aggregate: "count" };	
 				}
 			} else {
 				// remove encodings
 				delete vlSpec.encoding.x
 				delete vlSpec.encoding.y
+				delete vlSpec.encoding.size
 			}
 			vlSpec = { ...vlSpec };
 			specChanged++;
