@@ -137,7 +137,7 @@
 			value: 1,
 			on: [
 				{
-					events: "timer{1500}",
+					events: "timer{500}",
 					update: "1 + ((sample + 1) % 5)",
 				},
 			],
