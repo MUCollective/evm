@@ -96,8 +96,7 @@
         {/if}
     {/each}
 
-    <!-- TODO: add aggregate option here -->
-    <h3>Mark</h3>
+    <!-- <h3>Mark</h3>
     <select bind:value={mark} on:change={changeMark(mark)}>
         <option disabled selected value> -- change marking -- </option>
         <option value="tick">tick</option>
@@ -105,7 +104,7 @@
         <option value="point">point</option>
         <option value="circle">circle</option>
         <option value="line">line</option>
-    </select>
+    </select> -->
 
     <!-- <h3>Aggregation</h3>
     <select

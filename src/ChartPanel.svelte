@@ -169,6 +169,8 @@
 		// add band scale to position different modelcheck groups, and re-encode data within groups 
 		if (vlSpec.encoding.x.field == outcomeName) {
 			console.log("re-encoding y axis")
+			// double chart height
+			vgSpec.signals.push({ name: "height", update: "height*2" });
 			// add yscale if the outcome var is x
 			vgSpec.scales.push({
 				name: "yscale",
@@ -177,25 +179,27 @@
 				range: "height",
 				padding: 0.2
 			});
-			// we'll neew to replace original x and y scales inside of marks to get nested axes)
-			let originalScales = vgSpec.scales.filter((elem) => elem.name == "x" || elem.name == "y" );
-			originalScales[originalScales.findIndex((elem) => elem.name == "y")].range = { signal: "bandHeight" }; // make height respond to signal
-			// remove original y scale
+			// we'll need to remove original the y scale and replace it inside of marks to get nested axes
+			let originalScales = vgSpec.scales.filter((elem) => elem.name == "y" );
 			vgSpec.scales = vgSpec.scales.filter((elem) => !(elem.name == "y") );
 			// add axis for modelcheck group
 			vgSpec.axes.push({
 				orient: "left", 
 				scale: "yscale", 
 				tickSize: 0, 
-				labelPadding: 4, 
+				labelPadding: 40, 
 				zindex: 1
 			});
 			// remove original y axis and x grid (we re-add them back inside of marks to get nested axes)
 			let originalAxis = vgSpec.axes.filter((elem) => elem.scale == "y" || (elem.scale == "x" && elem.grid) );
+			originalAxis[originalAxis.findIndex((elem) => elem.scale == "y")].zindex = 1;
 			vgSpec.axes = vgSpec.axes.filter((elem) => !(elem.scale == "y" || (elem.scale == "x" && elem.grid)) );
 			// re-encode data within facets...
 			// borrow encoding info from initial spec
 			let originalEncoding = vgSpec.marks[0].encode.update;
+			if (vlSpec.mark.type == "circle" || vlSpec.mark.type == "point") {
+				originalEncoding.shape = { signal: "shape" };
+			}
 			// overwrite marks for not to avoid conflicts with compiled spec
 			vgSpec.marks = [ 
 				{
@@ -216,7 +220,8 @@
 					},
 					// adjust the extent of the subplot area based on the band type scale created above
 					signals: [
-						{ name: "bandHeight", update: "bandwidth('yscale')" }
+						{ name: "height", update: "bandwidth('yscale')" },
+						{ name: "shape", value: "circle" }
 					],
 					// re-encode whatever was on the original axis within each facet
 					scales: originalScales,
@@ -225,15 +230,19 @@
 						{
 							name: "marks",
 							from: { data: "facet" },
-							type: vlSpec.mark.type, // may need to redo orient
-							encode: { update: originalEncoding },
-							axes: originalAxis
+							type: vlSpec.mark.type == "tick" ? "rect" : "symbol", 
+							style: vlSpec.mark.type == "tick" ? ['tick'] : null,
+							encode: { update: originalEncoding }
 						}
-					]
+					],
+					// add a nested axis
+					axes: originalAxis
 				}
 			];
 		} else if (vlSpec.encoding.y.field == outcomeName) {
 			console.log("re-encoding x axis")
+			// double chart width
+			vgSpec.signals.push({ name: "width", update: "width*2" });
 			// add xscale if the outcome var is y
 			vgSpec.scales.push({
 				name: "xscale",
@@ -242,25 +251,27 @@
 				range: "width",
 				padding: 0.2
 			});
-			// we'll neew to replace original x and y scales inside of marks to get nested axes)
-			let originalScales = vgSpec.scales.filter((elem) => elem.name == "x" || elem.name == "y" );
-			originalScales[originalScales.findIndex((elem) => elem.name == "x")].range = { signal: "bandWidth" }; // make width respond to signal
-			// remove original x scale
+			// we'll need to remove original the x scale and replace it inside of marks to get nested axes
+			let originalScales = vgSpec.scales.filter((elem) => elem.name == "x" );
 			vgSpec.scales = vgSpec.scales.filter((elem) => !(elem.name == "x") );
 			// add axis for modelcheck group
 			vgSpec.axes.push({
 				orient: "bottom", 
 				scale: "xscale", 
 				tickSize: 0, 
-				labelPadding: 4, 
+				labelPadding: 40, 
 				zindex: 1
 			});
 			// remove original x axis and y grid (we re-add them back inside of marks to get nested axes)
 			let originalAxis = vgSpec.axes.filter((elem) => elem.scale == "x" || (elem.scale == "y" && elem.grid) );
+			originalAxis[originalAxis.findIndex((elem) => elem.scale == "x")].zindex = 1;
 			vgSpec.axes = vgSpec.axes.filter((elem) => !(elem.scale == "x" || (elem.scale == "y" && elem.grid)) );
 			// re-encode data within facets...
 			// borrow encoding info from initial spec
 			let originalEncoding = vgSpec.marks[0].encode.update;
+			if (vlSpec.mark.type == "circle" || vlSpec.mark.type == "point") {
+				originalEncoding.shape = { signal: "shape" };
+			}
 			// overwrite marks for not to avoid conflicts with compiled spec
 			vgSpec.marks = [ 
 				{
@@ -281,7 +292,8 @@
 					},
 					// adjust the extent of the subplot area based on the band type scale created above
 					signals: [
-						{ name: "bandWidth", update: "bandwidth('xscale')" }
+						{ name: "width", update: "bandwidth('xscale')" },
+						{ name: "shape", value: "circle" }
 					],
 					// re-encode whatever was on the original axis within each facet
 					scales: originalScales,
@@ -290,11 +302,13 @@
 						{
 							name: "marks",
 							from: { data: "facet" },
-							type: vlSpec.mark.type, // may need to redo orient
-							encode: { update: originalEncoding },
-							axes: originalAxis
+							type: vlSpec.mark.type == "tick" ? "rect" : "symbol", 
+							style: vlSpec.mark.type == "tick" ? ['tick'] : null,
+							encode: { update: originalEncoding }				
 						}
-					]
+					],
+					// add a nested axis
+					axes: originalAxis
 				}
 			];
 		}
