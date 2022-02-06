@@ -169,42 +169,51 @@
 					// console.log("facet", vlSpec);
 				}
 			}
-			// determine marks for bivariate charts
-			if (vlSpec.encoding.x && vlSpec.encoding.y) {
-				if (vlSpec.encoding.x.type == vlSpec.encoding.y.type && vlSpec.encoding.x.type == "quantitative") {
-					// case scatterplot
-					vlSpec.mark = { type: "point", size: 30, strokeWidth: 2	};
-				} else if (vlSpec.encoding.x.type == "quantitative" && (vlSpec.encoding.y.type == "nominal" || vlSpec.encoding.y.type == "ordinal")) {
-					// case strips along x-axis
-					vlSpec.mark = { type: "tick", orient: "vertical" };
-				} else if (vlSpec.encoding.y.type == "quantitative" && (vlSpec.encoding.x.type == "nominal" || vlSpec.encoding.x.type == "ordinal")) {
-					// case strips along x-axis
-					vlSpec.mark = { type: "tick", orient: "horizontal" };
-				} else if ((vlSpec.encoding.x.type == "nominal" || vlSpec.encoding.x.type == "ordinal") && (vlSpec.encoding.y.type == "nominal" || vlSpec.encoding.y.type == "ordinal")) {
-					// case 2d histogram
-					vlSpec.mark = { type: "circle" };
-					vlSpec.encoding.size = { field: varName,  aggregate: "count" };	
-				}
-			// determine marks for univariate charts
-			} else if ((vlSpec.encoding.x || vlSpec.encoding.y) && !(vlSpec.encoding.x && vlSpec.encoding.y)) {
-				if (vlSpec.encoding.x && (vlSpec.encoding.x.type == "nominal" || vlSpec.encoding.x.type == "ordinal")) {
-					// case bars along x-axis
-					vlSpec.mark = { type: "bar", orient: "vertical" };
-					vlSpec.encoding.y = { field: varName,  aggregate: "count" };		
-				} else if (vlSpec.encoding.y && (vlSpec.encoding.y.type == "nominal" || vlSpec.encoding.y.type == "ordinal")) {
-					// case bars along y-axis
-					vlSpec.mark = { type: "bar", orient: "horizontal" };
-					vlSpec.encoding.x = { field: varName,  aggregate: "count" };	
-				}
-			} else {
-				// remove encodings
-				delete vlSpec.encoding.x
-				delete vlSpec.encoding.y
-				delete vlSpec.encoding.size
-			}
+			determineChartType(vlSpec, varName);
 			vlSpec = { ...vlSpec };
 			specChanged++;
 			console.log("vlspec:", vlSpec);
+		}
+	}
+
+	function determineChartType(vlSpec: VisualizationSpec, varName: string) {
+		// determine marks for bivariate charts
+		if (vlSpec.encoding.x && vlSpec.encoding.y) {
+			if (vlSpec.encoding.x.type == vlSpec.encoding.y.type && vlSpec.encoding.x.type == "quantitative") {
+				// case scatterplot
+				vlSpec.mark = { type: "point", size: 30, strokeWidth: 2	};
+			} else if (vlSpec.encoding.x.type == "quantitative" && (vlSpec.encoding.y.type == "nominal" || vlSpec.encoding.y.type == "ordinal")) {
+				// case strips along x-axis
+				vlSpec.mark = { type: "tick", orient: "vertical" };
+			} else if (vlSpec.encoding.y.type == "quantitative" && (vlSpec.encoding.x.type == "nominal" || vlSpec.encoding.x.type == "ordinal")) {
+				// case strips along x-axis
+				vlSpec.mark = { type: "tick", orient: "horizontal" };
+			} else if ((vlSpec.encoding.x.type == "nominal" || vlSpec.encoding.x.type == "ordinal") && (vlSpec.encoding.y.type == "nominal" || vlSpec.encoding.y.type == "ordinal")) {
+				// case 2d histogram
+				vlSpec.mark = { type: "circle" };
+				vlSpec.encoding.size = { field: varName,  aggregate: "count" };	
+			}
+		// determine marks for univariate charts
+		} else if ((vlSpec.encoding.x || vlSpec.encoding.y) && !(vlSpec.encoding.x && vlSpec.encoding.y)) {
+			if (vlSpec.encoding.x && (vlSpec.encoding.x.type == "nominal" || vlSpec.encoding.x.type == "ordinal")) {
+				// case bars along x-axis
+				vlSpec.mark = { type: "bar", orient: "vertical" };
+				vlSpec.encoding.y = { field: varName,  aggregate: "count" };		
+			} else if (vlSpec.encoding.y && (vlSpec.encoding.y.type == "nominal" || vlSpec.encoding.y.type == "ordinal")) {
+				// case bars along y-axis
+				vlSpec.mark = { type: "bar", orient: "horizontal" };
+				vlSpec.encoding.x = { field: varName,  aggregate: "count" };	
+			}
+		// otherwise don't show anything
+		} else {
+			// reset
+			vlSpec.mark = "tick";
+			delete vlSpec.encoding.x;
+			delete vlSpec.encoding.y;
+			delete vlSpec.encoding.size;
+			delete vlSpec.encoding.color;
+			delete vlSpec.encoding.row;
+			delete vlSpec.encoding.column;
 		}
 	}
 
@@ -829,24 +838,42 @@
 		// console.log("now?????", dndState[shelfIdx]);
 		// console.log(dndState);
 		dndState = [...dndState];
+		let remainingVarName; // for determining chart type
+		delete vlSpec.encoding.size; // clear aggregation 2d histogram (we'll add it back if needed)
 		if (shelfId == "x-drop") {
 			delete vlSpec.encoding.x;
 			if (vlSpec.encoding.y && vlSpec.encoding.y.aggregate) {
 				delete vlSpec.encoding.y; // clear aggregation for bar chart
 			}
-			vlSpec.mark = "tick";
+			remainingVarName = vlSpec.encoding.y ? vlSpec.encoding.y.field : undefined;
+			// vlSpec.mark = "tick";
 		} else if (shelfId == "y-drop") {
 			delete vlSpec.encoding.y;
 			if (vlSpec.encoding.x && vlSpec.encoding.x.aggregate) {
 				delete vlSpec.encoding.x; // clear aggregation for bar chart
 			}
-			vlSpec.mark = "tick";
+			remainingVarName = vlSpec.encoding.x ? vlSpec.encoding.x.field : undefined;
+			// vlSpec.mark = "tick";
 		}
-		
 		if (shelfId == "row-drop") {
 			delete vlSpec.encoding.row;
 		}
 		if (shelfId == "col-drop") {
+			delete vlSpec.encoding.column;
+		}
+		if (!remainingVarName) {
+			remainingVarName = vlSpec.encoding.y ? vlSpec.encoding.y.field : vlSpec.encoding.x ? vlSpec.encoding.x.field : undefined;
+		} 
+		if (remainingVarName) {
+			determineChartType(vlSpec, remainingVarName);
+		} else {
+			// reset
+			vlSpec.mark = "tick";
+			delete vlSpec.encoding.x;
+			delete vlSpec.encoding.y;
+			delete vlSpec.encoding.size;
+			delete vlSpec.encoding.color;
+			delete vlSpec.encoding.row;
 			delete vlSpec.encoding.column;
 		}
 		vlSpec = { ...vlSpec };

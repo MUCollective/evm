@@ -125,7 +125,6 @@
 	// convert vega-lite spec to vega to add modelchecks
 	// console.log("vegaLite.compile(vlSpec)", vegaLite.compile(vlSpec));
 	let vgSpec = vegaLite.compile(vlSpec).spec;
-	console.log("vgSpec before changes", vgSpec);
 	if (modeling && haveModelToShow) {
 		// hops:
 		// make sure signals exist
@@ -162,42 +161,66 @@
 				console.log("re-encoding y axis")
 				// double chart height
 				vgSpec.signals.push({ name: "height", update: "height*2" });
-				// add yscale if the outcome var is x
+				// add y_scale if the outcome var is x
 				vgSpec.scales.push({
-					name: "yscale",
+					name: "y_scale",
 					type: "band",
 					domain: {"data": "table", "field": "modelcheck_group"},
 					range: "height",
 					padding: 0.2
 				});
-				// we'll need to remove the original y scale and replace it inside of marks to get nested axes
+				// we'll need to replace the original y scale inside of marks to get nested axes
 				let originalScales = vgSpec.scales.filter((elem) => elem.name == "y" );
-				vgSpec.scales = vgSpec.scales.filter((elem) => !(elem.name == "y") );
 				// add axis for modelcheck group
 				vgSpec.axes.push({
 					orient: "left", 
-					scale: "yscale", 
+					scale: "y_scale", 
 					tickSize: 0, 
 					labelPadding: 40, 
 					zindex: 0
 				});
 				// we'll also remove the original y axis and grids, so we can later add them back inside of marks to get nested axes
-				let originalAxis = vgSpec.axes.filter((elem) => elem.scale == "y" || elem.grid),
-					yAxisIdx = originalAxis.findIndex((elem) => elem.scale == "y" && !elem.grid),
-					xGridIdx = originalAxis.findIndex((elem) => elem.scale == "x" && elem.grid);
+				let originalAxis; 
+				if (vlSpec.encoding.row || vlSpec.encoding.column) {
+					// small multiples
+					let rowHeaderIdx = vgSpec.marks.findIndex((elem) => elem.name == "row_header"),
+						cellIdx = vgSpec.marks.findIndex((elem) => elem.name == "cell"),
+						yAxis = vgSpec.marks[rowHeaderIdx].axes.filter((elem) => elem.scale == "y"),
+						grids = vgSpec.marks[cellIdx].axes.filter((elem) => elem.grid);
+					originalAxis = grids.concat(yAxis);
+					vgSpec.marks[rowHeaderIdx].axes = vgSpec.marks[rowHeaderIdx].axes.filter((elem) => !(elem.scale == "y")); // remove y
+					vgSpec.marks[cellIdx].axes = vgSpec.marks[cellIdx].axes.filter((elem) => !elem.grid); // remove grid
+				} else {
+					// single chart
+					originalAxis = vgSpec.axes.filter((elem) => elem.scale == "y" || elem.grid);
+					vgSpec.axes = vgSpec.axes.filter((elem) => !(elem.scale == "y" || elem.grid)); // remove
+				}
+				console.log("originalAxis", originalAxis);
+				// change properties of original axis as needed
+				let yAxisIdx = originalAxis.findIndex((elem) => (elem.scale == "y" && !elem.grid)),
+					xGridIdx = originalAxis.findIndex((elem) => (elem.scale == "x" && elem.grid));
 				originalAxis[yAxisIdx].zindex = 1;
 				if (vlSpec.mark.type == "point") {
 					originalAxis[xGridIdx].translate = { "signal": "height" };
 					originalAxis[xGridIdx].tickOffset = { "signal": "-height" };
 				}
-				vgSpec.axes = vgSpec.axes.filter((elem) => !(elem.scale == "y" || elem.grid)); // remove
-				// re-encode data within facets...
 				// borrow encoding info from initial spec
-				let originalEncoding = vgSpec.marks[0].encode.update;
+				let originalEncoding;
+				if (vlSpec.encoding.row || vlSpec.encoding.column) {
+					// small multiples
+					let cellIdx = vgSpec.marks.findIndex((elem) => elem.name == "cell");
+					originalEncoding = vgSpec.marks[cellIdx].marks[0].encode.update;
+				} else {
+					// single chart
+					originalEncoding = vgSpec.marks[0].encode.update;
+				}
 				originalEncoding.shape = { signal: "shape" }; // assume point
-				// overwrite marks for not to avoid conflicts with compiled spec
-				vgSpec.marks = [ 
-					{
+				// re-encode data within facets...
+				if (vlSpec.encoding.row || vlSpec.encoding.column) {
+					// small multiples
+					// overwrite marks only inside of the inner cell
+					let cellIdx = vgSpec.marks.findIndex((elem) => elem.name == "cell");
+					vgSpec.marks[cellIdx] = {
 						// group by modelcheck group to create data sources for each subplot
 						type: "group",
 						from: {
@@ -210,15 +233,16 @@
 						// put modelcheck check group on the main axis
 						encode: {
 							enter: {
-								y: { scale: "yscale", field: "modelcheck_group" } 
+								y: { scale: "y_scale", field: "modelcheck_group" } 
 							}
 						},
 						// adjust the extent of the subplot area based on the band type scale created above
 						signals: [
-							{ name: "height", update: "bandwidth('yscale')" },
+							{ name: "height", update: "bandwidth('y_scale')" },
 							{ name: "shape", value: "circle" }
 						],
 						// re-encode whatever was on the original axis within each facet
+						// add nested scale
 						scales: originalScales,
 						// re-construct marks
 						marks: [
@@ -231,34 +255,90 @@
 						],
 						// add a nested axis
 						axes: originalAxis
-					}
-				];
+					};
+				} else {
+					// single chart
+					// overwrite marks to avoid conflicts with compiled spec
+					vgSpec.marks = [ 
+						{
+							// group by modelcheck group to create data sources for each subplot
+							type: "group",
+							from: {
+								facet: {
+									data: "data_0",
+									name: "facet",
+									groupby: "modelcheck_group" // do this!
+								}
+							},
+							// put modelcheck check group on the main axis
+							encode: {
+								enter: {
+									y: { scale: "y_scale", field: "modelcheck_group" } 
+								}
+							},
+							// adjust the extent of the subplot area based on the band type scale created above
+							signals: [
+								{ name: "height", update: "bandwidth('y_scale')" },
+								{ name: "shape", value: "circle" }
+							],
+							// re-encode whatever was on the original axis within each facet
+							// add nested scale
+							scales: originalScales,
+							// re-construct marks
+							marks: [
+								{
+									name: "marks",
+									from: { data: "facet" },
+									type: "symbol", // assume point
+									encode: { update: originalEncoding }
+								}
+							],
+							// add a nested axis
+							axes: originalAxis
+						}
+					];
+				}
 			} else { //if (vlSpec.encoding.y.field == outcomeName) or the outcome isn't encoded on either primary position
 				console.log("re-encoding x axis")
 				// double chart width
 				vgSpec.signals.push({ name: "width", update: "width*2" });
-				// add xscale if the outcome var is y
+				// add x_scale if the outcome var is y
 				vgSpec.scales.push({
-					name: "xscale",
+					name: "x_scale",
 					type: "band",
 					domain: {"data": "table", "field": "modelcheck_group"},
 					range: "width",
 					padding: 0.2
 				});
-				// we'll need to remove the original x scale and replace it inside of marks to get nested axes
-				let originalScales = vgSpec.scales.filter((elem) => elem.name == "x" );
-				vgSpec.scales = vgSpec.scales.filter((elem) => !(elem.name == "x") );
+				// we'll need to place the original x scale inside of marks to get nested axes
+				let originalScales = vgSpec.scales.filter((elem) => elem.name == "x");
 				// add axis for modelcheck group
 				vgSpec.axes.push({
 					orient: "bottom", 
-					scale: "xscale", 
+					scale: "x_scale", 
 					tickSize: 0, 
 					labelPadding: 40, 
 					zindex: 1
 				});
 				// we'll also remove the original x axis and grids, so we can later add them back inside of marks to get nested axes
-				let originalAxis = vgSpec.axes.filter((elem) => elem.scale == "x" || elem.grid),
-					xAxisIdx = originalAxis.findIndex((elem) => (elem.scale == "x" && !elem.grid)),
+				let originalAxis; 
+				if (vlSpec.encoding.row || vlSpec.encoding.column) {
+					// small multiples
+					let colFooterIdx = vgSpec.marks.findIndex((elem) => elem.name == "column_footer"),
+						cellIdx = vgSpec.marks.findIndex((elem) => elem.name == "cell"),
+						xAxis = vgSpec.marks[colFooterIdx].axes.filter((elem) => elem.scale == "x"),
+						grids = vgSpec.marks[cellIdx].axes.filter((elem) => elem.grid);
+					originalAxis = grids.concat(xAxis);
+					vgSpec.marks[colFooterIdx].axes = vgSpec.marks[colFooterIdx].axes.filter((elem) => !(elem.scale == "x")); // remove x
+					vgSpec.marks[cellIdx].axes = vgSpec.marks[cellIdx].axes.filter((elem) => !elem.grid); // remove grid
+				} else {
+					// single chart
+					originalAxis = vgSpec.axes.filter((elem) => elem.scale == "x" || elem.grid);
+					vgSpec.axes = vgSpec.axes.filter((elem) => !(elem.scale == "x" || elem.grid)); // remove
+				}
+				console.log("originalAxis", originalAxis);
+				// change properties of original axis as needed
+				let xAxisIdx = originalAxis.findIndex((elem) => (elem.scale == "x" && !elem.grid)),
 					xGridIdx = originalAxis.findIndex((elem) => (elem.scale == "x" && elem.grid));
 				originalAxis[xAxisIdx].zindex = 1;
 				originalAxis[xAxisIdx].offset = { "signal": "height" };
@@ -266,16 +346,23 @@
 					originalAxis[xGridIdx].translate = { "signal": "height" };
 					originalAxis[xGridIdx].tickOffset = { "signal": "-height" };
 				}
-				// console.log("original axis changed", originalAxis, xAxisIdx, xGridIdx);
-				// originalAxis[yGridIdx].offset = { "signal": "height" };
-				vgSpec.axes = vgSpec.axes.filter((elem) => !(elem.scale == "x" || elem.grid)); // remove
-				// re-encode data within facets...
 				// borrow encoding info from initial spec
-				let originalEncoding = vgSpec.marks[0].encode.update;
+				let originalEncoding;
+				if (vlSpec.encoding.row || vlSpec.encoding.column) {
+					// small multiples
+					let cellIdx = vgSpec.marks.findIndex((elem) => elem.name == "cell");
+					originalEncoding = vgSpec.marks[cellIdx].marks[0].encode.update;
+				} else {
+					// single chart
+					originalEncoding = vgSpec.marks[0].encode.update;
+				}
 				originalEncoding.shape = { signal: "shape" }; // assume point
-				// overwrite marks for not to avoid conflicts with compiled spec
-				vgSpec.marks = [ 
-					{
+				// re-encode data within facets...
+				if (vlSpec.encoding.row || vlSpec.encoding.column) {
+					// small multiples
+					// overwrite marks only inside of the inner cell
+					let cellIdx = vgSpec.marks.findIndex((elem) => elem.name == "cell");
+					vgSpec.marks[cellIdx] = {
 						// group by modelcheck group to create data sources for each subplot
 						type: "group",
 						from: {
@@ -288,15 +375,16 @@
 						// put modelcheck check group on the main axis
 						encode: {
 							enter: {
-								x: { scale: "xscale", field: "modelcheck_group" } 
+								x: { scale: "x_scale", field: "modelcheck_group" } 
 							}
 						},
 						// adjust the extent of the subplot area based on the band type scale created above
 						signals: [
-							{ name: "width", update: "bandwidth('xscale')" },
+							{ name: "width", update: "bandwidth('x_scale')" },
 							{ name: "shape", value: "circle" }
 						],
 						// re-encode whatever was on the original axis within each facet
+						// add nested scale
 						scales: originalScales,
 						// re-construct marks
 						marks: [
@@ -309,8 +397,49 @@
 						],
 						// add a nested axis
 						axes: originalAxis
-					}
-				];
+					};
+				} else {
+					// single chart
+					// overwrite marks to avoid conflicts with compiled spec
+					vgSpec.marks = [ 
+						{
+							// group by modelcheck group to create data sources for each subplot
+							type: "group",
+							from: {
+								facet: {
+									data: "data_0",
+									name: "facet",
+									groupby: "modelcheck_group" // do this!
+								}
+							},
+							// put modelcheck check group on the main axis
+							encode: {
+								enter: {
+									x: { scale: "x_scale", field: "modelcheck_group" } 
+								}
+							},
+							// adjust the extent of the subplot area based on the band type scale created above
+							signals: [
+								{ name: "width", update: "bandwidth('x_scale')" },
+								{ name: "shape", value: "circle" }
+							],
+							// re-encode whatever was on the original axis within each facet
+							// add nested scale
+							scales: originalScales,
+							// re-construct marks
+							marks: [
+								{
+									name: "marks",
+									from: { data: "facet" },
+									type: "symbol", // assume point
+									encode: { update: originalEncoding }
+								}
+							],
+							// add a nested axis
+							axes: originalAxis
+						}
+					];
+				}
 			}
 		}
 
@@ -320,9 +449,8 @@
 		// 	vgSpec.legends[0].symbolSize = 70
 		// }
 
-		// console.log("vgSpec.data", vgSpec.data);
-		console.log("vgSpec after changes", vgSpec);
 	}
+	console.log("vgSpec", vgSpec);
 
 	// function onChange(event) {
 	// 	showPredictionOrResidual = event.currentTarget.value;
