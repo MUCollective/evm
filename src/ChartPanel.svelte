@@ -187,7 +187,8 @@
 					xGridIdx = originalAxis.findIndex((elem) => elem.scale == "x" && elem.grid);
 				originalAxis[yAxisIdx].zindex = 1;
 				if (vlSpec.mark.type == "point") {
-					originalAxis[xGridIdx].offset = { "signal": "height" };
+					originalAxis[xGridIdx].translate = { "signal": "height" };
+					originalAxis[xGridIdx].tickOffset = { "signal": "-height" };
 				}
 				vgSpec.axes = vgSpec.axes.filter((elem) => !(elem.scale == "y" || elem.grid)); // remove
 				// re-encode data within facets...
@@ -262,7 +263,8 @@
 				originalAxis[xAxisIdx].zindex = 1;
 				originalAxis[xAxisIdx].offset = { "signal": "height" };
 				if (vlSpec.mark.type == "point") {
-					originalAxis[xGridIdx].offset = { "signal": "height" };
+					originalAxis[xGridIdx].translate = { "signal": "height" };
+					originalAxis[xGridIdx].tickOffset = { "signal": "-height" };
 				}
 				// console.log("original axis changed", originalAxis, xAxisIdx, xGridIdx);
 				// originalAxis[yGridIdx].offset = { "signal": "height" };
