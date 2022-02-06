@@ -203,6 +203,12 @@
 				// case bars along y-axis
 				vlSpec.mark = { type: "bar", orient: "horizontal" };
 				vlSpec.encoding.x = { field: varName,  aggregate: "count" };	
+			} else if (vlSpec.encoding.y && vlSpec.encoding.y.type == "quantitative") {
+				// case strips along x-axis
+				vlSpec.mark = { type: "tick", orient: "horizontal" };
+			} else if (vlSpec.encoding.x && vlSpec.encoding.x.type == "quantitative") {
+				// case strips along y-axis
+				vlSpec.mark = { type: "tick", orient: "vertical" };
 			}
 		// otherwise don't show anything
 		} else {
