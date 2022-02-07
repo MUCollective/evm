@@ -53,12 +53,13 @@
 
 	function onChange(event) {
 		showPredictionOrResidual = event.currentTarget.value;
-		console.log(showPredictionOrResidual);
+		// console.log(showPredictionOrResidual);
 	}
+
 	onMount(async () => {
 		// load data
 		data = await d3.json("./data/cars.json");
-		console.log("loaded data", data);
+		// console.log("loaded data", data);
 		dataChanged = data;
 		dataChanged = [...dataChanged];
 		dataTrans = data;
@@ -73,71 +74,86 @@
 		});
 		mounted = true;
 		originalDndState = deepCopy(dndState);
-		console.log("originalDndState", originalDndState);
-		console.log(dataChanged);
-		console.log(
-			"calculateEstimatesPerStudy calculateEstimatesPerStudy calculateEstimatesPerStudy"
-		);
+		// console.log("originalDndState", originalDndState);
+		// console.log(dataChanged);
+		// console.log(
+		// 	"calculateEstimatesPerStudy calculateEstimatesPerStudy calculateEstimatesPerStudy"
+		// );
 	});
+
 	function handleDndConsider(shelfId: any, e: any) {
 		const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
 		dndState[shelfIdx].items = e.detail.items;
 	}
+
 	function handleDndFinalize(shelfId: any, e: any) {
 		if (e.srcElement.id != "variables") {
 			const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
 			// 1 if x-row
-			console.log(
-				"current",
-				dndState[shelfIdx].items[dndState[shelfIdx].items.length - 1]
-					.name
-			);
+			// console.log(
+			// 	"current",
+			// 	dndState[shelfIdx].items[dndState[shelfIdx].items.length - 1]
+			// 		.name
+			// );
 			var varName = e.detail.items[0].name;
-			console.log("compare", varName);
+			// console.log("compare", varName);
 			if (
 				dndState[shelfIdx].items[dndState[shelfIdx].items.length - 1]
 					.name != varName
 			) {
-				console.log("tasukete T_T");
-				console.log("Moniter dndState dndState dndState");
-				console.log(dndState);
+				// console.log("HERE !!!!!!!!!!!");
+				// console.log(dndState);
 				encodingToData(
 					dndState[shelfIdx].name,
 					shelfId,
 					dndState[shelfIdx].items
 				);
-				console.log("what about now ????");
-				console.log(dndState);
+				// console.log("what about now !!!!!!!!!!!");
+				// console.log(dndState);
 			}
-			console.log(
-				"before change dndState[shelfIdx].items",
-				dndState[shelfIdx],
-				dndState[shelfIdx].items
-			);
-			console.log("e.detail.items", e.detail.items);
+			// console.log(
+			// 	"before change dndState[shelfIdx].items",
+			// 	dndState[shelfIdx],
+			// 	dndState[shelfIdx].items
+			// );
+			// console.log("e.detail.items", e.detail.items);
 			dndState[shelfIdx].items = e.detail.items;
 			dndState = [...dndState];
 			prevSpec = deepCopy(vlSpec);
 			if (e.detail.items.length != 0) {
-				var varSample = data[0][varName];
-				console.log("varSample", varSample);
-				console.log(data[0]);
-				console.log(varName, data[0][varName]);
-				var varType;
-				if (typeof varSample == "number") {
+				// var varSample = data[0][varName];
+				// console.log("varSample", varSample);
+				// console.log(data[0]);
+				// console.log(varName, data[0][varName]);
+				// var varType;
+				// if (typeof varSample == "number") {
+				// 	varType = "quantitative";
+				// } else if (typeof varSample == "string") {
+				// 	varType = "nominal";
+				// }
+				var varType, 
+					varValues = data.map((row) => row[varName]),
+					varUnique = [... new Set(varValues)];
+				console.log(varName);
+				console.log("varUnique", varUnique);
+				if (typeof varUnique[0] == "number" && varUnique.length > 9) {
 					varType = "quantitative";
-				} else if (typeof varSample == "string") {
+				} else if (typeof varUnique[0] == "number") {
+					varType = "ordinal";
+				} else {
 					varType = "nominal";
 				}
+
 				const tempEncoding = {
-					field: e.detail.items[0].name,
+					field: varName,
 					type: varType,
 				};
-				if (varType == "nominal") {
-					tempEncoding.aggregate = "count";
-					vlSpec.mark = "bar";
-				}
-				console.log(tempEncoding);
+				// if (varType == "nominal") {
+				// 	tempEncoding.aggregate = "count";
+				// 	vlSpec.mark = "bar";
+				// }
+				// console.log(tempEncoding);
+
 				if (shelfId == "x-drop") {
 					vlSpec.encoding.x = tempEncoding;
 				}
@@ -146,32 +162,73 @@
 				}
 				if (shelfId == "row-drop") {
 					vlSpec.encoding.row = { field: e.detail.items[0].name };
-					console.log("facet", vlSpec);
+					// console.log("facet", vlSpec);
 				}
 				if (shelfId == "col-drop") {
 					vlSpec.encoding.column = { field: e.detail.items[0].name };
-					console.log("facet", vlSpec);
+					// console.log("facet", vlSpec);
 				}
 			}
-			// continuous x continuous scatter plot
-			if (vlSpec.encoding.x && vlSpec.encoding.y) {
-				if (
-					vlSpec.encoding.x.type == vlSpec.encoding.y.type &&
-					vlSpec.encoding.x.type == "quantitative"
-				) {
-					vlSpec.mark = "point";
-				}
-			}
+			determineChartType(vlSpec, varName);
 			vlSpec = { ...vlSpec };
 			specChanged++;
 			console.log("vlspec:", vlSpec);
 		}
 	}
+
+	function determineChartType(vlSpec: VisualizationSpec, varName: string) {
+		// determine marks for bivariate charts
+		if (vlSpec.encoding.x && vlSpec.encoding.y) {
+			if (vlSpec.encoding.x.type == vlSpec.encoding.y.type && vlSpec.encoding.x.type == "quantitative") {
+				// case scatterplot
+				vlSpec.mark = { type: "point", size: 30, strokeWidth: 2	};
+			} else if (vlSpec.encoding.x.type == "quantitative" && (vlSpec.encoding.y.type == "nominal" || vlSpec.encoding.y.type == "ordinal")) {
+				// case strips along x-axis
+				vlSpec.mark = { type: "tick", orient: "vertical" };
+			} else if (vlSpec.encoding.y.type == "quantitative" && (vlSpec.encoding.x.type == "nominal" || vlSpec.encoding.x.type == "ordinal")) {
+				// case strips along x-axis
+				vlSpec.mark = { type: "tick", orient: "horizontal" };
+			} else if ((vlSpec.encoding.x.type == "nominal" || vlSpec.encoding.x.type == "ordinal") && (vlSpec.encoding.y.type == "nominal" || vlSpec.encoding.y.type == "ordinal")) {
+				// case 2d histogram
+				vlSpec.mark = { type: "circle" };
+				vlSpec.encoding.size = { field: varName,  aggregate: "count" };	
+			}
+		// determine marks for univariate charts
+		} else if ((vlSpec.encoding.x || vlSpec.encoding.y) && !(vlSpec.encoding.x && vlSpec.encoding.y)) {
+			if (vlSpec.encoding.x && (vlSpec.encoding.x.type == "nominal" || vlSpec.encoding.x.type == "ordinal")) {
+				// case bars along x-axis
+				vlSpec.mark = { type: "bar", orient: "vertical" };
+				vlSpec.encoding.y = { field: varName,  aggregate: "count" };		
+			} else if (vlSpec.encoding.y && (vlSpec.encoding.y.type == "nominal" || vlSpec.encoding.y.type == "ordinal")) {
+				// case bars along y-axis
+				vlSpec.mark = { type: "bar", orient: "horizontal" };
+				vlSpec.encoding.x = { field: varName,  aggregate: "count" };	
+			} else if (vlSpec.encoding.y && vlSpec.encoding.y.type == "quantitative") {
+				// case strips along x-axis
+				vlSpec.mark = { type: "tick", orient: "horizontal" };
+			} else if (vlSpec.encoding.x && vlSpec.encoding.x.type == "quantitative") {
+				// case strips along y-axis
+				vlSpec.mark = { type: "tick", orient: "vertical" };
+			}
+		// otherwise don't show anything
+		} else {
+			// reset
+			vlSpec.mark = "tick";
+			delete vlSpec.encoding.x;
+			delete vlSpec.encoding.y;
+			delete vlSpec.encoding.size;
+			delete vlSpec.encoding.color;
+			delete vlSpec.encoding.row;
+			delete vlSpec.encoding.column;
+		}
+	}
+
 	function changeMark(selected: any) {
 		vlSpec.mark = selected;
 		vlSpec = { ...vlSpec };
 		specChanged++;
 	}
+
 	function changeAggregation(aggr: any, shelfId: any) {
 		if (shelfId == "x-drop" && typeof vlSpec.encoding.x != "undefined") {
 			if (aggr == "none") {
@@ -238,6 +295,7 @@
 		vlSpec = { ...vlSpec };
 		specChanged++;
 	}
+
 	// var filterCount = 0;
 	function filterData(
 		varToFilter,
@@ -256,10 +314,10 @@
 			value2: conditionValue2,
 		});
 		filter = [...filter];
-		console.log(filter);
-		console.log(varToFilter);
+		// console.log(filter);
+		// console.log(varToFilter);
 		filter.forEach((f) => {
-			console.log(f);
+			// console.log(f);
 			filterHelper(
 				f.variable,
 				f.includeExclude,
@@ -268,10 +326,11 @@
 				f.value2
 			);
 		});
-		console.log(dataChanged);
-		console.log(dndState);
+		// console.log(dataChanged);
+		// console.log(dndState);
 		specChanged++;
 	}
+
 	function filterHelper(
 		varToFilter,
 		includeOrExclude,
@@ -279,14 +338,14 @@
 		conditionValue1,
 		conditionValue2
 	) {
-		console.log("in filterhepler, dataChanged:", dataChanged);
-		console.log(
-			varToFilter,
-			includeOrExclude,
-			condition,
-			conditionValue1,
-			conditionValue2
-		);
+		// console.log("in filterhepler, dataChanged:", dataChanged);
+		// console.log(
+		// 	varToFilter,
+		// 	includeOrExclude,
+		// 	condition,
+		// 	conditionValue1,
+		// 	conditionValue2
+		// );
 		dataChanged = dataChanged.filter(function (entry) {
 			if (condition == "greater") {
 				if (includeOrExclude == "include") {
@@ -334,8 +393,9 @@
 		});
 		// dataChanged = newData;
 		dataChanged = [...dataChanged];
-		console.log(dataChanged);
+		// console.log(dataChanged);
 	}
+
 	function removeFilter(index, clearAll = false) {
 		dataChanged = data;
 		dataChanged = [...dataChanged];
@@ -343,43 +403,43 @@
 		if (clearAll) {
 			filter = [];
 		} else {
-			console.log(filter);
+			// console.log(filter);
 			// var removedFilter = filter.splice(index, 1);
 			var removedFilter = filter[index];
 			if (index != 0) {
-				console.log("filter.slice(0, index)", filter.slice(0, index));
-				console.log(
-					"filter.slice(index, filter.length)",
-					filter.slice(index, filter.length)
-				);
+				// console.log("filter.slice(0, index)", filter.slice(0, index));
+				// console.log(
+				// 	"filter.slice(index, filter.length)",
+				// 	filter.slice(index, filter.length)
+				// );
 				filterTemp = filter
 					.slice(0, index)
 					.concat(filter.slice(index + 1, filter.length));
 			} else {
 				filterTemp = filter.slice(1);
 			}
-			console.log("filterTemp", filterTemp);
-			console.log("filter", filter);
+			// console.log("filterTemp", filterTemp);
+			// console.log("filter", filter);
 			Promise.all([filterTemp]).then((values) => {
 				filterTemp = values[0];
-				console.log("filterTemp", filterTemp);
+				// console.log("filterTemp", filterTemp);
 				filter = [...filterTemp];
-				console.log(filter);
+				// console.log(filter);
 				// filter = [...filter];
-				console.log("removing", removedFilter);
-				console.log("after removed, new filter", filter);
+				// console.log("removing", removedFilter);
+				// console.log("after removed, new filter", filter);
 			});
 			// filter = filterTemp;
 			filter = [...filterTemp];
-			console.log(filter);
+			// console.log(filter);
 			// filter = [...filter];
-			console.log("removing", removedFilter);
-			console.log("after removed, new filter", filter);
-			console.log(dataChanged.length);
+			// console.log("removing", removedFilter);
+			// console.log("after removed, new filter", filter);
+			// console.log(dataChanged.length);
 			dataChanged = data;
 			dataChanged = [...dataChanged];
-			console.log(data.length);
-			console.log(dataChanged.length);
+			// console.log(data.length);
+			// console.log(dataChanged.length);
 			if (filter.length != 0) {
 				filter.forEach((f) => {
 					filterData(
@@ -394,24 +454,26 @@
 		}
 		specChanged++;
 	}
+
 	function transformData(transVar, transform) {
 		dataTrans = dataChanged;
 		dataTrans = [...dataTrans];
-		console.log("transVar", transVar, "transform", transform);
+		// console.log("transVar", transVar, "transform", transform);
 		transformation.push({
 			variable: transVar,
 			transformation: transform,
 		});
 		transformation = [...transformation];
-		console.log(transformation);
+		// console.log(transformation);
 		transformation.forEach((t) => {
 			transformHelper(transVar, transform);
 		});
 		specChanged++;
 	}
+
 	function transformHelper(variable, t) {
-		console.log("transformHelper");
-		console.log(dataTrans[0]);
+		// console.log("transformHelper");
+		// console.log(dataTrans[0]);
 		var before = [];
 		var after = [];
 		dataTrans.forEach((e) => {
@@ -428,48 +490,50 @@
 			}
 		});
 		dataTransformed[variable] = { before: before, after: after };
-		console.log(dataTransformed);
+		// console.log(dataTransformed);
 		dataTrans = [...dataTrans];
 		dataChanged = [...dataTrans];
 	}
+
 	function removeTrans(index, clearAll = false) {
 		if (clearAll) {
 		}
 	}
+
 	function removeModel(index, removeAll = false) {
 		var modelTemp;
 		if (removeAll) {
 			models = [];
 			modeling = false;
 		} else {
-			console.log(models);
+			console.log("models object", models);
 			// var removedFilter = filter.splice(index, 1);
 			var removedModel = models[index];
 			if (index != 0) {
-				console.log("filter.slice(0, index)", models.slice(0, index));
-				console.log(
-					"filter.slice(0, index-1)",
-					models.slice(0, index - 1)
-				);
-				console.log(
-					"filter.slice(index, filter.length)",
-					models.slice(index, models.length)
-				);
+				// console.log("filter.slice(0, index)", models.slice(0, index));
+				// console.log(
+				// 	"filter.slice(0, index-1)",
+				// 	models.slice(0, index - 1)
+				// );
+				// console.log(
+				// 	"filter.slice(index, filter.length)",
+				// 	models.slice(index, models.length)
+				// );
 				modelTemp = models
 					.slice(0, index)
 					.concat(models.slice(index + 1, models.length));
-				console.log("modelTemp", modelTemp);
+				// console.log("modelTemp", modelTemp);
 			} else {
 				modelTemp = models.slice(1);
-				console.log("removing first one", modelTemp);
+				// console.log("removing first one", modelTemp);
 			}
 		}
 		Promise.all([modelTemp]).then((values) => {
 			console.log("values", values);
 			modelTemp = values[0];
-			console.log("filterTemp", modelTemp);
+			// console.log("filterTemp", modelTemp);
 			models = [...modelTemp];
-			console.log(models);
+			console.log("models after promise", models);
 			// filter = [...filter];
 			console.log("removing", removedModel);
 			console.log("after removed, new filter", models);
@@ -477,6 +541,7 @@
 		models = [...modelTemp];
 		// showModel = false;
 	}
+
 	// call model on server
 	async function callModel(mu, sigma = "~ 1", useData, model = "normal") {
 		showLoadingIcon = true;
@@ -509,11 +574,12 @@
 		}
 		return url.split("\n")[0];
 	}
+
 	async function calculate_residuals(useData) {
 		showLoadingIcon = true;
 		ocpu.seturl("//kalealex.ocpu.io/modelcheck/R");
 		var url;
-		console.log("in cal residual", useData);
+		console.log("in calc residual", useData);
 		console.log(models);
 		url = await ocpu.rpc("calc_residuals", {
 			df: JSON.stringify(useData),
@@ -521,6 +587,7 @@
 		});
 		return url.split("\n")[0];
 	}
+
 	// merge dataframes containing model results on server
 	async function mergeModels(oldData, newData) {
 		ocpu.seturl("//kalealex.ocpu.io/modelcheck/R");
@@ -530,6 +597,7 @@
 		});
 		return url.split("\n")[0];
 	}
+
 	// fetch data from open cpu given a url
 	async function fetchData(url) {
 		const newData = await fetch(
@@ -546,6 +614,7 @@
 			});
 		return newData;
 	}
+
 	// add model to the vis canvas
 	async function addModel(mu, sigma, model = "normal") {
 		showPredictionOrResidual = "prediction";
@@ -600,8 +669,8 @@
 			callModel(mu, sigma, dataOnly, model)
 				.then(function (response) {
 					showLoadingIcon = true;
-					console.log("this should be a url");
-					console.log(response);
+					// console.log("this should be a url");
+					// console.log(response);
 					return fetchData(response);
 				})
 				.then(function (modelData) {
@@ -612,8 +681,8 @@
 					// merge old model data from dataChanged with new model data from modelData
 					mergeModels(dataChanged, modelData)
 						.then(function (response) {
-							console.log("this should be a url");
-							console.log(response);
+							// console.log("this should be a url");
+							// console.log(response);
 							return fetchData(response);
 						})
 						.then(function (mergedData) {
@@ -672,8 +741,8 @@
 			callModel(mu, sigma, dataChanged, model)
 				.then(function (response) {
 					showLoadingIcon = true;
-					console.log("this should be a url");
-					console.log(response);
+					// console.log("this should be a url");
+					// console.log(response);
 					return fetchData(response);
 				})
 				.then(function (modelData) {
@@ -698,6 +767,7 @@
 		specChanged++;
 		// console.log(dataChanged);
 	}
+
 	function showResidual() {
 		console.log("residual!!!!!!!");
 		// if (residualList.length !== 0) {
@@ -707,8 +777,8 @@
 		calculate_residuals(dataChanged)
 			.then(function (response) {
 				showLoadingIcon = true;
-				console.log("this should be a url for residual");
-				console.log(response);
+				// console.log("this should be a url for residual");
+				// console.log(response);
 				return fetchData(response);
 			})
 			.then(function (residualData) {
@@ -744,6 +814,7 @@
 		// }
 		console.log(vlSpec);
 	}
+
 	function unshowResidual() {
 		console.log("unshowResidual");
 		console.log(dataChanged);
@@ -752,32 +823,42 @@
 		specChanged++;
 		// }
 	}
+
 	function encodingToData(variable: any, shelfId: any, item: any) {
-		console.log("variable", variable, "shelfId", shelfId, "item", item);
-		console.log("before any changes", vlSpec.encoding);
-		console.log(typeof dndState[0]);
-		console.log(item);
+		// console.log("variable", variable, "shelfId", shelfId, "item", item);
+		// console.log("before any changes", vlSpec.encoding);
+		// console.log(typeof dndState[0]);
+		// console.log(item);
 		const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
-		console.log("why doesn't it change", dndState[shelfIdx]);
+		// console.log("why doesn't it change", dndState[shelfIdx]);
 		dndState[shelfIdx].items = [];
-		console.log(
-			"?????",
-			dndState[shelfIdx],
-			"this should be empty",
-			dndState[shelfIdx].items
-		);
-		console.log(dndState[0]);
+		// console.log(
+		// 	"?????",
+		// 	dndState[shelfIdx],
+		// 	"this should be empty",
+		// 	dndState[shelfIdx].items
+		// );
+		// console.log(dndState[0]);
 		dndState[0].items.push(item[item.length - 1]);
-		console.log("now?????", dndState[shelfIdx]);
-		console.log(dndState);
+		// console.log("now?????", dndState[shelfIdx]);
+		// console.log(dndState);
 		dndState = [...dndState];
-		if (shelfId == "x-drop" || shelfId == "y-drop") {
-			if (shelfId == "x-drop") {
-				delete vlSpec.encoding.x;
-			} else {
-				delete vlSpec.encoding.y;
+		let remainingVarName; // for determining chart type
+		delete vlSpec.encoding.size; // clear aggregation 2d histogram (we'll add it back if needed)
+		if (shelfId == "x-drop") {
+			delete vlSpec.encoding.x;
+			if (vlSpec.encoding.y && vlSpec.encoding.y.aggregate) {
+				delete vlSpec.encoding.y; // clear aggregation for bar chart
 			}
-			vlSpec.mark = "tick";
+			remainingVarName = vlSpec.encoding.y ? vlSpec.encoding.y.field : undefined;
+			// vlSpec.mark = "tick";
+		} else if (shelfId == "y-drop") {
+			delete vlSpec.encoding.y;
+			if (vlSpec.encoding.x && vlSpec.encoding.x.aggregate) {
+				delete vlSpec.encoding.x; // clear aggregation for bar chart
+			}
+			remainingVarName = vlSpec.encoding.x ? vlSpec.encoding.x.field : undefined;
+			// vlSpec.mark = "tick";
 		}
 		if (shelfId == "row-drop") {
 			delete vlSpec.encoding.row;
@@ -785,11 +866,28 @@
 		if (shelfId == "col-drop") {
 			delete vlSpec.encoding.column;
 		}
+		if (!remainingVarName) {
+			remainingVarName = vlSpec.encoding.y ? vlSpec.encoding.y.field : vlSpec.encoding.x ? vlSpec.encoding.x.field : undefined;
+		} 
+		if (remainingVarName) {
+			determineChartType(vlSpec, remainingVarName);
+		} else {
+			// reset
+			vlSpec.mark = "tick";
+			delete vlSpec.encoding.x;
+			delete vlSpec.encoding.y;
+			delete vlSpec.encoding.size;
+			delete vlSpec.encoding.color;
+			delete vlSpec.encoding.row;
+			delete vlSpec.encoding.column;
+		}
 		vlSpec = { ...vlSpec };
 		specChanged++;
 	}
+
 	// filter, transform, model
-	function orderOfOperation() {}
+	// function orderOfOperation() {}
+
 	function deepCopy(inObject) {
 		let outObject, value, key;
 		if (typeof inObject !== "object" || inObject === null) {
@@ -817,23 +915,23 @@
 	// 	return result;
 	// }
 
-	function saveFile(fileName) {
-        // var a = document.createElement("a");
-        // a.href = file;
-        // a.setAttribute("download", fileName);
-        // a.click();
-        console.log("what????");
-        var output = [];
-        output["data"] = JSON.stringify(dataChanged);
-        output["spec"] = JSON.stringify(vlSpec);
-        console.log(output);
-        // var bb = new Blob(output, { type: 'text/plain' });
-        // var a = document.createElement('a');
-        // a.download = fileName + '.json';
-        // a.href = window.URL.createObjectURL(bb);
-        // a.textContent = 'Download ready';
-        // a.click(); 
-    }
+	// function saveFile(fileName) {
+    //     // var a = document.createElement("a");
+    //     // a.href = file;
+    //     // a.setAttribute("download", fileName);
+    //     // a.click();
+    //     console.log("what????");
+    //     var output = [];
+    //     output["data"] = JSON.stringify(dataChanged);
+    //     output["spec"] = JSON.stringify(vlSpec);
+    //     console.log(output);
+    //     // var bb = new Blob(output, { type: 'text/plain' });
+    //     // var a = document.createElement('a');
+    //     // a.download = fileName + '.json';
+    //     // a.href = window.URL.createObjectURL(bb);
+    //     // a.textContent = 'Download ready';
+    //     // a.click(); 
+    // }
 </script>
 
 <svelte:head>
@@ -847,16 +945,6 @@
 	{#if mounted}
 		<Grid fullWidth>
 			<Row style="display: flex; flex-wrap: nowrap;">
-				<!-- TODO:
-					+ add Vertical position (drop zone) with it's own shelf id ('y-drop')
-					+ create a json state that controls what renders on all of the shelves, keeping track of items across shelves
-					+ programmatically generate drop zones from a json spec
-					+ figure out why drop zones don't work, why trigger is always "droppedOutsideOfAny" 
-						(problem was that drop zones had no height; added css below to fix)
-					- link Chart to variables in drop zone
-					- format drop zones and draggable blocks similar to Polestar
-					- use css to modify layout to roughly match Polestar, leaving room for the modeling sidebar on the right
-				-->
 				<Column style="min-width: 220px; max-width: 220px;">
 					<DataPanel
 						{dndState}
