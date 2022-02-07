@@ -42,6 +42,7 @@
             </div>
         {/each}
         {console.log("exits data panel")}
+        {console.log(dndState)}
         {console.log("==============================")}
     </section>
 </div>

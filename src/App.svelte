@@ -98,14 +98,15 @@
 				dndState[shelfIdx].items[dndState[shelfIdx].items.length - 1]
 					.name != varName
 			) {
-				console.log("HERE !!!!!!!!!!!");
+				console.log("tasukete T_T");
+				console.log("Moniter dndState dndState dndState");
 				console.log(dndState);
 				encodingToData(
 					dndState[shelfIdx].name,
 					shelfId,
 					dndState[shelfIdx].items
 				);
-				console.log("what about now !!!!!!!!!!!");
+				console.log("what about now ????");
 				console.log(dndState);
 			}
 			console.log(
@@ -170,7 +171,6 @@
 		vlSpec.mark = selected;
 		vlSpec = { ...vlSpec };
 		specChanged++;
-		console.log("CHANGING MARK,", selected, vlSpec);
 	}
 	function changeAggregation(aggr: any, shelfId: any) {
 		if (shelfId == "x-drop" && typeof vlSpec.encoding.x != "undefined") {
