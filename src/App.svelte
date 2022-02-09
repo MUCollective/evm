@@ -84,56 +84,57 @@
 	function handleDndConsider(shelfId: any, e: any) {
 		const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
 		dndState[shelfIdx].items = e.detail.items;
+		console.log("in consider");
+		console.log(dndState);
+		console.log(dndState[shelfIdx]);
+
+		// if (dndState[0].items.length == 9) {
+		// 	dndState[0].items.forEach((d) => {
+		// 		if (typeof d.isDndShadowItem != "undefined") {
+		// 			console.log("shadow item");
+		// 			d.isDndShadowItem = false;
+		// 		}
+		// 	});
+		// }
 	}
 
 	function handleDndFinalize(shelfId: any, e: any) {
+		console.log("finalize");
+		console.log("shelfId", shelfId);
+		console.log("e", e);
+		if (e.srcElement.id == "variables") {
+			dndState[0].items.forEach((d) => {
+				if (typeof d.isDndShadowItem != "undefined") {
+					console.log("shadow item");
+					// d.isDndShadowItem = false;
+					delete d.isDndShadowItem;
+				}
+			});
+		}
+		console.log(dndState, "after change");
 		if (e.srcElement.id != "variables") {
 			const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
-			// 1 if x-row
-			// console.log(
-			// 	"current",
-			// 	dndState[shelfIdx].items[dndState[shelfIdx].items.length - 1]
-			// 		.name
-			// );
+			console.log("handle dnd finalize");
+			console.log("dndState[shelfIdx].items");
+			console.log(dndState[shelfIdx].items);
 			var varName = e.detail.items[0].name;
-			// console.log("compare", varName);
 			if (
 				dndState[shelfIdx].items[dndState[shelfIdx].items.length - 1]
 					.name != varName
 			) {
-				// console.log("HERE !!!!!!!!!!!");
-				// console.log(dndState);
 				encodingToData(
 					dndState[shelfIdx].name,
 					shelfId,
 					dndState[shelfIdx].items
 				);
-				// console.log("what about now !!!!!!!!!!!");
-				// console.log(dndState);
 			}
-			// console.log(
-			// 	"before change dndState[shelfIdx].items",
-			// 	dndState[shelfIdx],
-			// 	dndState[shelfIdx].items
-			// );
-			// console.log("e.detail.items", e.detail.items);
 			dndState[shelfIdx].items = e.detail.items;
 			dndState = [...dndState];
 			prevSpec = deepCopy(vlSpec);
 			if (e.detail.items.length != 0) {
-				// var varSample = data[0][varName];
-				// console.log("varSample", varSample);
-				// console.log(data[0]);
-				// console.log(varName, data[0][varName]);
-				// var varType;
-				// if (typeof varSample == "number") {
-				// 	varType = "quantitative";
-				// } else if (typeof varSample == "string") {
-				// 	varType = "nominal";
-				// }
-				var varType, 
+				var varType,
 					varValues = data.map((row) => row[varName]),
-					varUnique = [... new Set(varValues)];
+					varUnique = [...new Set(varValues)];
 				console.log(varName);
 				console.log("varUnique", varUnique);
 				if (typeof varUnique[0] == "number" && varUnique.length > 9) {
@@ -148,11 +149,6 @@
 					field: varName,
 					type: varType,
 				};
-				// if (varType == "nominal") {
-				// 	tempEncoding.aggregate = "count";
-				// 	vlSpec.mark = "bar";
-				// }
-				// console.log(tempEncoding);
 
 				if (shelfId == "x-drop") {
 					vlSpec.encoding.x = tempEncoding;
@@ -162,11 +158,9 @@
 				}
 				if (shelfId == "row-drop") {
 					vlSpec.encoding.row = { field: e.detail.items[0].name };
-					// console.log("facet", vlSpec);
 				}
 				if (shelfId == "col-drop") {
 					vlSpec.encoding.column = { field: e.detail.items[0].name };
-					// console.log("facet", vlSpec);
 				}
 			}
 			determineChartType(vlSpec, varName);
@@ -179,38 +173,71 @@
 	function determineChartType(vlSpec: VisualizationSpec, varName: string) {
 		// determine marks for bivariate charts
 		if (vlSpec.encoding.x && vlSpec.encoding.y) {
-			if (vlSpec.encoding.x.type == vlSpec.encoding.y.type && vlSpec.encoding.x.type == "quantitative") {
+			if (
+				vlSpec.encoding.x.type == vlSpec.encoding.y.type &&
+				vlSpec.encoding.x.type == "quantitative"
+			) {
 				// case scatterplot
-				vlSpec.mark = { type: "point", size: 30, strokeWidth: 2	};
-			} else if (vlSpec.encoding.x.type == "quantitative" && (vlSpec.encoding.y.type == "nominal" || vlSpec.encoding.y.type == "ordinal")) {
+				vlSpec.mark = { type: "point", size: 30, strokeWidth: 2 };
+			} else if (
+				vlSpec.encoding.x.type == "quantitative" &&
+				(vlSpec.encoding.y.type == "nominal" ||
+					vlSpec.encoding.y.type == "ordinal")
+			) {
 				// case strips along x-axis
 				vlSpec.mark = { type: "tick", orient: "vertical" };
-			} else if (vlSpec.encoding.y.type == "quantitative" && (vlSpec.encoding.x.type == "nominal" || vlSpec.encoding.x.type == "ordinal")) {
+			} else if (
+				vlSpec.encoding.y.type == "quantitative" &&
+				(vlSpec.encoding.x.type == "nominal" ||
+					vlSpec.encoding.x.type == "ordinal")
+			) {
 				// case strips along x-axis
 				vlSpec.mark = { type: "tick", orient: "horizontal" };
-			} else if ((vlSpec.encoding.x.type == "nominal" || vlSpec.encoding.x.type == "ordinal") && (vlSpec.encoding.y.type == "nominal" || vlSpec.encoding.y.type == "ordinal")) {
+			} else if (
+				(vlSpec.encoding.x.type == "nominal" ||
+					vlSpec.encoding.x.type == "ordinal") &&
+				(vlSpec.encoding.y.type == "nominal" ||
+					vlSpec.encoding.y.type == "ordinal")
+			) {
 				// case 2d histogram
 				vlSpec.mark = { type: "circle" };
-				vlSpec.encoding.size = { field: varName,  aggregate: "count" };	
+				vlSpec.encoding.size = { field: varName, aggregate: "count" };
 			}
-		// determine marks for univariate charts
-		} else if ((vlSpec.encoding.x || vlSpec.encoding.y) && !(vlSpec.encoding.x && vlSpec.encoding.y)) {
-			if (vlSpec.encoding.x && (vlSpec.encoding.x.type == "nominal" || vlSpec.encoding.x.type == "ordinal")) {
+			// determine marks for univariate charts
+		} else if (
+			(vlSpec.encoding.x || vlSpec.encoding.y) &&
+			!(vlSpec.encoding.x && vlSpec.encoding.y)
+		) {
+			if (
+				vlSpec.encoding.x &&
+				(vlSpec.encoding.x.type == "nominal" ||
+					vlSpec.encoding.x.type == "ordinal")
+			) {
 				// case bars along x-axis
 				vlSpec.mark = { type: "bar", orient: "vertical" };
-				vlSpec.encoding.y = { field: varName,  aggregate: "count" };		
-			} else if (vlSpec.encoding.y && (vlSpec.encoding.y.type == "nominal" || vlSpec.encoding.y.type == "ordinal")) {
+				vlSpec.encoding.y = { field: varName, aggregate: "count" };
+			} else if (
+				vlSpec.encoding.y &&
+				(vlSpec.encoding.y.type == "nominal" ||
+					vlSpec.encoding.y.type == "ordinal")
+			) {
 				// case bars along y-axis
 				vlSpec.mark = { type: "bar", orient: "horizontal" };
-				vlSpec.encoding.x = { field: varName,  aggregate: "count" };	
-			} else if (vlSpec.encoding.y && vlSpec.encoding.y.type == "quantitative") {
+				vlSpec.encoding.x = { field: varName, aggregate: "count" };
+			} else if (
+				vlSpec.encoding.y &&
+				vlSpec.encoding.y.type == "quantitative"
+			) {
 				// case strips along x-axis
 				vlSpec.mark = { type: "tick", orient: "horizontal" };
-			} else if (vlSpec.encoding.x && vlSpec.encoding.x.type == "quantitative") {
+			} else if (
+				vlSpec.encoding.x &&
+				vlSpec.encoding.x.type == "quantitative"
+			) {
 				// case strips along y-axis
 				vlSpec.mark = { type: "tick", orient: "vertical" };
 			}
-		// otherwise don't show anything
+			// otherwise don't show anything
 		} else {
 			// reset
 			vlSpec.mark = "tick";
@@ -850,14 +877,18 @@
 			if (vlSpec.encoding.y && vlSpec.encoding.y.aggregate) {
 				delete vlSpec.encoding.y; // clear aggregation for bar chart
 			}
-			remainingVarName = vlSpec.encoding.y ? vlSpec.encoding.y.field : undefined;
+			remainingVarName = vlSpec.encoding.y
+				? vlSpec.encoding.y.field
+				: undefined;
 			// vlSpec.mark = "tick";
 		} else if (shelfId == "y-drop") {
 			delete vlSpec.encoding.y;
 			if (vlSpec.encoding.x && vlSpec.encoding.x.aggregate) {
 				delete vlSpec.encoding.x; // clear aggregation for bar chart
 			}
-			remainingVarName = vlSpec.encoding.x ? vlSpec.encoding.x.field : undefined;
+			remainingVarName = vlSpec.encoding.x
+				? vlSpec.encoding.x.field
+				: undefined;
 			// vlSpec.mark = "tick";
 		}
 		if (shelfId == "row-drop") {
@@ -867,8 +898,12 @@
 			delete vlSpec.encoding.column;
 		}
 		if (!remainingVarName) {
-			remainingVarName = vlSpec.encoding.y ? vlSpec.encoding.y.field : vlSpec.encoding.x ? vlSpec.encoding.x.field : undefined;
-		} 
+			remainingVarName = vlSpec.encoding.y
+				? vlSpec.encoding.y.field
+				: vlSpec.encoding.x
+				? vlSpec.encoding.x.field
+				: undefined;
+		}
 		if (remainingVarName) {
 			determineChartType(vlSpec, remainingVarName);
 		} else {
@@ -916,22 +951,22 @@
 	// }
 
 	// function saveFile(fileName) {
-    //     // var a = document.createElement("a");
-    //     // a.href = file;
-    //     // a.setAttribute("download", fileName);
-    //     // a.click();
-    //     console.log("what????");
-    //     var output = [];
-    //     output["data"] = JSON.stringify(dataChanged);
-    //     output["spec"] = JSON.stringify(vlSpec);
-    //     console.log(output);
-    //     // var bb = new Blob(output, { type: 'text/plain' });
-    //     // var a = document.createElement('a');
-    //     // a.download = fileName + '.json';
-    //     // a.href = window.URL.createObjectURL(bb);
-    //     // a.textContent = 'Download ready';
-    //     // a.click(); 
-    // }
+	//     // var a = document.createElement("a");
+	//     // a.href = file;
+	//     // a.setAttribute("download", fileName);
+	//     // a.click();
+	//     console.log("what????");
+	//     var output = [];
+	//     output["data"] = JSON.stringify(dataChanged);
+	//     output["spec"] = JSON.stringify(vlSpec);
+	//     console.log(output);
+	//     // var bb = new Blob(output, { type: 'text/plain' });
+	//     // var a = document.createElement('a');
+	//     // a.download = fileName + '.json';
+	//     // a.href = window.URL.createObjectURL(bb);
+	//     // a.textContent = 'Download ready';
+	//     // a.click();
+	// }
 </script>
 
 <svelte:head>
@@ -1005,7 +1040,7 @@
 							</p>
 						{/if}
 
-						{#key specChanged} 
+						{#key specChanged}
 							<ChartPanel
 								bind:dataChanged
 								bind:vlSpec

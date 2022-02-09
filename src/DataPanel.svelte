@@ -1,11 +1,19 @@
 <script lang="ts">
     import { flip } from "svelte/animate";
-    import { dndzone } from "svelte-dnd-action";
+    import {
+        dndzone,
+        SHADOW_ITEM_MARKER_PROPERTY_NAME,
+    } from "svelte-dnd-action";
 
     export let dndState: { id: string; name: string; items: any[] }[];
     export let flipDurationMs: number;
     export let handleDndConsider;
     export let handleDndFinalize;
+    function removeShadow() {
+        Object.keys(dndState[0].items).forEach((d, i) => {
+            console.log(d);
+        });
+    }
 </script>
 
 <!-- data panel -->
@@ -39,10 +47,12 @@
                 padding: 0.2rem 0.5rem;"
             >
                 {item.name}
+                
             </div>
         {/each}
         {console.log("exits data panel")}
-        {console.log(dndState)}
+        <!-- {console.log(dndState)} -->
+        {removeShadow() }
         {console.log("==============================")}
     </section>
 </div>
