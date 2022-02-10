@@ -76,7 +76,7 @@
 		console.log("chartpanel dataset", dataset);
 		console.log("models", models);
 		// mpg ~ 1
-		console.log(models[0].exp[0]);
+		// console.log(models[0].exp[0]);
 
 		// vlSpec.encoding.<x or y>.scale.range = [<min of outcome>, <max of outcome>]
 

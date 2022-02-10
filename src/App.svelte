@@ -87,15 +87,6 @@
 		console.log("in consider");
 		console.log(dndState);
 		console.log(dndState[shelfIdx]);
-
-		// if (dndState[0].items.length == 9) {
-		// 	dndState[0].items.forEach((d) => {
-		// 		if (typeof d.isDndShadowItem != "undefined") {
-		// 			console.log("shadow item");
-		// 			d.isDndShadowItem = false;
-		// 		}
-		// 	});
-		// }
 	}
 
 	function handleDndFinalize(shelfId: any, e: any) {
@@ -106,7 +97,6 @@
 			dndState[0].items.forEach((d) => {
 				if (typeof d.isDndShadowItem != "undefined") {
 					console.log("shadow item");
-					// d.isDndShadowItem = false;
 					delete d.isDndShadowItem;
 				}
 			});
@@ -451,18 +441,9 @@
 				filterTemp = values[0];
 				// console.log("filterTemp", filterTemp);
 				filter = [...filterTemp];
-				// console.log(filter);
-				// filter = [...filter];
-				// console.log("removing", removedFilter);
-				// console.log("after removed, new filter", filter);
 			});
 			// filter = filterTemp;
 			filter = [...filterTemp];
-			// console.log(filter);
-			// filter = [...filter];
-			// console.log("removing", removedFilter);
-			// console.log("after removed, new filter", filter);
-			// console.log(dataChanged.length);
 			dataChanged = data;
 			dataChanged = [...dataChanged];
 			// console.log(data.length);
@@ -532,45 +513,64 @@
 		if (removeAll) {
 			models = [];
 			modeling = false;
+			dataChanged = dataChanged.filter(
+				(row) => row.modelcheck_group == "data"
+			);
+
+			dataChanged = [...dataChanged];
+			console.log(dataChanged);
+			delete vlSpec.encoding.color;
+			specChanged++;
+			return;
 		} else {
 			console.log("models object", models);
 			// var removedFilter = filter.splice(index, 1);
 			var removedModel = models[index];
 			if (index != 0) {
-				// console.log("filter.slice(0, index)", models.slice(0, index));
-				// console.log(
-				// 	"filter.slice(0, index-1)",
-				// 	models.slice(0, index - 1)
-				// );
-				// console.log(
-				// 	"filter.slice(index, filter.length)",
-				// 	models.slice(index, models.length)
-				// );
 				modelTemp = models
 					.slice(0, index)
 					.concat(models.slice(index + 1, models.length));
 				// console.log("modelTemp", modelTemp);
 			} else {
 				modelTemp = models.slice(1);
-				// console.log("removing first one", modelTemp);
 			}
 		}
-		Promise.all([modelTemp]).then((values) => {
-			console.log("values", values);
-			modelTemp = values[0];
-			// console.log("filterTemp", modelTemp);
-			models = [...modelTemp];
-			console.log("models after promise", models);
-			// filter = [...filter];
-			console.log("removing", removedModel);
-			console.log("after removed, new filter", models);
-		});
-		models = [...modelTemp];
-		// showModel = false;
+		Promise.all([modelTemp])
+			.then((values) => {
+				console.log("values", values);
+				modelTemp = values[0];
+				// console.log("filterTemp", modelTemp);
+				models = [...modelTemp];
+				console.log("models after promise", models);
+				// filter = [...filter];
+				console.log("removing", removedModel);
+				console.log("after removed, new filter", models);
+				return removedModel;
+			})
+			.then(function (removedModel) {
+				console.log("deleting models");
+				console.log(models);
+				console.log(dataChanged);
+				const modelExp = removedModel["exp"].join("| ");
+				console.log(modelExp);
+				dataChanged = dataChanged.filter(
+					(row) => row.modelcheck_group != modelExp
+				);
+				dataChanged = [...dataChanged];
+
+				console.log("remove model data:");
+				console.log(dataChanged);
+				specChanged++;
+			});
 	}
 
 	// call model on server
 	async function callModel(mu, sigma = "~ 1", useData, model = "normal") {
+		console.log("calling server!!");
+
+		console.log(models.length);
+
+		console.log("mu:", mu, "data:", useData);
 		showLoadingIcon = true;
 		ocpu.seturl("//kalealex.ocpu.io/modelcheck/R");
 		var url;
@@ -644,13 +644,14 @@
 
 	// add model to the vis canvas
 	async function addModel(mu, sigma, model = "normal") {
+		console.log("adding model!!!!!!");
 		showPredictionOrResidual = "prediction";
 		if (residualList.length !== 0) {
 			console.log("show not show residuals!!!");
 		}
 		// add the model to our queue
 		models.push({
-			exp: [mu, sigma, model],
+			exp: [model, mu, sigma],
 		});
 		models = [...models];
 		modeling = true;
@@ -722,36 +723,7 @@
 							mergedData = [...mergedData];
 							dataChanged = deepCopy(mergedData);
 							dataChanged = [...dataChanged];
-							// update vlSpec
-							// TODO: eventually we need contingencies to deal with xOffset and yOffset
-							// TODO: may need additional logic in case the previous spec still works, and we don't need to update vlSpec
-							// console.log("change vlSpec for model");
-							// console.log(vlSpec);
-							// vlSpec.encoding.color = vlSpec.encoding.color
-							// 	? vlSpec.encoding.color
-							// 	: { field: null, type: null };
-							// vlSpec.encoding.color.field = "modelcheck_group";
-							// vlSpec.encoding.color.type = "nominal";
-							// // quant + nominal
-							// if (vlSpec.mark == "bar") {
-							// 	if (vlSpec.encoding.x.type == "nominal") {
-							// 		vlSpec.encoding.xOffset = vlSpec.encoding.xOffset
-							// 			? vlSpec.encoding.xOffset
-							// 			: { field: null, type: null };
-							// 		vlSpec.encoding.xOffset.field = "modelcheck_group";
-							// 		vlSpec.encoding.xOffset.type = "nominal";
-							// 	} else {
-							// 		vlSpec.encoding.yOffset = vlSpec.encoding
-							// 			.yOffset
-							// 			? vlSpec.encoding.yOffset
-							// 			: { field: null, type: null };
-							// 		vlSpec.encoding.yOffset.field = "modelcheck_group";
-							// 		vlSpec.encoding.yOffset.type = "nominal";
-							// 	}
-							// }
-							// vlSpec = { ...vlSpec };
-							// console.log("after change");
-							// console.log(vlSpec);
+
 							showLoadingIcon = false;
 							specChanged++;
 						})
@@ -765,7 +737,25 @@
 		} else {
 			// data contains NO model predictions...
 			// call the new model
-			callModel(mu, sigma, dataChanged, model)
+
+			let dataOnly = deepCopy(dataChanged);
+			if (dataOnly.length > 500){
+				dataOnly = dataOnly.filter(
+					(row) => row.modelcheck_group === "data" && row.draw === 1
+				);
+				console.log("length > 500");
+				console.log(dataOnly);
+				dataOnly = dataOnly.map((row) => {
+					let obj = Object.assign({}, row);
+					delete obj["draw"];
+					delete obj["modelcheck_group"];
+					return obj;
+				});
+			};
+			console.log("one model data only:");
+			console.log(dataOnly);
+				
+			callModel(mu, sigma, dataOnly, model)
 				.then(function (response) {
 					showLoadingIcon = true;
 					// console.log("this should be a url");
