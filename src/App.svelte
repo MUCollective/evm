@@ -557,9 +557,28 @@
 				dataChanged = dataChanged.filter(
 					(row) => row.modelcheck_group != modelExp
 				);
+				if (
+					dataChanged.every((e) => {
+						return e["modelcheck_group"] == "data";
+					})
+				) {
+					console.log("hahaha");
+					dataChanged = dataChanged.filter((row) => row.draw == 1);
+					dataChanged = dataChanged.map((row) => {
+						let obj = Object.assign({}, row);
+						delete obj["draw"];
+						delete obj["modelcheck_group"];
+						return obj;
+					});
+					delete vlSpec.encoding.color;
+					console.log("delete vlSpec.encoding.xOffset;");
+					delete vlSpec.encoding.xOffset;
+					delete vlSpec.encoding.yOffset;
+				}
 				dataChanged = [...dataChanged];
+				vlSpec = { ...vlSpec };
 
-				console.log("remove model data:");
+				console.log("after remove model data:");
 				console.log(dataChanged);
 				specChanged++;
 			});
@@ -740,7 +759,7 @@
 			// call the new model
 
 			let dataOnly = deepCopy(dataChanged);
-			if (dataOnly.length > 500){
+			if (dataOnly.length > 500) {
 				dataOnly = dataOnly.filter(
 					(row) => row.modelcheck_group === "data" && row.draw === 1
 				);
@@ -752,8 +771,8 @@
 					delete obj["modelcheck_group"];
 					return obj;
 				});
-			};
-				
+			}
+
 			callModel(mu, sigma, dataOnly, model)
 				.then(function (response) {
 					showLoadingIcon = true;
