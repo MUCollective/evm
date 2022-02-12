@@ -421,23 +421,14 @@
 		if (clearAll) {
 			filter = [];
 		} else {
-			// console.log(filter);
-			// var removedFilter = filter.splice(index, 1);
 			var removedFilter = filter[index];
 			if (index != 0) {
-				// console.log("filter.slice(0, index)", filter.slice(0, index));
-				// console.log(
-				// 	"filter.slice(index, filter.length)",
-				// 	filter.slice(index, filter.length)
-				// );
 				filterTemp = filter
 					.slice(0, index)
 					.concat(filter.slice(index + 1, filter.length));
 			} else {
 				filterTemp = filter.slice(1);
 			}
-			// console.log("filterTemp", filterTemp);
-			// console.log("filter", filter);
 			Promise.all([filterTemp]).then((values) => {
 				filterTemp = values[0];
 				// console.log("filterTemp", filterTemp);
@@ -759,19 +750,6 @@
 			// call the new model
 
 			let dataOnly = deepCopy(dataChanged);
-			if (dataOnly.length > 500) {
-				dataOnly = dataOnly.filter(
-					(row) => row.modelcheck_group === "data" && row.draw === 1
-				);
-				console.log("length > 500");
-				console.log(dataOnly);
-				dataOnly = dataOnly.map((row) => {
-					let obj = Object.assign({}, row);
-					delete obj["draw"];
-					delete obj["modelcheck_group"];
-					return obj;
-				});
-			}
 
 			callModel(mu, sigma, dataOnly, model)
 				.then(function (response) {
