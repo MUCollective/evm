@@ -168,7 +168,8 @@
 				vlSpec.encoding.x.type == "quantitative"
 			) {
 				// case scatterplot
-				vlSpec.mark = { type: "point", size: 30, strokeWidth: 2 };
+				// vlSpec.mark = { type: "point", size: 30, strokeWidth: 2 };
+				vlSpec.mark = { type: "circle", size: 30 };
 			} else if (
 				vlSpec.encoding.x.type == "quantitative" &&
 				(vlSpec.encoding.y.type == "nominal" ||
