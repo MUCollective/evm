@@ -123,206 +123,979 @@
 	console.log("vega-lite spec", vlSpec);
 
 	// convert vega-lite spec to vega to add modelchecks
-	// console.log("vegaLite.compile(vlSpec)", vegaLite.compile(vlSpec));
 	let vgSpec = vegaLite.compile(vlSpec).spec;
+	console.log("compiled vega spec", vgSpec);
 	if (modeling && haveModelToShow) {
-		// hops:
-		// make sure signals exist
-		vgSpec.signals = vgSpec.signals ? vgSpec.signals : [];
-		// make sure transform exists
-		vgSpec.data[0].transform = vgSpec.data[0].transform ? vgSpec.data[0].transform : [];
-		// add sample parameter for hops
-		vgSpec.signals.push({
-			name: "sample",
-			value: 1,
-			on: [
-				{
-					events: "timer{500}",
-					update: "1 + ((sample + 1) % 5)",
-				},
-			],
-		});
-		// add filtering transform for hops
-		vgSpec.data[0].transform.push({
-			type: "filter",
-			expr: "datum.draw == sample",
-		});
-
-		// faceting for scatterplots:
-		if (vlSpec.mark.type == "point" || vlSpec.mark.type == "circle") {
-			// make sure scales exists
-			vgSpec.scales = vgSpec.scales ? vgSpec.scales : [];
-			// make sure axes exists
-			vgSpec.axes = vgSpec.axes ? vgSpec.axes : [];
-			// make sure marks exists
-			vgSpec.marks = vgSpec.marks ? vgSpec.marks : [];
-			if (vlSpec.encoding.row || vlSpec.encoding.column) {
-				// add band scale to position different modelcheck groups, and re-encode data within groups 
+		// faceting for scatterplots
+		if (vlSpec.mark.type == "circle") {
+			if (vlSpec.encoding.row && vlSpec.encoding.column) {
+				// TODO: fill this in with templates
+			} else if (vlSpec.encoding.row) {
+				// borrow encoding info from compiled spec
+				let cellIdx = vgSpec.marks.findIndex((elem) => elem.name == "cell"),
+					originalEncoding = vgSpec.marks[cellIdx].marks[0].encode.update;
+				originalEncoding.shape = { signal: "shape" };
+				// borrow scales from compiled spec, and modify them as needed
+				let originalScales = vgSpec.scales.filter((elem) => (elem.name == "x" || elem.name == "y" || elem.name == "color")),
+					xIdx = originalScales.findIndex((elem) => elem.name == "x"),
+					yIdx = originalScales.findIndex((elem) => elem.name == "y");
+				originalScales[xIdx].range = [0, { signal: "child_width" }];
+				originalScales[yIdx].range = [{ signal: "child_height" }, 0];
+				console.log("scales", originalScales);
 				if (vlSpec.encoding.x.field == outcomeName) {
-					console.log("re-encoding y axis")
-					// double chart height
-					vgSpec.signals.push({ name: "height", update: "height*2" });
-					// add y_scale if the outcome var is x
-					vgSpec.scales.push({
-						name: "y_scale",
-						type: "band",
-						domain: {"data": "table", "field": "modelcheck_group"},
-						range: "height",
-						padding: 0.07
-					});
-					// we'll need to replace the original y scale inside of marks to get nested axes
-					let originalScales = vgSpec.scales.filter((elem) => elem.name == "y" );
-					// add axis for modelcheck group
-					vgSpec.axes.push({
-						orient: "left", 
-						scale: "y_scale", 
-						tickSize: 0, 
-						labelPadding: 40, 
-						zindex: 0
-					});
-					// we'll also remove the original y axis and grids, so we can later add them back inside of marks to get nested axes
-					let rowHeaderIdx = vgSpec.marks.findIndex((elem) => elem.name == "row_header"),
-						cellIdx = vgSpec.marks.findIndex((elem) => elem.name == "cell"),
-						yAxis = vgSpec.marks[rowHeaderIdx].axes.filter((elem) => elem.scale == "y"),
-						grids = vgSpec.marks[cellIdx].axes.filter((elem) => elem.grid);
-					let originalAxis = grids.concat(yAxis);
-					vgSpec.marks[rowHeaderIdx].axes = vgSpec.marks[rowHeaderIdx].axes.filter((elem) => !(elem.scale == "y")); // remove y
-					vgSpec.marks[cellIdx].axes = vgSpec.marks[cellIdx].axes.filter((elem) => !elem.grid); // remove grid
-					console.log("originalAxis", originalAxis);
-					// change properties of original axis as needed
-					let yAxisIdx = originalAxis.findIndex((elem) => (elem.scale == "y" && !elem.grid)),
-						xGridIdx = originalAxis.findIndex((elem) => (elem.scale == "x" && elem.grid));
-					originalAxis[yAxisIdx].zindex = 1;
-					if (vlSpec.mark.type == "point") {
-						originalAxis[xGridIdx].translate = { "signal": "child_height" };
-						originalAxis[xGridIdx].tickOffset = { "signal": "-child_height" };
-					}
-					// borrow encoding info from initial spec
-					cellIdx = vgSpec.marks.findIndex((elem) => elem.name == "cell"); // update
-					let originalEncoding = vgSpec.marks[cellIdx].marks[0].encode.update;
-					originalEncoding.shape = { signal: "shape" }; // assume point
-					// re-encode data within facets...
-					// overwrite marks only inside of the inner cell
-					vgSpec.marks[cellIdx] = {
-						// group by modelcheck group to create data sources for each subplot
-						type: "group",
-						from: {
-							facet: {
-								data: "data_0",
-								name: "facet",
-								groupby: "modelcheck_group" // do this!
-							}
-						},
-						// put modelcheck check group on the main axis
-						encode: {
-							enter: {
-								y: { scale: "y_scale", field: "modelcheck_group" } 
-							}
-						},
-						// adjust the extent of the subplot area based on the band type scale created above
-						signals: [
-							{ name: "height", update: "bandwidth('y_scale')" },
-							{ name: "shape", value: "circle" }
-						],
-						// re-encode whatever was on the original axis within each facet
-						// add nested scale
-						scales: originalScales,
-						// re-construct marks
-						marks: [
+					// when outcome is on x, facet on y
+					// fill in standardized template based on vlSpec
+					vgSpec = {
+						"$schema": "https://vega.github.io/schema/vega/v5.json",
+						"background": "white",
+						"padding": 5,
+						"data": [
 							{
-								name: "child_marks",
-								from: { data: "facet" },
-								type: "symbol", // assume point
-								encode: { update: originalEncoding }
-							}
-						],
-						// add a nested axis
-						axes: originalAxis
-					};
-				} else { //if (vlSpec.encoding.y.field == outcomeName) or the outcome isn't encoded on either primary position
-					console.log("re-encoding x axis")
-					// double chart width
-					vgSpec.signals.push({ name: "width", update: "width*2" });
-					// add x_scale if the outcome var is y
-					vgSpec.scales.push({
-						name: "x_scale",
-						type: "band",
-						domain: {"data": "table", "field": "modelcheck_group"},
-						range: "width",
-						padding: 0.07
-					});
-					// we'll need to place the original x scale inside of marks to get nested axes
-					let originalScales = vgSpec.scales.filter((elem) => elem.name == "x");
-					// add axis for modelcheck group
-					vgSpec.axes.push({
-						orient: "bottom", 
-						scale: "x_scale", 
-						tickSize: 0, 
-						labelPadding: 40, 
-						zindex: 1
-					});
-					// we'll also remove the original x axis and grids, so we can later add them back inside of marks to get nested axes
-					let colFooterIdx = vgSpec.marks.findIndex((elem) => elem.name == "column_footer"),
-						cellIdx = vgSpec.marks.findIndex((elem) => elem.name == "cell"),
-						xAxis = vgSpec.marks[colFooterIdx].axes.filter((elem) => elem.scale == "x"),
-						grids = vgSpec.marks[cellIdx].axes.filter((elem) => elem.grid),
-						originalAxis = grids.concat(xAxis);
-					vgSpec.marks[colFooterIdx].axes = vgSpec.marks[colFooterIdx].axes.filter((elem) => !(elem.scale == "x")); // remove x
-					vgSpec.marks[cellIdx].axes = vgSpec.marks[cellIdx].axes.filter((elem) => !elem.grid); // remove grid
-					console.log("originalAxis", originalAxis);
-					// change properties of original axis as needed
-					let xAxisIdx = originalAxis.findIndex((elem) => (elem.scale == "x" && !elem.grid)),
-						xGridIdx = originalAxis.findIndex((elem) => (elem.scale == "x" && elem.grid));
-					originalAxis[xAxisIdx].zindex = 1;
-					originalAxis[xAxisIdx].offset = { "signal": "child_height" };
-					if (vlSpec.mark.type == "point") {
-						originalAxis[xGridIdx].translate = { "signal": "child_height" };
-						originalAxis[xGridIdx].tickOffset = { "signal": "-child_height" };
-					}
-					// borrow encoding info from initial spec
-					cellIdx = vgSpec.marks.findIndex((elem) => elem.name == "cell"); // update
-					let originalEncoding = vgSpec.marks[cellIdx].marks[0].encode.update;
-					originalEncoding.shape = { signal: "shape" }; // assume point
-					// re-encode data within facets...
-					// overwrite marks only inside of the inner cell
-					vgSpec.marks[cellIdx] = {
-						// group by modelcheck group to create data sources for each subplot
-						type: "group",
-						from: {
-							facet: {
-								data: "data_0",
-								name: "facet",
-								groupby: "modelcheck_group" // do this!
-							}
-						},
-						// put modelcheck check group on the main axis
-						encode: {
-							enter: {
-								x: { scale: "x_scale", field: "modelcheck_group" } 
-							}
-						},
-						// adjust the extent of the subplot area based on the band type scale created above
-						signals: [
-							{ name: "width", update: "bandwidth('x_scale')" },
-							{ name: "shape", value: "circle" }
-						],
-						// re-encode whatever was on the original axis within each facet
-						// add nested scale
-						scales: originalScales,
-						// re-construct marks
-						marks: [
+							"name": "table",
+							"transform": [
+								{
+									"type": "filter",
+									"expr": "datum.draw == sample"
+								}
+							],
+							"values": [] // will be filled by Svelte-Vega
+							},
 							{
-								name: "child_marks",
-								from: { data: "facet" },
-								type: "symbol", // assume point
-								encode: { update: originalEncoding }
+								"name": "data_0",
+								"source": "table",
+								"transform": [
+									{
+										"type": "filter",
+										"expr": `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+									}
+								]
+							},
+							{
+							"name": "row_domain",
+							"source": "data_0",
+							"transform": [{"type": "aggregate", "groupby": [vlSpec.encoding.row.field, "modelcheck_group"]}]
 							}
 						],
-						// add a nested axis
-						axes: originalAxis
-					};
+						"signals": [
+							{"name": "child_width", "value": 200},
+							{"name": "child_height", "value": 200},
+							{
+								"name": "sample",
+								"value": 1,
+								"on": [
+									{
+										"events": "timer{500}",
+										"update": "((sample + 1) % 5) + 1"
+									}
+								]
+							}
+						],
+						"layout": {
+							"padding": 20,
+							"offset": {
+								"rowTitle": 10
+							},
+							"columns": 1,
+							"bounds": "full",
+							"align": "all"
+						},
+						"marks": [
+							{
+								"name": "row-title",
+								"type": "group",
+								"role": "row-title",
+								"title": {
+									"text": vlSpec.encoding.row.field,
+									"orient": "left",
+									"style": "guide-title",
+									"offset": 10
+								}
+							},
+							{
+								"name": "row_header",
+								"type": "group",
+								"role": "row-header",
+								"from": {
+									"data": "row_domain"
+								},
+								"sort": {
+									"field": `datum[\"${vlSpec.encoding.row.field}\"]`,
+									"order": "ascending"
+								},
+								"title": {
+									"text": {
+										"signal": `isValid(parent[\"${vlSpec.encoding.row.field}\"]) ? parent[\"${vlSpec.encoding.row.field}\"] : \"\"+parent[\"${vlSpec.encoding.row.field}\"]`
+									},
+									"orient": "left",
+									"style": "guide-label",
+									"frame": "group",
+									"offset": 10
+								},
+								"encode": {
+									"update": {
+										"height": {
+											"signal": "child_height"
+										}
+									}
+								},
+								"axes": [
+									{
+										"scale": "y",
+										"orient": "left",
+										"grid": false,
+										"title": vlSpec.encoding.y.field,
+										"labelOverlap": true,
+										"tickCount": {
+											"signal": "ceil(child_height/40)"
+										},
+										"zindex": 1
+									}
+								]
+							},
+							{
+								"name": "column_footer",
+								"type": "group",
+								"role": "column-footer",
+								"encode": {"update": {"width": {"signal": "child_width"}}},
+								"axes": [
+									{
+										"scale": "x",
+										"orient": "bottom",
+										"grid": false,
+										"title": vlSpec.encoding.x.field,
+										"offset": -5,
+										"labelFlush": true,
+										"labelOverlap": true,
+										"tickCount": {"signal": "ceil(child_width/40)"},
+										"zindex": 1
+									}
+								]
+							},
+							{
+								"type": "group",
+								"from": {
+									"facet": {
+										"data": "data_0",
+										"name": "facet",
+										"groupby": [vlSpec.encoding.row.field, "modelcheck_group"],
+										"aggregate": {"cross": true}
+									}
+								},
+								"encode": {
+									"update": {
+										"width": {"signal": "child_width"},
+										"height": {"signal": "child_height"}
+									}
+								},
+								"signals": [
+									{
+										"name": "shape",
+										"value": "circle"
+									}
+								],
+								"marks": [
+									{
+										"name": "child_marks",
+										"from": {
+											"data": "facet"
+										},
+										"type": "symbol",
+										"encode": {
+											"update": originalEncoding // plug in compiled encoding for primary axes
+										}
+									}
+								],
+								"axes": [
+									{
+										"scale": "x",
+										"orient": "bottom",
+										"gridScale": "y",
+										"grid": true,
+										"tickCount": {
+											"signal": "ceil(child_width/40)"
+										},
+										"domain": false,
+										"labels": false,
+										"aria": false,
+										"maxExtent": 0,
+										"minExtent": 0,
+										"ticks": false,
+										"zindex": 0
+									},
+									{
+										"scale": "y",
+										"orient": "left",
+										"gridScale": "x",
+										"grid": true,
+										"tickCount": {
+											"signal": "ceil(child_height/40)"
+										},
+										"domain": false,
+										"labels": false,
+										"aria": false,
+										"maxExtent": 0,
+										"minExtent": 0,
+										"ticks": false,
+										"zindex": 0
+									}
+								]
+							}
+						],
+						"scales": originalScales, // plug in original scales to keep vegaLite settings
+						"legends": [
+							{
+								"stroke": "color",
+								"symbolType": "circle",
+								"title": "modelcheck_group",
+								"encode": {
+									"symbols": {
+										"update": {
+											"fill": {
+												"value": "transparent"
+											},
+											"opacity": {
+												"value": 0.7
+											}
+										}
+									}
+								}
+							}
+						]
+					}
+				} else {
+					// else, facet on x
+					// fill in standardized template based on vlSpec
+					vgSpec = {
+						"$schema": "https://vega.github.io/schema/vega/v5.json",
+						"background": "white",
+						"padding": 5,
+						"data": [
+							{
+								"name": "table",
+								"transform": [
+									{
+										"type": "filter",
+										"expr": "datum.draw == sample"
+									}
+								],
+								"values": [] // will be filled by Svelte-Vega
+							},
+							{
+								"name": "data_0",
+								"source": "table",
+								"transform": [
+									{
+										"type": "filter",
+										"expr": `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+									}
+								]
+							},
+							{
+								"name": "row_domain",
+								"source": "data_0",
+								"transform": [{"type": "aggregate", "groupby": [vlSpec.encoding.row.field]}]
+							},
+							{
+								"name": "model_domain",
+								"source": "data_0",
+								"transform": [{"type": "aggregate", "groupby": ["modelcheck_group"]}]
+							}
+						],
+						"signals": [
+							{"name": "child_width", "value": 200},
+							{"name": "child_height", "value": 200},
+							{
+								"name": "sample",
+								"value": 1,
+								"on": [
+									{
+										"events": "timer{500}",
+										"update": "((sample + 1) % 5) + 1"
+									}
+								]
+							}
+						],
+						"layout": {
+							"padding": 20,
+							"offset": {
+								"rowTitle": 10
+							},
+							"columns": 2,
+							"bounds": "full",
+							"align": "all"
+						},
+						"marks": [
+							{
+								"name": "row-title",
+								"type": "group",
+								"role": "row-title",
+								"title": {
+									"text": vlSpec.encoding.row.field,
+									"orient": "left",
+									"style": "guide-title",
+									"offset": 10
+								}
+							},
+							{
+								"name": "row_header",
+								"type": "group",
+								"role": "row-header",
+								"from": {
+									"data": "row_domain"
+								},
+								"sort": {
+									"field": `datum[\"${vlSpec.encoding.row.field}\"]`,
+									"order": "ascending"
+								},
+								"title": {
+									"text": {
+										"signal": `isValid(parent[\"${vlSpec.encoding.row.field}\"]) ? parent[\"${vlSpec.encoding.row.field}\"] : \"\"+parent[\"${vlSpec.encoding.row.field}\"]`
+									},
+									"orient": "left",
+									"style": "guide-label",
+									"frame": "group",
+									"offset": 10
+								},
+								"encode": {
+									"update": {
+										"height": {
+											"signal": "child_height"
+										}
+									}
+								},
+								"axes": [
+									{
+										"scale": "y",
+										"orient": "left",
+										"grid": false,
+										"title": vlSpec.encoding.y.field,
+										"labelOverlap": true,
+										"tickCount": {
+											"signal": "ceil(child_height/40)"
+										},
+										"zindex": 1
+									}
+								]
+							}, 
+							{
+								"name": "column_footer",
+								"type": "group",
+								"role": "column-footer",
+								"from": {"data": "model_domain"},
+								"encode": {"update": {"width": {"signal": "child_width"}}},
+								"axes": [
+									{
+										"scale": "x",
+										"orient": "bottom",
+										"grid": false,
+										"title": vlSpec.encoding.x.field,
+										"offset": -5,
+										"labelFlush": true,
+										"labelOverlap": true,
+										"tickCount": {"signal": "ceil(child_width/40)"},
+										"zindex": 0
+									}
+								]
+							},
+							{
+								"type": "group",
+								"from": {
+									"facet": {
+										"data": "data_0",
+										"name": "facet",
+										"groupby": [vlSpec.encoding.row.field,"modelcheck_group"],
+										"aggregate": {"cross": true}
+									}
+								},
+								"encode": {
+									"update": {
+										"width": {"signal": "child_width"},
+										"height": {"signal": "child_height"}
+									}
+								},
+								"signals": [
+									{
+										"name": "shape",
+										"value": "circle"
+									}
+								],
+								"marks": [
+									{
+										"name": "child_marks",
+										"from": {
+											"data": "facet"
+										},
+										"type": "symbol",
+										"encode": {
+											"update": originalEncoding // plug in compiled encoding for primary axes
+										}
+									}
+								],
+								"axes": [
+									{
+										"scale": "x",
+										"orient": "bottom",
+										"gridScale": "y",
+										"grid": true,
+										"tickCount": {
+											"signal": "ceil(child_width/40)"
+										},
+										"domain": false,
+										"labels": false,
+										"aria": false,
+										"maxExtent": 0,
+										"minExtent": 0,
+										"ticks": false,
+										"zindex": 0
+									},
+									{
+										"scale": "y",
+										"orient": "left",
+										"gridScale": "x",
+										"grid": true,
+										"tickCount": {
+											"signal": "ceil(child_height/40)"
+										},
+										"domain": false,
+										"labels": false,
+										"aria": false,
+										"maxExtent": 0,
+										"minExtent": 0,
+										"ticks": false,
+										"zindex": 0
+									}
+								]
+							}
+						],
+						"scales": originalScales, // plug in original scales to keep vegaLite settings
+						"legends": [
+							{
+								"stroke": "color",
+								"symbolType": "circle",
+								"title": "modelcheck_group",
+								"encode": {
+									"symbols": {
+										"update": {
+											"fill": {
+												"value": "transparent"
+											},
+											"opacity": {
+												"value": 0.7
+											}
+										}
+									}
+								}
+							}
+						]
+					}
 				}
-			} else { // standalone scatterplot (no row or column encoding)
+				
+			} else if (vlSpec.encoding.column) {
+				// borrow encoding info from compiled spec
+				let cellIdx = vgSpec.marks.findIndex((elem) => elem.name == "cell"),
+					originalEncoding = vgSpec.marks[cellIdx].marks[0].encode.update;
+				originalEncoding.shape = { signal: "shape" };
+				// borrow scales from compiled spec, and modify them as needed
+				let originalScales = vgSpec.scales.filter((elem) => (elem.name == "x" || elem.name == "y" || elem.name == "color")),
+					xIdx = originalScales.findIndex((elem) => elem.name == "x"),
+					yIdx = originalScales.findIndex((elem) => elem.name == "y");
+				originalScales[xIdx].range = [0, { signal: "child_width" }];
+				originalScales[yIdx].range = [{ signal: "child_height" }, 0];
+				console.log("scales", originalScales);
+				if (vlSpec.encoding.x.field == outcomeName) {
+					// if outcome on x, facet on y
+					// fill in standardized template based on vlSpec
+					vgSpec = {
+						"$schema": "https://vega.github.io/schema/vega/v5.json",
+						"background": "white",
+						"padding": 5,
+						"data": [
+							{
+								"name": "table",
+								"transform": [
+									{
+										"type": "filter",
+										"expr": "datum.draw == sample"
+									}
+								],
+								"values": [] // will be filled by Svelte-Vega
+							},
+							{
+								"name": "data_0",
+								"source": "table",
+								"transform": [
+									{
+										"type": "filter",
+										"expr": `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+									}
+								]
+							},
+							{
+								"name": "column_domain",
+								"source": "data_0",
+								"transform": [{"type": "aggregate", "groupby": [vlSpec.encoding.column.field]}]
+							},
+							{
+								"name": "model_domain",
+								"source": "data_0",
+								"transform": [{"type": "aggregate", "groupby": ["modelcheck_group"]}]
+							}
+						],
+						"signals": [
+							{"name": "child_width", "value": 200},
+							{"name": "child_height", "value": 200},
+							{
+								"name": "sample",
+								"value": 1,
+								"on": [
+									{
+										"events": "timer{500}",
+										"update": "((sample + 1) % 5) + 1"
+									}
+								]
+							}
+						],
+						"layout": {
+							"padding": 20,
+							"offset": {
+								"rowTitle": 10
+							},
+							// "columns": 2,
+							"bounds": "full",
+							"align": "all"
+						},
+						"marks": [
+							{
+								"name": "column-title",
+								"type": "group",
+								"role": "column-title",
+								"title": {
+									"text": vlSpec.encoding.column.field,
+									"orient": "top",
+									"style": "guide-title",
+									"offset": 10
+								}
+							},
+							{
+								"name": "row_header",
+								"type": "group",
+								"role": "row-header",
+								"from": {"data": "model_domain"},
+								"encode": {"update": {"height": {"signal": "child_height"}}},
+								"axes": [
+									{
+										"scale": "y",
+										"orient": "left",
+										"grid": false,
+										"title": vlSpec.encoding.y.field,
+										"labelOverlap": true,
+										"tickCount": {
+											"signal": "ceil(child_height/40)"
+										},
+										"zindex": 1
+									}
+								]
+							}, 
+							{
+								"name": "column_header",
+								"type": "group",
+								"role": "column-header",
+								"from": {
+									"data": "column_domain"
+								},
+								"sort": {
+									"field": `datum[\"${vlSpec.encoding.column.field}\"]`,
+									"order": "ascending"
+								},
+								"title": {
+									"text": {
+										"signal": `isValid(parent[\"${vlSpec.encoding.column.field}\"]) ? parent[\"${vlSpec.encoding.column.field}\"] : \"\"+parent[\"${vlSpec.encoding.column.field}\"]`
+									},
+									"orient": "top",
+									"style": "guide-label",
+									"frame": "group",
+									"offset": 10
+								},
+								"encode": {
+									"update": {
+										"width": {
+											"signal": "child_width"
+										}
+									}
+								}
+							}, 
+							{
+								"name": "column_footer",
+								"type": "group",
+								"role": "column-footer",
+								"from": {"data": "column_domain"},
+								"encode": {"update": {"width": {"signal": "child_width"}}},
+								"axes": [
+									{
+										"scale": "x",
+										"orient": "bottom",
+										"grid": false,
+										"title": vlSpec.encoding.x.field,
+										"offset": -5,
+										"labelFlush": true,
+										"labelOverlap": true,
+										"tickCount": {"signal": "ceil(child_width/40)"},
+										"zindex": 0
+									}
+								]
+							},
+							{
+								"type": "group",
+								"from": {
+									"facet": {
+										"data": "data_0",
+										"name": "facet",
+										"groupby": [vlSpec.encoding.column.field, "modelcheck_group"],
+										"aggregate": {"cross": true}
+									}
+								},
+								"encode": {
+									"update": {
+										"width": {"signal": "child_width"},
+										"height": {"signal": "child_height"}
+									}
+								},
+								"signals": [
+									{
+										"name": "shape",
+										"value": "circle"
+									}
+								],
+								"marks": [
+									{
+										"name": "child_marks",
+										"from": {
+											"data": "facet"
+										},
+										"type": "symbol",
+										"encode": {
+											"update": originalEncoding // plug in compiled encoding for primary axes
+										}
+									}
+								],
+								"axes": [
+									{
+										"scale": "x",
+										"orient": "bottom",
+										"gridScale": "y",
+										"grid": true,
+										"tickCount": {
+											"signal": "ceil(child_width/40)"
+										},
+										"domain": false,
+										"labels": false,
+										"aria": false,
+										"maxExtent": 0,
+										"minExtent": 0,
+										"ticks": false,
+										"zindex": 0
+									},
+									{
+										"scale": "y",
+										"orient": "left",
+										"gridScale": "x",
+										"grid": true,
+										"tickCount": {
+											"signal": "ceil(child_height/40)"
+										},
+										"domain": false,
+										"labels": false,
+										"aria": false,
+										"maxExtent": 0,
+										"minExtent": 0,
+										"ticks": false,
+										"zindex": 0
+									}
+								]
+							}
+						],
+						"scales": originalScales, // plug in original scales to keep vegaLite settings
+						"legends": [
+							{
+								"stroke": "color",
+								"symbolType": "circle",
+								"title": "modelcheck_group",
+								"encode": {
+									"symbols": {
+										"update": {
+											"fill": {
+												"value": "transparent"
+											},
+											"opacity": {
+												"value": 0.7
+											}
+										}
+									}
+								}
+							}
+						]
+					}
+				} else {
+					// else, facet on x
+					// fill in standardized template based on vlSpec
+					vgSpec = {
+						"$schema": "https://vega.github.io/schema/vega/v5.json",
+						"background": "white",
+						"padding": 5,
+						"data": [
+							{
+							"name": "table",
+							"transform": [
+								{
+									"type": "filter",
+									"expr": "datum.draw == sample"
+								}
+							],
+							"values": [] // will be filled by Svelte-Vega
+							},
+							{
+								"name": "data_0",
+								"source": "table",
+								"transform": [
+									{
+										"type": "filter",
+										"expr": `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+									}
+								]
+							},
+							{
+							"name": "column_domain",
+							"source": "data_0",
+							"transform": [{"type": "aggregate", "groupby": [vlSpec.encoding.column.field, "modelcheck_group"]}]
+							}
+						],
+						"signals": [
+							{"name": "child_width", "value": 200},
+							{"name": "child_height", "value": 200},
+							{
+								"name": "sample",
+								"value": 1,
+								"on": [
+									{
+										"events": "timer{500}",
+										"update": "((sample + 1) % 5) + 1"
+									}
+								]
+							}
+						],
+						"layout": {
+							"padding": 20,
+							"offset": {
+								"rowTitle": 10
+							},
+							// "columns": 1,
+							"bounds": "full",
+							"align": "all"
+						},
+						"marks": [
+							{
+								"name": "column-title",
+								"type": "group",
+								"role": "column-title",
+								"title": {
+									"text": vlSpec.encoding.column.field,
+									"orient": "top",
+									"style": "guide-title",
+									"offset": 10
+								}
+							},
+							{
+								"name": "row_header",
+								"type": "group",
+								"role": "row-header",
+								"encode": {"update": {"height": {"signal": "child_height"}}},
+								"axes": [
+									{
+										"scale": "y",
+										"orient": "left",
+										"grid": false,
+										"title": vlSpec.encoding.y.field,
+										"labelOverlap": true,
+										"tickCount": {
+											"signal": "ceil(child_height/40)"
+										},
+										"zindex": 1
+									}
+								]
+							}, 
+							{
+								"name": "column_header",
+								"type": "group",
+								"role": "column-header",
+								"from": {
+									"data": "column_domain"
+								},
+								"sort": {
+									"field": `datum[\"${vlSpec.encoding.column.field}\"]`,
+									"order": "ascending"
+								},
+								"title": {
+									"text": {
+										"signal": `isValid(parent[\"${vlSpec.encoding.column.field}\"]) ? parent[\"${vlSpec.encoding.column.field}\"] : \"\"+parent[\"${vlSpec.encoding.column.field}\"]`
+									},
+									"orient": "top",
+									"style": "guide-label",
+									"frame": "group",
+									"offset": 10
+								},
+								"encode": {
+									"update": {
+										"width": {
+											"signal": "child_width"
+										}
+									}
+								}
+							},
+							{
+								"name": "column_footer",
+								"type": "group",
+								"role": "column-footer",
+								"from": {
+									"data": "column_domain"
+								},
+								"encode": {"update": {"width": {"signal": "child_width"}}},
+								"axes": [
+									{
+										"scale": "x",
+										"orient": "bottom",
+										"grid": false,
+										"title": vlSpec.encoding.x.field,
+										"offset": -5,
+										"labelFlush": true,
+										"labelOverlap": true,
+										"tickCount": {"signal": "ceil(child_width/40)"},
+										"zindex": 1
+									}
+								]
+							},
+							{
+								"type": "group",
+								"from": {
+									"facet": {
+										"data": "data_0",
+										"name": "facet",
+										"groupby": [vlSpec.encoding.column.field, "modelcheck_group"],
+										"aggregate": {"cross": true}
+									}
+								},
+								"encode": {
+									"update": {
+										"width": {"signal": "child_width"},
+										"height": {"signal": "child_height"}
+									}
+								},
+								"signals": [
+									{
+										"name": "shape",
+										"value": "circle"
+									}
+								],
+								"marks": [
+									{
+										"name": "child_marks",
+										"from": {
+											"data": "facet"
+										},
+										"type": "symbol",
+										"encode": {
+											"update": originalEncoding // plug in compiled encoding for primary axes
+										}
+									}
+								],
+								"axes": [
+									{
+										"scale": "x",
+										"orient": "bottom",
+										"gridScale": "y",
+										"grid": true,
+										"tickCount": {
+											"signal": "ceil(child_width/40)"
+										},
+										"domain": false,
+										"labels": false,
+										"aria": false,
+										"maxExtent": 0,
+										"minExtent": 0,
+										"ticks": false,
+										"zindex": 0
+									},
+									{
+										"scale": "y",
+										"orient": "left",
+										"gridScale": "x",
+										"grid": true,
+										"tickCount": {
+											"signal": "ceil(child_height/40)"
+										},
+										"domain": false,
+										"labels": false,
+										"aria": false,
+										"maxExtent": 0,
+										"minExtent": 0,
+										"ticks": false,
+										"zindex": 0
+									}
+								]
+							}
+						],
+						"scales": originalScales, // plug in original scales to keep vegaLite settings
+						"legends": [
+							{
+								"stroke": "color",
+								"symbolType": "circle",
+								"title": "modelcheck_group",
+								"encode": {
+									"symbols": {
+										"update": {
+											"fill": {
+												"value": "transparent"
+											},
+											"opacity": {
+												"value": 0.7
+											}
+										}
+									}
+								}
+							}
+						]
+					}
+				}
+
+			} else { // no facet
+				// turn compiled spec into HOPs:
+				// make sure signals exist
+				vgSpec.signals = vgSpec.signals ? vgSpec.signals : [];
+				// make sure transform exists
+				vgSpec.data[0].transform = vgSpec.data[0].transform ? vgSpec.data[0].transform : [];
+				// add sample parameter for hops
+				vgSpec.signals.push({
+					name: "sample",
+					value: 1,
+					on: [
+						{
+							events: "timer{500}",
+							update: "1 + ((sample + 1) % 5)",
+						},
+					],
+				});
+				// add filtering transform for hops
+				vgSpec.data[0].transform.push({
+					type: "filter",
+					expr: "datum.draw == sample",
+				});
+
+				// faceting within scatterplots:
+				// make sure scales exists
+				vgSpec.scales = vgSpec.scales ? vgSpec.scales : [];
+				// make sure axes exists
+				vgSpec.axes = vgSpec.axes ? vgSpec.axes : [];
+				// make sure marks exists
+				vgSpec.marks = vgSpec.marks ? vgSpec.marks : [];
 				// add band scale to position different modelcheck groups, and re-encode data within groups 
 				if (vlSpec.encoding.x.field == outcomeName) {
 					console.log("re-encoding y axis")
@@ -338,14 +1111,14 @@
 					});
 					// we'll need to replace the original y scale inside of marks to get nested axes
 					let originalScales = vgSpec.scales.filter((elem) => elem.name == "y" );
-					// add axis for modelcheck group
-					vgSpec.axes.push({
-						orient: "left", 
-						scale: "y_scale", 
-						tickSize: 0, 
-						labelPadding: 40, 
-						zindex: 0
-					});
+					// // add axis for modelcheck group
+					// vgSpec.axes.push({
+					// 	orient: "left", 
+					// 	scale: "y_scale", 
+					// 	tickSize: 0, 
+					// 	labelPadding: 40, 
+					// 	zindex: 0
+					// });
 					// we'll also remove the original y axis and grids, so we can later add them back inside of marks to get nested axes
 					let originalAxis = vgSpec.axes.filter((elem) => elem.scale == "y" || elem.grid);
 					vgSpec.axes = vgSpec.axes.filter((elem) => !(elem.scale == "y" || elem.grid)); // remove
@@ -354,10 +1127,8 @@
 					let yAxisIdx = originalAxis.findIndex((elem) => (elem.scale == "y" && !elem.grid)),
 						xGridIdx = originalAxis.findIndex((elem) => (elem.scale == "x" && elem.grid));
 					originalAxis[yAxisIdx].zindex = 1;
-					if (vlSpec.mark.type == "point") {
-						originalAxis[xGridIdx].translate = { "signal": "height" };
-						originalAxis[xGridIdx].tickOffset = { "signal": "-height" };
-					}
+					originalAxis[xGridIdx].translate = { "signal": "height" }; // assume point
+					originalAxis[xGridIdx].tickOffset = { "signal": "-height" };
 					// borrow encoding info from initial spec
 					let originalEncoding = vgSpec.marks[0].encode.update;
 					originalEncoding.shape = { signal: "shape" }; // assume point
@@ -415,14 +1186,14 @@
 					});
 					// we'll need to place the original x scale inside of marks to get nested axes
 					let originalScales = vgSpec.scales.filter((elem) => elem.name == "x");
-					// add axis for modelcheck group
-					vgSpec.axes.push({
-						orient: "bottom", 
-						scale: "x_scale", 
-						tickSize: 0, 
-						labelPadding: 40, 
-						zindex: 1
-					});
+					// // add axis for modelcheck group
+					// vgSpec.axes.push({
+					// 	orient: "bottom", 
+					// 	scale: "x_scale", 
+					// 	tickSize: 0, 
+					// 	labelPadding: 40, 
+					// 	zindex: 1
+					// });
 					// we'll also remove the original x axis and grids, so we can later add them back inside of marks to get nested axes
 					let originalAxis = vgSpec.axes.filter((elem) => elem.scale == "x" || elem.grid);
 					vgSpec.axes = vgSpec.axes.filter((elem) => !(elem.scale == "x" || elem.grid)); // remove
@@ -432,10 +1203,8 @@
 						xGridIdx = originalAxis.findIndex((elem) => (elem.scale == "x" && elem.grid));
 					originalAxis[xAxisIdx].zindex = 1;
 					originalAxis[xAxisIdx].offset = { "signal": "height" };
-					if (vlSpec.mark.type == "point") {
-						originalAxis[xGridIdx].translate = { "signal": "height" };
-						originalAxis[xGridIdx].tickOffset = { "signal": "-height" };
-					}
+					originalAxis[xGridIdx].translate = { "signal": "height" }; // assume point
+					originalAxis[xGridIdx].tickOffset = { "signal": "-height" };
 					// borrow encoding info from initial spec
 					let originalEncoding = vgSpec.marks[0].encode.update;
 					originalEncoding.shape = { signal: "shape" }; // assume point
@@ -481,16 +1250,366 @@
 					];
 				}
 			}
+		} else { // strip plots and bar charts
+			// turn compiled spec into HOPs:
+			// make sure signals exist
+			vgSpec.signals = vgSpec.signals ? vgSpec.signals : [];
+			// make sure transform exists
+			vgSpec.data[0].transform = vgSpec.data[0].transform ? vgSpec.data[0].transform : [];
+			// add sample parameter for hops
+			vgSpec.signals.push({
+				name: "sample",
+				value: 1,
+				on: [
+					{
+						events: "timer{500}",
+						update: "1 + ((sample + 1) % 5)",
+					},
+				],
+			});
+			// add filtering transform for hops
+			vgSpec.data[0].transform.push({
+				type: "filter",
+				expr: "datum.draw == sample",
+			});
 		}
-
-		// // fix legend symbol for ticks
-		// if (vlSpec.mark == "tick" || vlSpec.mark.type == "tick") {
-		// 	vgSpec.legends[0].symbolType = "rect"
-		// 	vgSpec.legends[0].symbolSize = 70
+		// // faceting for scatterplots:
+		// if (vlSpec.mark.type == "point" || vlSpec.mark.type == "circle") {
+		// 	// make sure scales exists
+		// 	vgSpec.scales = vgSpec.scales ? vgSpec.scales : [];
+		// 	// make sure axes exists
+		// 	vgSpec.axes = vgSpec.axes ? vgSpec.axes : [];
+		// 	// make sure marks exists
+		// 	vgSpec.marks = vgSpec.marks ? vgSpec.marks : [];
+		// 	if (vlSpec.encoding.row || vlSpec.encoding.column) {
+		// 		// add band scale to position different modelcheck groups, and re-encode data within groups 
+		// 		if (vlSpec.encoding.x.field == outcomeName) {
+		// 			console.log("re-encoding y axis")
+		// 			// double chart height
+		// 			vgSpec.signals.push({ name: "height", update: "height*2" });
+		// 			// add y_scale if the outcome var is x
+		// 			vgSpec.scales.push({
+		// 				name: "y_scale",
+		// 				type: "band",
+		// 				domain: {"data": "table", "field": "modelcheck_group"},
+		// 				range: "height",
+		// 				padding: 0.07
+		// 			});
+		// 			// we'll need to replace the original y scale inside of marks to get nested axes
+		// 			let originalScales = vgSpec.scales.filter((elem) => elem.name == "y" );
+		// 			// add axis for modelcheck group
+		// 			vgSpec.axes.push({
+		// 				orient: "left", 
+		// 				scale: "y_scale", 
+		// 				tickSize: 0, 
+		// 				labelPadding: 40, 
+		// 				zindex: 0
+		// 			});
+		// 			// we'll also remove the original y axis and grids, so we can later add them back inside of marks to get nested axes
+		// 			let rowHeaderIdx = vgSpec.marks.findIndex((elem) => elem.name == "row_header"),
+		// 				cellIdx = vgSpec.marks.findIndex((elem) => elem.name == "cell"),
+		// 				yAxis = vgSpec.marks[rowHeaderIdx].axes.filter((elem) => elem.scale == "y"),
+		// 				grids = vgSpec.marks[cellIdx].axes.filter((elem) => elem.grid);
+		// 			let originalAxis = grids.concat(yAxis);
+		// 			vgSpec.marks[rowHeaderIdx].axes = vgSpec.marks[rowHeaderIdx].axes.filter((elem) => !(elem.scale == "y")); // remove y
+		// 			vgSpec.marks[cellIdx].axes = vgSpec.marks[cellIdx].axes.filter((elem) => !elem.grid); // remove grid
+		// 			console.log("originalAxis", originalAxis);
+		// 			// change properties of original axis as needed
+		// 			let yAxisIdx = originalAxis.findIndex((elem) => (elem.scale == "y" && !elem.grid)),
+		// 				xGridIdx = originalAxis.findIndex((elem) => (elem.scale == "x" && elem.grid));
+		// 			originalAxis[yAxisIdx].zindex = 1;
+		// 			if (vlSpec.mark.type == "point") {
+		// 				originalAxis[xGridIdx].translate = { "signal": "child_height" };
+		// 				originalAxis[xGridIdx].tickOffset = { "signal": "-child_height" };
+		// 			}
+		// 			// borrow encoding info from initial spec
+		// 			cellIdx = vgSpec.marks.findIndex((elem) => elem.name == "cell"); // update
+		// 			let originalEncoding = vgSpec.marks[cellIdx].marks[0].encode.update;
+		// 			originalEncoding.shape = { signal: "shape" }; // assume point
+		// 			// re-encode data within facets...
+		// 			// overwrite marks only inside of the inner cell
+		// 			vgSpec.marks[cellIdx] = {
+		// 				// group by modelcheck group to create data sources for each subplot
+		// 				type: "group",
+		// 				from: {
+		// 					facet: {
+		// 						data: "data_0",
+		// 						name: "facet",
+		// 						groupby: "modelcheck_group" // do this!
+		// 					}
+		// 				},
+		// 				// put modelcheck check group on the main axis
+		// 				encode: {
+		// 					enter: {
+		// 						y: { scale: "y_scale", field: "modelcheck_group" } 
+		// 					}
+		// 				},
+		// 				// adjust the extent of the subplot area based on the band type scale created above
+		// 				signals: [
+		// 					{ name: "height", update: "bandwidth('y_scale')" },
+		// 					{ name: "shape", value: "circle" }
+		// 				],
+		// 				// re-encode whatever was on the original axis within each facet
+		// 				// add nested scale
+		// 				scales: originalScales,
+		// 				// re-construct marks
+		// 				marks: [
+		// 					{
+		// 						name: "child_marks",
+		// 						from: { data: "facet" },
+		// 						type: "symbol", // assume point
+		// 						encode: { update: originalEncoding }
+		// 					}
+		// 				],
+		// 				// add a nested axis
+		// 				axes: originalAxis
+		// 			};
+		// 		} else { //if (vlSpec.encoding.y.field == outcomeName) or the outcome isn't encoded on either primary position
+		// 			console.log("re-encoding x axis")
+		// 			// double chart width
+		// 			vgSpec.signals.push({ name: "width", update: "width*2" });
+		// 			// add x_scale if the outcome var is y
+		// 			vgSpec.scales.push({
+		// 				name: "x_scale",
+		// 				type: "band",
+		// 				domain: {"data": "table", "field": "modelcheck_group"},
+		// 				range: "width",
+		// 				padding: 0.07
+		// 			});
+		// 			// we'll need to place the original x scale inside of marks to get nested axes
+		// 			let originalScales = vgSpec.scales.filter((elem) => elem.name == "x");
+		// 			// add axis for modelcheck group
+		// 			vgSpec.axes.push({
+		// 				orient: "bottom", 
+		// 				scale: "x_scale", 
+		// 				tickSize: 0, 
+		// 				labelPadding: 40, 
+		// 				zindex: 1
+		// 			});
+		// 			// we'll also remove the original x axis and grids, so we can later add them back inside of marks to get nested axes
+		// 			let colFooterIdx = vgSpec.marks.findIndex((elem) => elem.name == "column_footer"),
+		// 				cellIdx = vgSpec.marks.findIndex((elem) => elem.name == "cell"),
+		// 				xAxis = vgSpec.marks[colFooterIdx].axes.filter((elem) => elem.scale == "x"),
+		// 				grids = vgSpec.marks[cellIdx].axes.filter((elem) => elem.grid),
+		// 				originalAxis = grids.concat(xAxis);
+		// 			vgSpec.marks[colFooterIdx].axes = vgSpec.marks[colFooterIdx].axes.filter((elem) => !(elem.scale == "x")); // remove x
+		// 			vgSpec.marks[cellIdx].axes = vgSpec.marks[cellIdx].axes.filter((elem) => !elem.grid); // remove grid
+		// 			console.log("originalAxis", originalAxis);
+		// 			// change properties of original axis as needed
+		// 			let xAxisIdx = originalAxis.findIndex((elem) => (elem.scale == "x" && !elem.grid)),
+		// 				xGridIdx = originalAxis.findIndex((elem) => (elem.scale == "x" && elem.grid));
+		// 			originalAxis[xAxisIdx].zindex = 1;
+		// 			originalAxis[xAxisIdx].offset = { "signal": "child_height" };
+		// 			if (vlSpec.mark.type == "point") {
+		// 				originalAxis[xGridIdx].translate = { "signal": "child_height" };
+		// 				originalAxis[xGridIdx].tickOffset = { "signal": "-child_height" };
+		// 			}
+		// 			// borrow encoding info from initial spec
+		// 			cellIdx = vgSpec.marks.findIndex((elem) => elem.name == "cell"); // update
+		// 			let originalEncoding = vgSpec.marks[cellIdx].marks[0].encode.update;
+		// 			originalEncoding.shape = { signal: "shape" }; // assume point
+		// 			// re-encode data within facets...
+		// 			// overwrite marks only inside of the inner cell
+		// 			vgSpec.marks[cellIdx] = {
+		// 				// group by modelcheck group to create data sources for each subplot
+		// 				type: "group",
+		// 				from: {
+		// 					facet: {
+		// 						data: "data_0",
+		// 						name: "facet",
+		// 						groupby: "modelcheck_group" // do this!
+		// 					}
+		// 				},
+		// 				// put modelcheck check group on the main axis
+		// 				encode: {
+		// 					enter: {
+		// 						x: { scale: "x_scale", field: "modelcheck_group" } 
+		// 					}
+		// 				},
+		// 				// adjust the extent of the subplot area based on the band type scale created above
+		// 				signals: [
+		// 					{ name: "width", update: "bandwidth('x_scale')" },
+		// 					{ name: "shape", value: "circle" }
+		// 				],
+		// 				// re-encode whatever was on the original axis within each facet
+		// 				// add nested scale
+		// 				scales: originalScales,
+		// 				// re-construct marks
+		// 				marks: [
+		// 					{
+		// 						name: "child_marks",
+		// 						from: { data: "facet" },
+		// 						type: "symbol", // assume point
+		// 						encode: { update: originalEncoding }
+		// 					}
+		// 				],
+		// 				// add a nested axis
+		// 				axes: originalAxis
+		// 			};
+		// 		}
+		// 	} else { // standalone scatterplot (no row or column encoding)
+		// 		// add band scale to position different modelcheck groups, and re-encode data within groups 
+		// 		if (vlSpec.encoding.x.field == outcomeName) {
+		// 			console.log("re-encoding y axis")
+		// 			// double chart height
+		// 			vgSpec.signals.push({ name: "height", update: "height*2" });
+		// 			// add y_scale if the outcome var is x
+		// 			vgSpec.scales.push({
+		// 				name: "y_scale",
+		// 				type: "band",
+		// 				domain: {"data": "table", "field": "modelcheck_group"},
+		// 				range: "height",
+		// 				padding: 0.07
+		// 			});
+		// 			// we'll need to replace the original y scale inside of marks to get nested axes
+		// 			let originalScales = vgSpec.scales.filter((elem) => elem.name == "y" );
+		// 			// add axis for modelcheck group
+		// 			vgSpec.axes.push({
+		// 				orient: "left", 
+		// 				scale: "y_scale", 
+		// 				tickSize: 0, 
+		// 				labelPadding: 40, 
+		// 				zindex: 0
+		// 			});
+		// 			// we'll also remove the original y axis and grids, so we can later add them back inside of marks to get nested axes
+		// 			let originalAxis = vgSpec.axes.filter((elem) => elem.scale == "y" || elem.grid);
+		// 			vgSpec.axes = vgSpec.axes.filter((elem) => !(elem.scale == "y" || elem.grid)); // remove
+		// 			console.log("originalAxis", originalAxis);
+		// 			// change properties of original axis as needed
+		// 			let yAxisIdx = originalAxis.findIndex((elem) => (elem.scale == "y" && !elem.grid)),
+		// 				xGridIdx = originalAxis.findIndex((elem) => (elem.scale == "x" && elem.grid));
+		// 			originalAxis[yAxisIdx].zindex = 1;
+		// 			if (vlSpec.mark.type == "point") {
+		// 				originalAxis[xGridIdx].translate = { "signal": "height" };
+		// 				originalAxis[xGridIdx].tickOffset = { "signal": "-height" };
+		// 			}
+		// 			// borrow encoding info from initial spec
+		// 			let originalEncoding = vgSpec.marks[0].encode.update;
+		// 			originalEncoding.shape = { signal: "shape" }; // assume point
+		// 			// re-encode data within facets...
+		// 			// overwrite marks to avoid conflicts with compiled spec
+		// 			vgSpec.marks = [ 
+		// 				{
+		// 					// group by modelcheck group to create data sources for each subplot
+		// 					type: "group",
+		// 					from: {
+		// 						facet: {
+		// 							data: "data_0",
+		// 							name: "facet",
+		// 							groupby: "modelcheck_group" // do this!
+		// 						}
+		// 					},
+		// 					// put modelcheck check group on the main axis
+		// 					encode: {
+		// 						enter: {
+		// 							y: { scale: "y_scale", field: "modelcheck_group" } 
+		// 						}
+		// 					},
+		// 					// adjust the extent of the subplot area based on the band type scale created above
+		// 					signals: [
+		// 						{ name: "height", update: "bandwidth('y_scale')" },
+		// 						{ name: "shape", value: "circle" }
+		// 					],
+		// 					// re-encode whatever was on the original axis within each facet
+		// 					// add nested scale
+		// 					scales: originalScales,
+		// 					// re-construct marks
+		// 					marks: [
+		// 						{
+		// 							name: "marks",
+		// 							from: { data: "facet" },
+		// 							type: "symbol", // assume point
+		// 							encode: { update: originalEncoding }
+		// 						}
+		// 					],
+		// 					// add a nested axis
+		// 					axes: originalAxis
+		// 				}
+		// 			];
+		// 		} else { //if (vlSpec.encoding.y.field == outcomeName) or the outcome isn't encoded on either primary position
+		// 			console.log("re-encoding x axis")
+		// 			// double chart width
+		// 			vgSpec.signals.push({ name: "width", update: "width*2" });
+		// 			// add x_scale if the outcome var is y
+		// 			vgSpec.scales.push({
+		// 				name: "x_scale",
+		// 				type: "band",
+		// 				domain: {"data": "table", "field": "modelcheck_group"},
+		// 				range: "width",
+		// 				padding: 0.07
+		// 			});
+		// 			// we'll need to place the original x scale inside of marks to get nested axes
+		// 			let originalScales = vgSpec.scales.filter((elem) => elem.name == "x");
+		// 			// add axis for modelcheck group
+		// 			vgSpec.axes.push({
+		// 				orient: "bottom", 
+		// 				scale: "x_scale", 
+		// 				tickSize: 0, 
+		// 				labelPadding: 40, 
+		// 				zindex: 1
+		// 			});
+		// 			// we'll also remove the original x axis and grids, so we can later add them back inside of marks to get nested axes
+		// 			let originalAxis = vgSpec.axes.filter((elem) => elem.scale == "x" || elem.grid);
+		// 			vgSpec.axes = vgSpec.axes.filter((elem) => !(elem.scale == "x" || elem.grid)); // remove
+		// 			console.log("originalAxis", originalAxis);
+		// 			// change properties of original axis as needed
+		// 			let xAxisIdx = originalAxis.findIndex((elem) => (elem.scale == "x" && !elem.grid)),
+		// 				xGridIdx = originalAxis.findIndex((elem) => (elem.scale == "x" && elem.grid));
+		// 			originalAxis[xAxisIdx].zindex = 1;
+		// 			originalAxis[xAxisIdx].offset = { "signal": "height" };
+		// 			if (vlSpec.mark.type == "point") {
+		// 				originalAxis[xGridIdx].translate = { "signal": "height" };
+		// 				originalAxis[xGridIdx].tickOffset = { "signal": "-height" };
+		// 			}
+		// 			// borrow encoding info from initial spec
+		// 			let originalEncoding = vgSpec.marks[0].encode.update;
+		// 			originalEncoding.shape = { signal: "shape" }; // assume point
+		// 			// re-encode data within facets...
+		// 			// overwrite marks to avoid conflicts with compiled spec
+		// 			vgSpec.marks = [ 
+		// 				{
+		// 					// group by modelcheck group to create data sources for each subplot
+		// 					type: "group",
+		// 					from: {
+		// 						facet: {
+		// 							data: "data_0",
+		// 							name: "facet",
+		// 							groupby: "modelcheck_group" // do this!
+		// 						}
+		// 					},
+		// 					// put modelcheck check group on the main axis
+		// 					encode: {
+		// 						enter: {
+		// 							x: { scale: "x_scale", field: "modelcheck_group" } 
+		// 						}
+		// 					},
+		// 					// adjust the extent of the subplot area based on the band type scale created above
+		// 					signals: [
+		// 						{ name: "width", update: "bandwidth('x_scale')" },
+		// 						{ name: "shape", value: "circle" }
+		// 					],
+		// 					// re-encode whatever was on the original axis within each facet
+		// 					// add nested scale
+		// 					scales: originalScales,
+		// 					// re-construct marks
+		// 					marks: [
+		// 						{
+		// 							name: "marks",
+		// 							from: { data: "facet" },
+		// 							type: "symbol", // assume point
+		// 							encode: { update: originalEncoding }
+		// 						}
+		// 					],
+		// 					// add a nested axis
+		// 					axes: originalAxis
+		// 				}
+		// 			];
+		// 		}
+		// 	}
 		// }
 
 	}
-	console.log("vgSpec", vgSpec);
+	console.log("use vgSpec", vgSpec);
 
 	// function onChange(event) {
 	// 	showPredictionOrResidual = event.currentTarget.value;
