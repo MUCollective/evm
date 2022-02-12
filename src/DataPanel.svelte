@@ -50,10 +50,9 @@
                 
             </div>
         {/each}
-        {console.log("exits data panel")}
-        <!-- {console.log(dndState)} -->
-        {removeShadow() }
-        {console.log("==============================")}
+        <!-- {console.log("exits data panel")} -->
+        <!-- {removeShadow() } -->
+        <!-- {console.log("==============================")} -->
     </section>
 </div>
 

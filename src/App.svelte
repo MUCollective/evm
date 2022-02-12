@@ -752,8 +752,6 @@
 					return obj;
 				});
 			};
-			console.log("one model data only:");
-			console.log(dataOnly);
 				
 			callModel(mu, sigma, dataOnly, model)
 				.then(function (response) {
