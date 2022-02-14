@@ -332,10 +332,7 @@
 			value2: conditionValue2,
 		});
 		filter = [...filter];
-		// console.log(filter);
-		// console.log(varToFilter);
 		filter.forEach((f) => {
-			// console.log(f);
 			filterHelper(
 				f.variable,
 				f.includeExclude,
@@ -344,8 +341,6 @@
 				f.value2
 			);
 		});
-		// console.log(dataChanged);
-		// console.log(dndState);
 		specChanged++;
 	}
 
@@ -356,14 +351,6 @@
 		conditionValue1,
 		conditionValue2
 	) {
-		// console.log("in filterhepler, dataChanged:", dataChanged);
-		// console.log(
-		// 	varToFilter,
-		// 	includeOrExclude,
-		// 	condition,
-		// 	conditionValue1,
-		// 	conditionValue2
-		// );
 		dataChanged = dataChanged.filter(function (entry) {
 			if (condition == "greater") {
 				if (includeOrExclude == "include") {
@@ -421,7 +408,7 @@
 		if (clearAll) {
 			filter = [];
 		} else {
-			var removedFilter = filter[index];
+			// index of filter
 			if (index != 0) {
 				filterTemp = filter
 					.slice(0, index)
@@ -438,8 +425,6 @@
 			filter = [...filterTemp];
 			dataChanged = data;
 			dataChanged = [...dataChanged];
-			// console.log(data.length);
-			// console.log(dataChanged.length);
 			if (filter.length != 0) {
 				filter.forEach((f) => {
 					filterData(
@@ -451,6 +436,19 @@
 					);
 				});
 			}
+		}
+		// <!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!>
+		// <------------------------------------>
+		// <--------------- HERE --------------->
+		// <------------------------------------>
+		// <!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!>
+		if (models.length !== 0) {
+			console.log("removing filter when there are models in spec");
+			console.log(dataChanged);
+			models.forEach((model) => {
+				console.log(model["exp"]);
+				addModel(model["exp"][1], model["exp"][2], model["exp"][0]);
+			});
 		}
 		specChanged++;
 	}
