@@ -332,10 +332,7 @@
 			value2: conditionValue2,
 		});
 		filter = [...filter];
-		// console.log(filter);
-		// console.log(varToFilter);
 		filter.forEach((f) => {
-			// console.log(f);
 			filterHelper(
 				f.variable,
 				f.includeExclude,
@@ -344,8 +341,6 @@
 				f.value2
 			);
 		});
-		// console.log(dataChanged);
-		// console.log(dndState);
 		specChanged++;
 	}
 
@@ -356,14 +351,6 @@
 		conditionValue1,
 		conditionValue2
 	) {
-		// console.log("in filterhepler, dataChanged:", dataChanged);
-		// console.log(
-		// 	varToFilter,
-		// 	includeOrExclude,
-		// 	condition,
-		// 	conditionValue1,
-		// 	conditionValue2
-		// );
 		dataChanged = dataChanged.filter(function (entry) {
 			if (condition == "greater") {
 				if (includeOrExclude == "include") {
@@ -421,23 +408,14 @@
 		if (clearAll) {
 			filter = [];
 		} else {
-			// console.log(filter);
-			// var removedFilter = filter.splice(index, 1);
-			var removedFilter = filter[index];
+			// index of filter
 			if (index != 0) {
-				// console.log("filter.slice(0, index)", filter.slice(0, index));
-				// console.log(
-				// 	"filter.slice(index, filter.length)",
-				// 	filter.slice(index, filter.length)
-				// );
 				filterTemp = filter
 					.slice(0, index)
 					.concat(filter.slice(index + 1, filter.length));
 			} else {
 				filterTemp = filter.slice(1);
 			}
-			// console.log("filterTemp", filterTemp);
-			// console.log("filter", filter);
 			Promise.all([filterTemp]).then((values) => {
 				filterTemp = values[0];
 				// console.log("filterTemp", filterTemp);
@@ -447,8 +425,6 @@
 			filter = [...filterTemp];
 			dataChanged = data;
 			dataChanged = [...dataChanged];
-			// console.log(data.length);
-			// console.log(dataChanged.length);
 			if (filter.length != 0) {
 				filter.forEach((f) => {
 					filterData(
@@ -460,6 +436,19 @@
 					);
 				});
 			}
+		}
+		// <!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!>
+		// <------------------------------------>
+		// <--------------- HERE --------------->
+		// <------------------------------------>
+		// <!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!>
+		if (models.length !== 0) {
+			console.log("removing filter when there are models in spec");
+			console.log(dataChanged);
+			models.forEach((model) => {
+				console.log(model["exp"]);
+				addModel(model["exp"][1], model["exp"][2], model["exp"][0]);
+			});
 		}
 		specChanged++;
 	}
@@ -557,9 +546,28 @@
 				dataChanged = dataChanged.filter(
 					(row) => row.modelcheck_group != modelExp
 				);
+				if (
+					dataChanged.every((e) => {
+						return e["modelcheck_group"] == "data";
+					})
+				) {
+					console.log("hahaha");
+					dataChanged = dataChanged.filter((row) => row.draw == 1);
+					dataChanged = dataChanged.map((row) => {
+						let obj = Object.assign({}, row);
+						delete obj["draw"];
+						delete obj["modelcheck_group"];
+						return obj;
+					});
+					delete vlSpec.encoding.color;
+					console.log("delete vlSpec.encoding.xOffset;");
+					delete vlSpec.encoding.xOffset;
+					delete vlSpec.encoding.yOffset;
+				}
 				dataChanged = [...dataChanged];
+				vlSpec = { ...vlSpec };
 
-				console.log("remove model data:");
+				console.log("after remove model data:");
 				console.log(dataChanged);
 				specChanged++;
 			});
@@ -740,22 +748,7 @@
 			// call the new model
 
 			let dataOnly = deepCopy(dataChanged);
-			if (dataOnly.length > 500){
-				dataOnly = dataOnly.filter(
-					(row) => row.modelcheck_group === "data" && row.draw === 1
-				);
-				console.log("length > 500");
-				console.log(dataOnly);
-				dataOnly = dataOnly.map((row) => {
-					let obj = Object.assign({}, row);
-					delete obj["draw"];
-					delete obj["modelcheck_group"];
-					return obj;
-				});
-			};
-			console.log("one model data only:");
-			console.log(dataOnly);
-				
+
 			callModel(mu, sigma, dataOnly, model)
 				.then(function (response) {
 					showLoadingIcon = true;
