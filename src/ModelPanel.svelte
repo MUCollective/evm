@@ -14,8 +14,31 @@
     let showAddingModel = false;
     let muSpec = "mpg ~ 1";
     let sigmaSpec = "~1";
-    let modelType = "normal";
+    let modelFamily = "normal";
     let showModels = false;
+
+    // format model object from inputs, e.g.,
+    // {
+	//	  name: "normal| mpg ~ 1| ~1",
+	//    family: "normal",
+	//    mu_spec: "mpg ~ 1",
+    //    sigma_spec: "~1",
+	// }
+    function formatModel(muSpec, sigmaSpec, modelFamily) {
+        // families that have no scale submodel should be NULL for sigma_spec
+        let sigmaStr = sigmaSpec;
+        if (!(modelFamily == "negbinomial" || modelFamily == "normal" || modelFamily == "ordinal")) {
+            sigmaStr = ""
+            sigmaSpec = null
+        }
+
+        return {
+            name: modelFamily + "| " + muSpec + "| " + sigmaStr,
+            family: modelFamily,
+            mu_spec: muSpec,
+            sigma_spec: sigmaSpec
+        };
+    }
 </script>
 
 <!-- model panel -->
@@ -30,34 +53,33 @@
         <button on:click={removeModel(0, true)}>clear all</button>
     </div>
     {#if showAddingModel}
-        <select bind:value={modelType}>
+        <select bind:value={modelFamily}>
             <option disabled selected value> -- select model -- </option>
             <option value="normal">normal model</option>
             <option value="logistic">logistic model</option>
             <option value="poisson">poisson model</option>
+            <option value="negbinomial">negative binominal model</option>
             <option value="ordinal">ordinal model</option>
             <option value="multinomial">multinominal model</option>
-            <option value="negbinomial">negbinominal model</option>
         </select>
         <br />
         mu spec: <input bind:value={muSpec} style="padding: initial;" />
-        {#if modelType == "negbinomial" || modelType == "normal"}
-        <br />
-            sigma spec: <input
-                bind:value={sigmaSpec}
-                style="padding: initial;"
-            />
-        {:else if modelType == "ordinal"}
-        <br />
-            disp spec: <input
-                bind:value={sigmaSpec}
-                style="padding: initial;"
-            />
+        {#if modelFamily == "negbinomial" || modelFamily == "normal"}
+            <br />
+                sigma spec: <input
+                    bind:value={sigmaSpec}
+                    style="padding: initial;"
+                />
+        {:else if modelFamily == "ordinal"}
+            <br />
+                disp spec: <input
+                    bind:value={sigmaSpec}
+                    style="padding: initial;"
+                />
         {/if}
         {#if muSpec}
-            <!-- {#if sigmaSpec != "~1"} -->
             <button
-                on:click={addModel(muSpec, sigmaSpec, modelType)}
+                on:click={addModel(formatModel(muSpec, sigmaSpec, modelFamily))}
                 on:click={() => (showAddingModel = false)}
                 on:click={showPredictionOrResidual = "prediction"}
             >
@@ -69,11 +91,11 @@
     {#if models.length != 0}
         {#each models as f, i}
             <div class="current">
-                model: {f.exp[2]}
+                model: {f.family}
                 <br />
-                muSpec: {f.exp[0]}
+                muSpec: {f.mu_spec}
                 <br />
-                sigmaSpec: {f.exp[1]}
+                sigmaSpec: {f.sigma_spec}
                 <button class="single-char" on:click={removeModel(i)}
                     >&times;
                 </button>

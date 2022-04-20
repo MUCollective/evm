@@ -19,10 +19,9 @@
 <!-- data panel -->
 <div class="data-panel card">
     <h3>Data</h3>
-    <div class="dataset-name">
-        <!-- title: Dataset (drag zone) -->
+    <!-- <div class="dataset-name">
         {dndState[0].name}
-    </div>
+    </div> -->
     <!-- ignore the below error, it's due to the wrongly defined type in the DnD libaray -->
     <section
         use:dndzone={{

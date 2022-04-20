@@ -19,7 +19,7 @@
 		distinctModelGroups.pop(); // remove "undefined" if needed
 	}
 	let haveModelToShow = distinctModelGroups.some(
-		(elem) => elem.startsWith("normal|") || elem.startsWith("res|")
+		(elem) => elem.startsWith("normal|") || elem.startsWith("res|") // TODO: make this work for non-normal families
 	);
 	console.log("modelcheck groups in the chart data", distinctModelGroups);
 	console.log("model to show?", haveModelToShow);

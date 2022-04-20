@@ -444,11 +444,51 @@
 		// <!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!>
 		if (models.length !== 0) {
 			console.log("removing filter when there are models in spec");
-			console.log(dataChanged);
-			models.forEach((model) => {
-				console.log(model["exp"]);
-				addModel(model["exp"][1], model["exp"][2], model["exp"][0]);
-			});
+			
+			// need to revert to data only and rerun all models to make sure predictions reflect model fit to unfiltered data
+			let dataOnly = removeModelOutputs();
+			// let dataOnly = deepCopy(dataChanged);
+			// dataOnly = dataOnly.filter(
+			// 	(row) => row.modelcheck_group === "data" && row.draw === 1
+			// );
+			// dataOnly = dataOnly.map((row) => {
+			// 	let obj = Object.assign({}, row);
+			// 	delete obj["draw"];
+			// 	delete obj["modelcheck_group"];
+			// 	return obj;
+			// });
+
+			// get outcome name
+			let outcomeName = models[0].name.substring(
+				models[0].name.indexOf("|") + 1, 
+				models[0].name.indexOf("~")
+			);
+			outcomeName = outcomeName.trim();
+
+			callModelcheck(dataOnly, outcomeName, true) // hardcoded `true' means calc residuals by default
+				.then(function (response) {
+					showLoadingIcon = true;
+					// console.log("this should be a url");
+					// console.log(response);
+					return fetchData(response);
+				})
+				.then(function (modelData) {
+					console.log("this should be a the data with model predictions");
+					console.log(modelData);
+					// modelData = modelData.filter((row) => row.draw === 1);
+					modelData = [...modelData];
+					// update dataChanged
+					dataChanged = deepCopy(modelData).filter(
+						(row) => !row.modelcheck_group.startsWith("res") //&& row.draw === 1
+					);
+					dataChanged = [...dataChanged];
+					// update vlSpec
+					showLoadingIcon = false;
+					specChanged++;
+				})
+				.catch(function (err) {
+					console.log(err);
+				});
 		}
 		specChanged++;
 	}
@@ -498,118 +538,223 @@
 		}
 	}
 
+    /**
+	* Alex's new modeling code goes here
+	* start
+	*/
+
+	// call main event handler for modeling
+	async function callModelcheck(data, outcomeName, calcResiduals = true) {
+		console.log("calling server");
+		console.log("models", models);
+		console.log("data", data);
+
+		showLoadingIcon = true;
+
+		// connect to server
+		ocpu.seturl("//kalealex.ocpu.io/modelcheck/R");
+
+		// call main event handler
+		var url = await ocpu.rpc("add_model", {
+			df: JSON.stringify(data),
+			models: JSON.stringify(models),
+			outcome_name: outcomeName,
+			residuals: calcResiduals
+		});
+
+		return url.split("\n")[0];
+	}
+
+	// add model to the vis canvas
+	// expects model object formated like this
+	// {
+	//	  name: "normal| mpg ~ 1| ~1",
+	//    family: "normal",
+	//    mu_spec: "mpg ~ 1",
+    //    sigma_spec: "~1",
+	// }
+	// families that have no scale submodel should be NULL for sigma_spec
+	async function addModel(newModel) {
+		console.log("adding model");
+		showPredictionOrResidual = "prediction";
+		
+		// add the model to our queue
+		models.push(newModel);
+		models = [...models];
+		modeling = true;
+
+		// get outcome name
+		let outcomeName = newModel.name.substring(
+			newModel.name.indexOf("|") + 1, 
+			newModel.name.indexOf("~")
+		);
+		outcomeName = outcomeName.trim();
+
+		// make fresh copy of data to send to avoid async change conflicts
+		let passData = deepCopy(dataChanged);
+
+		// event handler will figure out what to do based on current state
+		callModelcheck(passData, outcomeName, true) // hardcoded `true' means calc residuals by default
+			.then(function (response) {
+				showLoadingIcon = true;
+				// console.log("this should be a url");
+				// console.log(response);
+				return fetchData(response);
+			})
+			.then(function (modelData) {
+				console.log("this should be a the data with model predictions");
+				console.log(modelData);
+				// modelData = modelData.filter((row) => row.draw === 1);
+				modelData = [...modelData];
+				// update dataChanged
+				dataChanged = deepCopy(modelData).filter(
+					(row) => !row.modelcheck_group.startsWith("res") //&& row.draw === 1
+				);
+				dataChanged = [...dataChanged];
+				// update vlSpec
+				showLoadingIcon = false;
+				specChanged++;
+			})
+			.catch(function (err) {
+				console.log(err);
+			});
+		// specChanged++; // not sure if this is necessary
+	}
+
+	// revert to data only
+	function removeModelOutputs() {
+		let dataOnly = deepCopy(dataChanged);
+		dataOnly = dataOnly.filter(
+			(row) => row.modelcheck_group === "data" && row.draw === 1
+		);
+		dataOnly = dataOnly.map((row) => {
+			let obj = Object.assign({}, row);
+			delete obj["draw"];
+			delete obj["modelcheck_group"];
+			return obj;
+		});
+
+		return dataOnly;
+	}
+
+	/**
+	* Alex's new modeling code goes here
+	* end
+	*/
+
 	function removeModel(index, removeAll = false) {
 		var modelTemp;
+		// determine whether the model we are dropping is the only model to drop
+		removeAll = models.length == 1
 		if (removeAll) {
+			// drop all models
 			models = [];
 			modeling = false;
-			dataChanged = dataChanged.filter(
-				(row) => row.modelcheck_group == "data"
-			);
-
+			// revert to data only
+			dataChanged = removeModelOutputs();
 			dataChanged = [...dataChanged];
 			console.log(dataChanged);
+			// update spec
 			delete vlSpec.encoding.color;
+			delete vlSpec.encoding.xOffset;
+			delete vlSpec.encoding.yOffset;
+			vlSpec = { ...vlSpec };
 			specChanged++;
 			return;
 		} else {
+			// remove selected model
 			console.log("models object", models);
-			// var removedFilter = filter.splice(index, 1);
 			var removedModel = models[index];
 			if (index != 0) {
 				modelTemp = models
 					.slice(0, index)
 					.concat(models.slice(index + 1, models.length));
-				// console.log("modelTemp", modelTemp);
 			} else {
 				modelTemp = models.slice(1);
 			}
 		}
-		Promise.all([modelTemp])
+		// if removing one model but keeping others
+		Promise.all([modelTemp, removedModel])
 			.then((values) => {
-				console.log("values", values);
-				modelTemp = values[0];
-				// console.log("filterTemp", modelTemp);
+				// update global models queue
+				[modelTemp, removedModel] = values;
 				models = [...modelTemp];
 				console.log("models after promise", models);
-				// filter = [...filter];
-				console.log("removing", removedModel);
-				console.log("after removed, new filter", models);
+				console.log("removed model", removedModel);
 				return removedModel;
 			})
 			.then(function (removedModel) {
 				console.log("deleting models");
-				console.log(models);
-				console.log(dataChanged);
-				const modelExp = removedModel["exp"].join("| ");
-				console.log(modelExp);
+				// console.log(models);
+				// console.log(dataChanged);
 				dataChanged = dataChanged.filter(
-					(row) => row.modelcheck_group != modelExp
+					(row) => !(row.modelcheck_group == removedModel.name || row.modelcheck_group == ("res| " + removedModel.name))
 				);
-				if (
-					dataChanged.every((e) => {
-						return e["modelcheck_group"] == "data";
-					})
-				) {
-					console.log("hahaha");
-					dataChanged = dataChanged.filter((row) => row.draw == 1);
-					dataChanged = dataChanged.map((row) => {
-						let obj = Object.assign({}, row);
-						delete obj["draw"];
-						delete obj["modelcheck_group"];
-						return obj;
-					});
-					delete vlSpec.encoding.color;
-					console.log("delete vlSpec.encoding.xOffset;");
-					delete vlSpec.encoding.xOffset;
-					delete vlSpec.encoding.yOffset;
-				}
+				// if (
+				// 	dataChanged.every((e) => {
+				// 		return e["modelcheck_group"] == "data";
+				// 	})
+				// ) {
+				// 	console.log("hahaha");
+				// 	dataChanged = dataChanged.filter((row) => row.draw == 1);
+				// 	dataChanged = dataChanged.map((row) => {
+				// 		let obj = Object.assign({}, row);
+				// 		delete obj["draw"];
+				// 		delete obj["modelcheck_group"];
+				// 		return obj;
+				// 	});
+				// 	delete vlSpec.encoding.color;
+				// 	console.log("delete vlSpec.encoding.xOffset;");
+				// 	delete vlSpec.encoding.xOffset;
+				// 	delete vlSpec.encoding.yOffset;
+				// }
 				dataChanged = [...dataChanged];
-				vlSpec = { ...vlSpec };
+				console.log("after remove model data", dataChanged);
 
-				console.log("after remove model data:");
-				console.log(dataChanged);
 				specChanged++;
+			})
+			.catch(function (err) {
+				console.log(err);
 			});
 	}
 
-	// call model on server
-	async function callModel(mu, sigma = "~ 1", useData, model = "normal") {
-		console.log("calling server!!");
+	// // call model on server
+	// async function callModel(mu, sigma = "~ 1", useData, model = "normal") {
+	// 	console.log("calling server!!");
 
-		console.log(models.length);
+	// 	console.log(models.length);
 
-		console.log("mu:", mu, "data:", useData);
-		showLoadingIcon = true;
-		ocpu.seturl("//kalealex.ocpu.io/modelcheck/R");
-		var url;
-		if (model == "normal") {
-			url = await ocpu.rpc("normal_model_check", {
-				mu_spec: mu,
-				sigma_spec: sigma,
-				data: JSON.stringify(useData),
-			});
-		} else if (model == "ordinal") {
-			url = await ocpu.rpc("ordinal_model_check", {
-				mu_spec: mu,
-				disp_spec: sigma,
-				data: JSON.stringify(useData),
-			});
-		} else if (model == "multinomial") {
-			url = await ocpu.rpc("multinomial_model_check", {
-				spec: mu,
-				data: JSON.stringify(useData),
-			});
-		} else {
-			const model_name = model + "_model_check";
-			console.log(model_name);
-			url = await ocpu.rpc(model_name, {
-				mu_spec: mu,
-				data: JSON.stringify(useData),
-			});
-		}
-		return url.split("\n")[0];
-	}
+	// 	console.log("mu:", mu, "data:", useData);
+	// 	showLoadingIcon = true;
+	// 	ocpu.seturl("//kalealex.ocpu.io/modelcheck/R");
+	// 	var url;
+	// 	if (model == "normal") {
+	// 		url = await ocpu.rpc("normal_model_check", {
+	// 			mu_spec: mu,
+	// 			sigma_spec: sigma,
+	// 			data: JSON.stringify(useData),
+	// 		});
+	// 	} else if (model == "ordinal") {
+	// 		url = await ocpu.rpc("ordinal_model_check", {
+	// 			mu_spec: mu,
+	// 			disp_spec: sigma,
+	// 			data: JSON.stringify(useData),
+	// 		});
+	// 	} else if (model == "multinomial") {
+	// 		url = await ocpu.rpc("multinomial_model_check", {
+	// 			spec: mu,
+	// 			data: JSON.stringify(useData),
+	// 		});
+	// 	} else {
+	// 		const model_name = model + "_model_check";
+	// 		console.log(model_name);
+	// 		url = await ocpu.rpc(model_name, {
+	// 			mu_spec: mu,
+	// 			data: JSON.stringify(useData),
+	// 		});
+	// 	}
+	// 	return url.split("\n")[0];
+	// }
 
 	async function calculate_residuals(useData) {
 		showLoadingIcon = true;
@@ -624,15 +769,15 @@
 		return url.split("\n")[0];
 	}
 
-	// merge dataframes containing model results on server
-	async function mergeModels(oldData, newData) {
-		ocpu.seturl("//kalealex.ocpu.io/modelcheck/R");
-		const url = await ocpu.rpc("merge_modelchecks", {
-			df_old: JSON.stringify(oldData),
-			df_new: JSON.stringify(newData),
-		});
-		return url.split("\n")[0];
-	}
+	// // merge dataframes containing model results on server
+	// async function mergeModels(oldData, newData) {
+	// 	ocpu.seturl("//kalealex.ocpu.io/modelcheck/R");
+	// 	const url = await ocpu.rpc("merge_modelchecks", {
+	// 		df_old: JSON.stringify(oldData),
+	// 		df_new: JSON.stringify(newData),
+	// 	});
+	// 	return url.split("\n")[0];
+	// }
 
 	// fetch data from open cpu given a url
 	async function fetchData(url) {
@@ -651,133 +796,133 @@
 		return newData;
 	}
 
-	// add model to the vis canvas
-	async function addModel(mu, sigma, model = "normal") {
-		console.log("adding model!!!!!!");
-		showPredictionOrResidual = "prediction";
-		if (residualList.length !== 0) {
-			console.log("show not show residuals!!!");
-		}
-		// add the model to our queue
-		models.push({
-			exp: [model, mu, sigma],
-		});
-		models = [...models];
-		modeling = true;
-		// figure out what to do next based on current state
-		// TODO: we probably also need an if to deal with the edge case where we need to rerun everything
-		if (
-			dataChanged[0].hasOwnProperty("modelcheck_group") &&
-			dataChanged.some((row) => row.modelcheck_group !== "data")
-		) {
-			// data already contains model predictions...
-			// filter other model predictions out of the dataset
-			let dataOnly = deepCopy(dataChanged);
-			dataOnly = dataOnly.filter(
-				(row) => row.modelcheck_group === "data" && row.draw === 1
-			);
-			dataOnly = dataOnly.map((row) => {
-				let obj = Object.assign({}, row);
-				delete obj["mu.expectation"];
-				delete obj["logitmu.expectation"];
-				delete obj["logmu.expectation"];
-				delete obj["se.expectation"];
-				delete obj["logitmu.se"];
-				delete obj["logse.expectation"];
-				delete obj["logmu.se"];
-				delete obj["logsigma.expectation"];
-				delete obj["logsigma.se"];
-				delete obj["df"];
-				delete obj["se.residual"];
-				delete obj["draw"];
-				delete obj["t"];
-				delete obj["x"];
-				delete obj["t1"];
-				delete obj["t2"];
-				delete obj["mu"];
-				delete obj["logitmu"];
-				delete obj["logmu"];
-				delete obj["sigma"];
-				delete obj["logsigma"];
-				delete obj["modelcheck_group"];
-				return obj;
-			});
-			// call the new model, and merge its results with dataChanged
-			callModel(mu, sigma, dataOnly, model)
-				.then(function (response) {
-					showLoadingIcon = true;
-					// console.log("this should be a url");
-					// console.log(response);
-					return fetchData(response);
-				})
-				.then(function (modelData) {
-					console.log(
-						"this should be a the data with model predictions"
-					);
-					console.log(modelData);
-					// merge old model data from dataChanged with new model data from modelData
-					mergeModels(dataChanged, modelData)
-						.then(function (response) {
-							// console.log("this should be a url");
-							// console.log(response);
-							return fetchData(response);
-						})
-						.then(function (mergedData) {
-							console.log(
-								"this should be a the data with predictions from both old and new models"
-							);
-							console.log(mergedData);
-							// update dataChanged
-							// mergedData = mergedData.filter((row) => row.draw === 1);
-							mergedData = [...mergedData];
-							dataChanged = deepCopy(mergedData);
-							dataChanged = [...dataChanged];
+	// // add model to the vis canvas
+	// async function addModel(mu, sigma, model = "normal") {
+	// 	console.log("adding model!!!!!!");
+	// 	showPredictionOrResidual = "prediction";
+	// 	if (residualList.length !== 0) {
+	// 		console.log("show not show residuals!!!");
+	// 	}
+	// 	// add the model to our queue
+	// 	models.push({
+	// 		exp: [model, mu, sigma],
+	// 	});
+	// 	models = [...models];
+	// 	modeling = true;
+	// 	// figure out what to do next based on current state
+	// 	// TODO: we probably also need an if to deal with the edge case where we need to rerun everything
+	// 	if (
+	// 		dataChanged[0].hasOwnProperty("modelcheck_group") &&
+	// 		dataChanged.some((row) => row.modelcheck_group !== "data")
+	// 	) {
+	// 		// data already contains model predictions...
+	// 		// filter other model predictions out of the dataset
+	// 		let dataOnly = deepCopy(dataChanged);
+	// 		dataOnly = dataOnly.filter(
+	// 			(row) => row.modelcheck_group === "data" && row.draw === 1
+	// 		);
+	// 		dataOnly = dataOnly.map((row) => {
+	// 			let obj = Object.assign({}, row);
+	// 			delete obj["mu.expectation"];
+	// 			delete obj["logitmu.expectation"];
+	// 			delete obj["logmu.expectation"];
+	// 			delete obj["se.expectation"];
+	// 			delete obj["logitmu.se"];
+	// 			delete obj["logse.expectation"];
+	// 			delete obj["logmu.se"];
+	// 			delete obj["logsigma.expectation"];
+	// 			delete obj["logsigma.se"];
+	// 			delete obj["df"];
+	// 			delete obj["se.residual"];
+	// 			delete obj["draw"];
+	// 			delete obj["t"];
+	// 			delete obj["x"];
+	// 			delete obj["t1"];
+	// 			delete obj["t2"];
+	// 			delete obj["mu"];
+	// 			delete obj["logitmu"];
+	// 			delete obj["logmu"];
+	// 			delete obj["sigma"];
+	// 			delete obj["logsigma"];
+	// 			delete obj["modelcheck_group"];
+	// 			return obj;
+	// 		});
+	// 		// call the new model, and merge its results with dataChanged
+	// 		callModel(mu, sigma, dataOnly, model)
+	// 			.then(function (response) {
+	// 				showLoadingIcon = true;
+	// 				// console.log("this should be a url");
+	// 				// console.log(response);
+	// 				return fetchData(response);
+	// 			})
+	// 			.then(function (modelData) {
+	// 				console.log(
+	// 					"this should be a the data with model predictions"
+	// 				);
+	// 				console.log(modelData);
+	// 				// merge old model data from dataChanged with new model data from modelData
+	// 				mergeModels(dataChanged, modelData)
+	// 					.then(function (response) {
+	// 						// console.log("this should be a url");
+	// 						// console.log(response);
+	// 						return fetchData(response);
+	// 					})
+	// 					.then(function (mergedData) {
+	// 						console.log(
+	// 							"this should be a the data with predictions from both old and new models"
+	// 						);
+	// 						console.log(mergedData);
+	// 						// update dataChanged
+	// 						// mergedData = mergedData.filter((row) => row.draw === 1);
+	// 						mergedData = [...mergedData];
+	// 						dataChanged = deepCopy(mergedData);
+	// 						dataChanged = [...dataChanged];
 
-							showLoadingIcon = false;
-							specChanged++;
-						})
-						.catch(function (err) {
-							console.log(err);
-						});
-				})
-				.catch(function (err) {
-					console.log(err);
-				});
-		} else {
-			// data contains NO model predictions...
-			// call the new model
+	// 						showLoadingIcon = false;
+	// 						specChanged++;
+	// 					})
+	// 					.catch(function (err) {
+	// 						console.log(err);
+	// 					});
+	// 			})
+	// 			.catch(function (err) {
+	// 				console.log(err);
+	// 			});
+	// 	} else {
+	// 		// data contains NO model predictions...
+	// 		// call the new model
 
-			let dataOnly = deepCopy(dataChanged);
+	// 		let dataOnly = deepCopy(dataChanged);
 
-			callModel(mu, sigma, dataOnly, model)
-				.then(function (response) {
-					showLoadingIcon = true;
-					// console.log("this should be a url");
-					// console.log(response);
-					return fetchData(response);
-				})
-				.then(function (modelData) {
-					console.log(
-						"this should be a the data with model predictions"
-					);
-					console.log(modelData);
-					// modelData = modelData.filter((row) => row.draw === 1);
-					modelData = [...modelData];
-					// update dataChanged
-					dataChanged = deepCopy(modelData);
-					dataChanged = [...dataChanged];
-					// update vlSpec
-					// TODO: eventually we need contingencies to deal with xOffset and yOffset
-					showLoadingIcon = false;
-					specChanged++;
-				})
-				.catch(function (err) {
-					console.log(err);
-				});
-		}
-		specChanged++;
-		// console.log(dataChanged);
-	}
+	// 		callModel(mu, sigma, dataOnly, model)
+	// 			.then(function (response) {
+	// 				showLoadingIcon = true;
+	// 				// console.log("this should be a url");
+	// 				// console.log(response);
+	// 				return fetchData(response);
+	// 			})
+	// 			.then(function (modelData) {
+	// 				console.log(
+	// 					"this should be a the data with model predictions"
+	// 				);
+	// 				console.log(modelData);
+	// 				// modelData = modelData.filter((row) => row.draw === 1);
+	// 				modelData = [...modelData];
+	// 				// update dataChanged
+	// 				dataChanged = deepCopy(modelData);
+	// 				dataChanged = [...dataChanged];
+	// 				// update vlSpec
+	// 				// TODO: eventually we need contingencies to deal with xOffset and yOffset
+	// 				showLoadingIcon = false;
+	// 				specChanged++;
+	// 			})
+	// 			.catch(function (err) {
+	// 				console.log(err);
+	// 			});
+	// 	}
+	// 	specChanged++;
+	// 	// console.log(dataChanged);
+	// }
 
 	function showResidual() {
 		console.log("residual!!!!!!!");
