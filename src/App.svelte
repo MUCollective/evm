@@ -430,7 +430,7 @@
 			if (trans == "log") {
 				if (entry[variable] < 0) {
 					if (!alerted) {
-						alert("You should not apply log transform to variables with values less than 0.\nOut of range values will be turned into NaNs.");
+						alert("You should not apply log transform to variables with values less than 0.\nOut of range values will be dropped from the dataset. Remove this transorm to revert to the original data.");
 						alerted = true;
 					}
 					entry[variable] = NaN;
@@ -445,7 +445,7 @@
 			} else if (trans == "logit") {
 				if (entry[variable] < 0 || entry[variable] > 1) {
 					if (!alerted) {
-						alert("You should not apply log odds transform to variables with values out of the range [0, 1].\nOut of range values will be turned into NaNs.");
+						alert("You should not apply log odds transform to variables with values out of the range [0, 1].\nOut of range values will be dropped from the dataset. Remove this transorm to revert to the original data.");
 						alerted = true;
 					}
 					entry[variable] = NaN;
@@ -462,7 +462,7 @@
 				}
 			}
 			return entry;
-		});
+		}).filter(entry => !isNaN(entry[variable]));
 		d = [...d];
 		return d;
 	}
