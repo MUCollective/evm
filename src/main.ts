@@ -10,6 +10,7 @@ const app = new App({
 		flipDurationMs: 300,
 		data: null,
 		dataChanged: null,
+		dataModelOutput: null,
 		dataTrans:null,
 		filter: [],
 		transformation: [],

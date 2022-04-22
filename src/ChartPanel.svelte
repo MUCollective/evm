@@ -9,8 +9,9 @@
 	export let vlSpec: VisualizationSpec;
 	export let options: EmbedOptions = { renderer: "svg" };
 	export let modeling: boolean;
+	// export let showLoadingIcon: boolean;
 	export let models: any;
-	export let showPredictionOrResidual;
+	// export let showPredictionOrResidual;
 
 	// process input data, looking for signs that we have a model to show
 	let dataset = { table: dataChanged };
@@ -2156,6 +2157,7 @@
 	// 	showPredictionOrResidual = event.currentTarget.value;
 	// 	console.log(showPredictionOrResidual);
 	// }
+
 	function distinctValues(dataObj, key) {
 		var lookup = {};
 		var result = [];
