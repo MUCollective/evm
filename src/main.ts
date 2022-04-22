@@ -5,18 +5,14 @@ const app = new App({
 	props: {
 		name: 'Exploratory Modeling',
 		mounted: false,
-		charting: false,
 		modeling: false,
 		flipDurationMs: 300,
 		data: null,
 		dataChanged: null,
 		dataModelOutput: null,
-		dataTrans:null,
-		filter: [],
-		transformation: [],
-		dataTransformed: [],
+		filters: [],
+		transformations: [],
 		models: [],
-		residualList: [],
 		dndState: [
 			{
 				id: "variables",

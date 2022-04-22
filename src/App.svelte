@@ -17,15 +17,12 @@
 	// props
 	export let name: string;
 	export let mounted: boolean;
-	// export let charting: boolean; // not used?
 	export let modeling: boolean;
-	// export const chartX = writable("origin");
 	// props for Vega-Lite
 	// data should be a {}[] format (pure dataset), this will be wrapped by {"table": data} in the ChartPanel component.
 	export let data: any;
 	export let dataChanged: any;
 	export let dataModelOutput: any;
-	export let dataTrans: any;
 	export let vlSpec: VisualizationSpec;
 	// export let vlSpecModel: VisualizationSpec;
 	// export let facet: any;
@@ -39,11 +36,10 @@
 	export let dndState: { id: string; name: string; items: any[] }[];
 	export let flipDurationMs: number;
 	export let originalDndState: { id: string; name: string; items: any[] }[];
-	export let filter: any;
-	export let transformation: any;
+	export let filters: any;
+	export let transformations: any;
 	$: specChanged = 0;
 	$: showLoadingIcon = false;
-	export let dataTransformed: any;
 	export let models: any;
 	let prevSpec: VisualizationSpec = vlSpec;
 	console.log("PREV prevSpec", prevSpec);
@@ -61,8 +57,6 @@
 		// console.log("loaded data", data);
 		dataChanged = data;
 		dataChanged = [...dataChanged];
-		dataTrans = data;
-		dataTrans = [...dataTrans];
 		// populate dropzone items with variable names from data
 		Object.keys(data[0]).forEach((d, i) => {
 			dndState[0].items.push({
@@ -235,110 +229,86 @@
 		}
 	}
 
-	function changeMark(selected: any) {
-		vlSpec.mark = selected;
-		vlSpec = { ...vlSpec };
-		specChanged++;
-	}
+	// function changeMark(selected: any) {
+	// 	vlSpec.mark = selected;
+	// 	vlSpec = { ...vlSpec };
+	// 	specChanged++;
+	// }
 
-	function changeAggregation(aggr: any, shelfId: any) {
-		if (shelfId == "x-drop" && typeof vlSpec.encoding.x != "undefined") {
-			if (aggr == "none") {
-				if (typeof vlSpec.encoding.x.aggregate != "undefined") {
-					delete vlSpec.encoding.x.aggregate;
-				}
-			} else {
-				vlSpec.encoding.x.aggregate = aggr;
-			}
-		} else if (
-			shelfId == "y-drop" &&
-			typeof vlSpec.encoding.y != "undefined"
-		) {
-			if (aggr == "none") {
-				if (typeof vlSpec.encoding.y.aggregate != "undefined") {
-					delete vlSpec.encoding.y.aggregate;
-				}
-			} else {
-				vlSpec.encoding.y.aggregate = aggr;
-			}
-		} else if (
-			shelfId == "col-drop" &&
-			typeof vlSpec.encoding.column != "undefined"
-		) {
-			if (aggr == "none") {
-				if (typeof vlSpec.encoding.column.aggregate != "undefined") {
-					delete vlSpec.encoding.column.aggregate;
-				}
-			} else {
-				vlSpec.encoding.column.aggregate = aggr;
-			}
-		} else if (
-			shelfId == "row-drop" &&
-			typeof vlSpec.encoding.row != "undefined"
-		) {
-			if (aggr == "none") {
-				if (typeof vlSpec.encoding.row.aggregate != "undefined") {
-					delete vlSpec.encoding.row.aggregate;
-				}
-			} else {
-				vlSpec.encoding.row.aggregate = aggr;
-			}
-		}
-		if (aggr == "sum") {
-			vlSpec.mark = "bar";
-		}
-		if (
-			typeof vlSpec.encoding.x != "undefined" &&
-			typeof vlSpec.encoding.x.aggregate == "undefined" &&
-			typeof vlSpec.encoding.y != "undefined" &&
-			typeof vlSpec.encoding.y.aggregate == "undefined"
-		) {
-			if (vlSpec.encoding.x && vlSpec.encoding.y) {
-				if (
-					vlSpec.encoding.x.type == vlSpec.encoding.y.type &&
-					vlSpec.encoding.x.type == "quantitative"
-				) {
-					vlSpec.mark = "point";
-				}
-			} else {
-				vlSpec.mark = "tick";
-			}
-		}
-		vlSpec = { ...vlSpec };
-		specChanged++;
-	}
+	// function changeAggregation(aggr: any, shelfId: any) {
+	// 	if (shelfId == "x-drop" && typeof vlSpec.encoding.x != "undefined") {
+	// 		if (aggr == "none") {
+	// 			if (typeof vlSpec.encoding.x.aggregate != "undefined") {
+	// 				delete vlSpec.encoding.x.aggregate;
+	// 			}
+	// 		} else {
+	// 			vlSpec.encoding.x.aggregate = aggr;
+	// 		}
+	// 	} else if (
+	// 		shelfId == "y-drop" &&
+	// 		typeof vlSpec.encoding.y != "undefined"
+	// 	) {
+	// 		if (aggr == "none") {
+	// 			if (typeof vlSpec.encoding.y.aggregate != "undefined") {
+	// 				delete vlSpec.encoding.y.aggregate;
+	// 			}
+	// 		} else {
+	// 			vlSpec.encoding.y.aggregate = aggr;
+	// 		}
+	// 	} else if (
+	// 		shelfId == "col-drop" &&
+	// 		typeof vlSpec.encoding.column != "undefined"
+	// 	) {
+	// 		if (aggr == "none") {
+	// 			if (typeof vlSpec.encoding.column.aggregate != "undefined") {
+	// 				delete vlSpec.encoding.column.aggregate;
+	// 			}
+	// 		} else {
+	// 			vlSpec.encoding.column.aggregate = aggr;
+	// 		}
+	// 	} else if (
+	// 		shelfId == "row-drop" &&
+	// 		typeof vlSpec.encoding.row != "undefined"
+	// 	) {
+	// 		if (aggr == "none") {
+	// 			if (typeof vlSpec.encoding.row.aggregate != "undefined") {
+	// 				delete vlSpec.encoding.row.aggregate;
+	// 			}
+	// 		} else {
+	// 			vlSpec.encoding.row.aggregate = aggr;
+	// 		}
+	// 	}
+	// 	if (aggr == "sum") {
+	// 		vlSpec.mark = "bar";
+	// 	}
+	// 	if (
+	// 		typeof vlSpec.encoding.x != "undefined" &&
+	// 		typeof vlSpec.encoding.x.aggregate == "undefined" &&
+	// 		typeof vlSpec.encoding.y != "undefined" &&
+	// 		typeof vlSpec.encoding.y.aggregate == "undefined"
+	// 	) {
+	// 		if (vlSpec.encoding.x && vlSpec.encoding.y) {
+	// 			if (
+	// 				vlSpec.encoding.x.type == vlSpec.encoding.y.type &&
+	// 				vlSpec.encoding.x.type == "quantitative"
+	// 			) {
+	// 				vlSpec.mark = "point";
+	// 			}
+	// 		} else {
+	// 			vlSpec.mark = "tick";
+	// 		}
+	// 	}
+	// 	vlSpec = { ...vlSpec };
+	// 	specChanged++;
+	// }
 
 	/**
 	* Filtering
 	* start
 	*/
 
-	// var filterCount = 0;
-	function filterData(varToFilter, includeOrExclude, condition, conditionValue1, conditionValue2) {
-		// filterCount++;
-		// filter.push(tempFilter);
-		filter.push({
-			variable: varToFilter,
-			includeExclude: includeOrExclude,
-			condition: condition,
-			value1: conditionValue1,
-			value2: conditionValue2,
-		});
-		filter = [...filter];
-		filter.forEach((f) => {
-			filterHelper(
-				f.variable,
-				f.includeExclude,
-				f.condition,
-				f.value1,
-				f.value2
-			);
-		});
-		specChanged++;
-	}
-
-	function filterHelper(varToFilter, includeOrExclude, condition, conditionValue1, conditionValue2) {
-		dataChanged = dataChanged.filter(function (entry) {
+	function applyFilter(d, varToFilter, includeOrExclude, condition, conditionValue1, conditionValue2) {
+		d = d.filter(function (entry) {
 			if (condition == "greater") {
 				if (includeOrExclude == "include") {
 					return entry[varToFilter] > conditionValue1;
@@ -383,96 +353,65 @@
 				}
 			}
 		});
-		dataChanged = [...dataChanged];
-		// console.log(dataChanged);
+		d = [...d];
+		return d;
+	}
+
+	function addFilter(varToFilter, includeOrExclude, condition, conditionValue1, conditionValue2) {
+		// add filters to queue
+		filters.push({
+			variable: varToFilter,
+			includeExclude: includeOrExclude,
+			condition: condition,
+			value1: conditionValue1,
+			value2: conditionValue2,
+		});
+		
+		// Promise all pattern
+		Promise.all([filters])
+			.then((values) => {
+				// update data
+				let temp = values[0];
+				filters = [...temp];
+				console.log("filters after add filter", filters);
+			})
+			.then(() => {
+				// reconcile state changes
+				filterTransModel();
+			})
+			.catch(function (err) {
+				console.log(err);
+			});
 	}
 
 	function removeFilter(index, clearAll = false) {
-		dataChanged = data;
-		dataChanged = [...dataChanged];
 		var filterTemp;
+		clearAll = filters.length == 1;
 		if (clearAll) {
-			filter = [];
+			filterTemp = [];
 		} else {
 			// index of filter
 			if (index != 0) {
-				filterTemp = filter
+				filterTemp = filters
 					.slice(0, index)
-					.concat(filter.slice(index + 1, filter.length));
+					.concat(filters.slice(index + 1, filters.length));
 			} else {
-				filterTemp = filter.slice(1);
+				filterTemp = filters.slice(1);
 			}
-			Promise.all([filterTemp]).then((values) => {
+		}
+		Promise.all([filterTemp])
+			.then((values) => {
 				filterTemp = values[0];
-				// console.log("filterTemp", filterTemp);
-				filter = [...filterTemp];
+				filters = [...filterTemp];
+				console.log("filters after remove filter", filters);
+			})
+			.then(() => {
+				// reconcile state changes
+				filterTransModel();
+			})
+			.catch(function (err) {
+				console.log(err);
 			});
-			// filter = filterTemp;
-			filter = [...filterTemp];
-			dataChanged = data;
-			dataChanged = [...dataChanged];
-			if (filter.length != 0) {
-				filter.forEach((f) => {
-					filterData(
-						f.variable,
-						f.includeExclude,
-						f.condition,
-						f.value1,
-						f.value2
-					);
-				});
-			}
-		}
-		// do we need to rerun models?
-		if (models.length !== 0) {
-			console.log("removing filter when there are models in spec");
-			
-			// need to revert to data only and rerun all models to make sure predictions reflect model fit to unfiltered data
-			let dataOnly = removeModelOutputs();
-			// let dataOnly = deepCopy(dataChanged);
-			// dataOnly = dataOnly.filter(
-			// 	(row) => row.modelcheck_group === "data" && row.draw === 1
-			// );
-			// dataOnly = dataOnly.map((row) => {
-			// 	let obj = Object.assign({}, row);
-			// 	delete obj["draw"];
-			// 	delete obj["modelcheck_group"];
-			// 	return obj;
-			// });
-
-			// get outcome name
-			let outcomeName = models[0].name.substring(
-				models[0].name.indexOf("|") + 1, 
-				models[0].name.indexOf("~")
-			);
-			outcomeName = outcomeName.trim();
-
-			callModelcheck(dataOnly, outcomeName, true) // hardcoded `true' means calc residuals by default
-				.then(function (response) {
-					// showLoadingIcon = true;
-					// console.log("this should be a url");
-					// console.log(response);
-					return fetchData(response);
-				})
-				.then(function (modelData) {
-					console.log("this should be a the data with model predictions");
-					console.log(modelData);
-					// modelData = modelData.filter((row) => row.draw === 1);
-					dataModelOutput = [...modelData];
-					// update dataChanged
-					dataChanged = deepCopy(dataModelOutput).filter(
-						(row) => !row.modelcheck_group.startsWith("res") //&& row.draw === 1
-					);
-					dataChanged = [...dataChanged];
-					// update vlSpec
-					showLoadingIcon = false;
-					specChanged++;
-				})
-				.catch(function (err) {
-					console.log(err);
-				});
-		}
-		specChanged++;
 	}
 
 	/**
@@ -485,55 +424,222 @@
 	* start
 	*/
 
-	function transformData(transVar, transform) {
-		dataTrans = dataChanged;
-		dataTrans = [...dataTrans];
-		// console.log("transVar", transVar, "transform", transform);
-		transformation.push({
+	function applyTransform(d, variable, trans) {
+		let alerted = false;
+		d = d.map(function (entry) {
+			if (trans == "log") {
+				if (entry[variable] < 0) {
+					if (!alerted) {
+						alert("You should not apply log transform to variables with values less than 0.\nOut of range values will be turned into NaNs.");
+						alerted = true;
+					}
+					entry[variable] = NaN;
+				} else {
+					// nudge zeros
+					entry[variable] = entry[variable] == 0 
+						? 0.01
+						: entry[variable];
+					// transform
+					entry[variable] = Math.log(entry[variable]);
+				}
+			} else if (trans == "logit") {
+				if (entry[variable] < 0 || entry[variable] > 1) {
+					if (!alerted) {
+						alert("You should not apply log odds transform to variables with values out of the range [0, 1].\nOut of range values will be turned into NaNs.");
+						alerted = true;
+					}
+					entry[variable] = NaN;
+				} else {
+					// nudge zeros and ones
+					entry[variable] = entry[variable] == 0 
+						? 0.01
+						: entry[variable];
+					entry[variable] = entry[variable] == 1 
+						? 0.99
+						: entry[variable];
+					// transform
+					entry[variable] = Math.log(entry[variable] / (1 - entry[variable]));
+				}
+			}
+			return entry;
+		});
+		d = [...d];
+		return d;
+	}
+
+	function addTransform(transVar, transform) {
+		console.log("adding transformation")
+		transformations.push({
 			variable: transVar,
 			transformation: transform,
 		});
-		transformation = [...transformation];
-		// console.log(transformation);
-		transformation.forEach((t) => {
-			transformHelper(transVar, transform);
-		});
-		specChanged++;
-	}
-
-	function transformHelper(variable, t) {
-		// console.log("transformHelper");
-		// console.log(dataTrans[0]);
-		var before = [];
-		var after = [];
-		dataTrans.forEach((e) => {
-			// console.log('in for each loop', "e", e[variable]);
-			if (t == "log") {
-				if (typeof e[variable] == "number") {
-					// dataTransformed.push({
-					// 	variable: variable
-					// });
-					before.push(e[variable]);
-					after.push(Math.log(e[variable]));
-					e[variable] = Math.log(e[variable]);
-				}
-			}
-		});
-		dataTransformed[variable] = { before: before, after: after };
-		// console.log(dataTransformed);
-		dataTrans = [...dataTrans];
-		dataChanged = [...dataTrans];
+		// Promise all pattern
+		Promise.all([transformations])
+			.then((values) => {
+				// update data
+				let temp = values[0];
+				transformations = [...temp];
+				console.log("transformations after add tranform", transformations);
+			})
+			.then(() => {
+				// reconcile state changes
+				filterTransModel();
+			})
+			.catch(function (err) {
+				console.log(err);
+			});
 	}
 
 	function removeTrans(index, clearAll = false) {
+		var transTemp;
+		clearAll = transformations.length == 1;
 		if (clearAll) {
+			transTemp = [];
+		} else {
+			// index of transformation
+			if (index != 0) {
+				transTemp = transformations
+					.slice(0, index)
+					.concat(transformations.slice(index + 1, transformations.length));
+			} else {
+				transTemp = transformations.slice(1);
+			}
 		}
+		Promise.all([transTemp])
+			.then((values) => {
+				transTemp = values[0];
+				transformations = [...transTemp];
+				console.log("transformations after remove transform", transformations);
+			})
+			.then(() => {
+				// reconcile state changes
+				filterTransModel();
+			})
+			.catch(function (err) {
+				console.log(err);
+			});
 	}
 
 	/**
 	* Transforming
 	* end
 	*/
+
+	// run filters, transforms, and models in order to reconcile state changes
+	function filterTransModel() {
+		// reset data
+		let tempData = deepCopy(data);
+		showLoadingIcon = true;
+		Promise.all([tempData])
+			.then((values) => {
+				tempData = values[0];
+				dataChanged = [...tempData];
+				console.log("data after reset to original", dataChanged);
+				// do we still need to filter, transform, or model?
+				let finished = filters.length == 0 && transformations.length == 0 && models.length == 0; 
+				if (finished) {
+					showLoadingIcon = false;
+					specChanged++; 
+				}	
+				return dataChanged;
+			})
+			.then((d) => {
+				// apply filters
+				return new Promise((resolve, reject) => {
+					if (filters.length == 0) {
+						resolve(d);
+					} else {	
+						filters.forEach((f) => {
+							d = applyFilter(
+								d,
+								f.variable,
+								f.includeExclude,
+								f.condition,
+								f.value1,
+								f.value2
+							);
+						});
+						dataChanged = [...d];
+						console.log("data after applying filters", dataChanged);
+						// do we still need to transform or model?
+						let finished = transformations.length == 0 && models.length == 0; 
+						if (finished) {
+							showLoadingIcon = false;
+							specChanged++; 
+						}
+						resolve(dataChanged);
+					}
+					reject("Problem applying filters");
+				});
+			})
+			.then((d) => {
+				// apply transforms
+				return new Promise((resolve, reject) => {
+					if (transformations.length == 0) {
+						resolve(d);
+					} else {	
+						transformations.forEach((t) => {
+							d = applyTransform(
+								d,
+								t.variable,
+								t.transformation
+							);
+						});
+						dataChanged = [...d];
+						console.log("data after applying transformations", dataChanged);
+						// do we still need to model?
+						let finished = models.length == 0; 
+						if (finished) {
+							showLoadingIcon = false;
+							specChanged++; 
+						}							
+						resolve(dataChanged);
+					}
+					reject("Problem applying transformations");
+				});
+			})
+			.then((d) => {
+				// apply models
+				if (models.length != 0) {
+					console.log("rerunning models to reconcile state changes");
+					// get outcome name
+					let outcomeName = models[0].name.substring(
+						models[0].name.indexOf("|") + 1, 
+						models[0].name.indexOf("~")
+					);
+					outcomeName = outcomeName.trim();
+					// call server to run models
+					callModelcheck(d, outcomeName, true) // hardcoded `true' means calc residuals by default
+						.then(function (response) {
+							// showLoadingIcon = true;
+							// console.log("this should be a url");
+							// console.log(response);
+							return fetchData(response);
+						})
+						.then(function (modelData) {
+							console.log("this should be a the data with model predictions");
+							console.log(modelData);
+							// modelData = modelData.filter((row) => row.draw === 1);
+							dataModelOutput = [...modelData];
+							// update dataChanged
+							dataChanged = deepCopy(dataModelOutput).filter(
+								(row) => !row.modelcheck_group.startsWith("res") //&& row.draw === 1
+							);
+							dataChanged = [...dataChanged];
+							// update vlSpec, definitely finished now
+							showLoadingIcon = false;
+							specChanged++;
+						})
+						.catch(function (err) {
+							console.log(err);
+						});
+				}
+				// specChanged++;
+			})
+			.catch(function (err) {
+				console.log(err);
+			});
+	}
 
     /**
 	* Modeling
@@ -946,9 +1052,6 @@
 		specChanged++;
 	}
 
-	// filter, transform, model
-	// function orderOfOperation() {}
-
 	function deepCopy(inObject) {
 		let outObject, value, key;
 		if (typeof inObject !== "object" || inObject === null) {
@@ -1019,16 +1122,14 @@
 						{dndState}
 						{originalDndState}
 						{flipDurationMs}
-						{filter}
-						{transformation}
+						{filters}
+						{transformations}
 						{handleDndConsider}
 						{handleDndFinalize}
 						{encodingToData}
-						{changeMark}
-						{changeAggregation}
-						{filterData}
+						{addFilter}
 						{removeFilter}
-						{transformData}
+						{addTransform}
 						{removeTrans}
 					/>
 				</Column>

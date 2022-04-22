@@ -17,15 +17,15 @@
     export let handleDndConsider;
     export let handleDndFinalize;
     export let encodingToData;
-    export let changeMark;
-    export let changeAggregation;
-    export let filterData;
+    // export let changeMark;
+    // export let changeAggregation;
+    export let addFilter;
     export let removeFilter;
-    export let transformData;
+    export let addTransform;
     export let removeTrans;
 
-    export let filter: any;
-    export let transformation: any;
+    export let filters: any;
+    export let transformations: any;
 
     let mark;
     let aggregateX;
@@ -35,7 +35,7 @@
     let showAddingFilter = false;
     let showAddingTransform = false;
     let transVar;
-    let transCondition;
+    let trans;
 
     let includeOrExclude = "include";
     function onChange(event) {
@@ -137,11 +137,9 @@
         <button on:click={removeFilter(0, true)}>clear all </button>
     </div>
 
-    
-    <!-- {#key filter.length} -->
 
-    {#if filter.length != 0}
-        {#each filter as f, i}
+    {#if filters.length != 0}
+        {#each filters as f, i}
             <div class="current">
                 {f.includeExclude}
                 {f.variable}
@@ -203,7 +201,7 @@
         {/if}
         {#if condition && conditionValue1}
             <button
-                on:click={filterData(
+                on:click={addFilter(
                     filterVar,
                     includeOrExclude,
                     condition,
@@ -218,8 +216,6 @@
     {/if}
 {/if}
 
-<!-- there's no filter right now -->
-
 <h3>Transform</h3>
 <div class="add-and-clear" style="display: inline-block;">
     current
@@ -231,8 +227,8 @@
 
 
 
-{#if transformation.length != 0}
-    {#each transformation as t, i}
+{#if transformations.length != 0}
+    {#each transformations as t, i}
         <div class="current">
             <!-- {console.log(f)} -->
             <br />
@@ -259,14 +255,14 @@
         {/each}
     </select>
     {#if transVar}
-        <select bind:value={transCondition}>
+        <select bind:value={trans}>
             <option disabled selected value> -- transformation -- </option>
             <option value="log">log transform</option>
-            <option value="logOdds">log odds transform</option>
+            <option value="logit">log odds transform</option>
         </select>
-        {#if transCondition}
+        {#if trans}
             <button
-                on:click={transformData(transVar, transCondition)}
+                on:click={addTransform(transVar, trans)}
                 on:click={() => (showAddingTransform = false)}
             >
                 &#10003;
