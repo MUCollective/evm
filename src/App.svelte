@@ -54,6 +54,7 @@
 	onMount(async () => {
 		// load data
 		data = await d3.json("./data/cars.json");
+		// data = await d3.csv("./data/forestfires.csv");
 		// console.log("loaded data", data);
 		dataChanged = data;
 		dataChanged = [...dataChanged];

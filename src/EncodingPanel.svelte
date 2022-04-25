@@ -210,7 +210,8 @@
                 )}
                 on:click={() => (showAddingFilter = false)}
             >
-                &#10003;
+                <!-- &#10003; -->
+                Apply filter
             </button>
         {/if}
     {/if}
@@ -265,7 +266,8 @@
                 on:click={addTransform(transVar, trans)}
                 on:click={() => (showAddingTransform = false)}
             >
-                &#10003;
+                <!-- &#10003; -->
+                Apply transform
             </button>
         {/if}
     {/if}

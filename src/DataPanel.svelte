@@ -18,10 +18,10 @@
 
 <!-- data panel -->
 <div class="data-panel card">
-    <h3>Data</h3>
-    <!-- <div class="dataset-name">
+    <h3 style="margin-bottom: 2px;">Data</h3>
+    <div class="dataset-name" style="margin-bottom: 6px;">
         {dndState[0].name}
-    </div> -->
+    </div>
     <!-- ignore the below error, it's due to the wrongly defined type in the DnD libaray -->
     <section
         use:dndzone={{

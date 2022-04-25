@@ -16,7 +16,8 @@ const app = new App({
 		dndState: [
 			{
 				id: "variables",
-				name: "Dataset (drag zone)",
+				name: "Cars",
+				// name: "Forest fires",
 				items: [],
 			},
 			{

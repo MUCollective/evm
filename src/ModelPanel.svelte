@@ -1,6 +1,8 @@
 <script lang="ts">
     // ui compoenets
     import { Grid, Row, Column, Button } from "carbon-components-svelte";
+import App from "./App.svelte";
+import Chart from "./Chart.svelte";
 
     // props
     // export let bootstrap: any;
@@ -12,10 +14,54 @@
     export let showPredictionOrResidual;
 
     let showAddingModel = false;
-    let muSpec = "mpg ~ 1";
+    let muSpec = "outcome ~ 1";
     let sigmaSpec = "~1";
     let modelFamily = "normal";
     let showModels = false;
+    let outcomeName = "outcome";
+
+    $: muSpec, getOutcomeName();
+
+    function getOutcomeName() {
+        outcomeName = muSpec.substring(muSpec.indexOf("|") + 1, muSpec.indexOf("~"));
+        outcomeName = outcomeName.trim();
+    }
+
+    function formatPredictorsAsNaturalLanguage(spec) {
+        let description;
+        spec = spec.slice(spec.indexOf("~") + 1).trim();
+        if (spec == "1")  {// intercept model
+            description = "is constant and not impacted by any predictors";
+        } else {
+            description = "depends on "
+            let terms = spec.split("+");
+            for (let i = 0; i < terms.length; i++) {
+                if (terms[i].includes("*")) {
+                    // interaction term
+                    description = description + "the interaction of "
+                    let interactionTerms = terms[i].split("*");
+                    console.log(interactionTerms);
+                    for (let j = 0; j < interactionTerms.length; j++) {
+                        description = description + `<span class="variable">${interactionTerms[j]}</span>`;
+                        if (j == interactionTerms.length - 2) {
+                            description = description + " and ";
+                        } else if (j < interactionTerms.length - 2) {
+                            description = description + ", ";
+                        }
+                    }
+                } else {
+                    // main effect term
+                    description = description + `<span class="variable">${terms[i]}</span>`;
+                }
+                if (i == terms.length - 2) {
+                    description = description + " and ";
+                } else if (i < terms.length - 2) {
+                    description = description + ", ";
+                }
+            }
+        }
+        return description;
+    }
 
     // format model object from inputs, e.g.,
     // {
@@ -27,7 +73,8 @@
     function formatModel(muSpec, sigmaSpec, modelFamily) {
         // families that have no scale submodel should be NULL for sigma_spec
         let sigmaStr = sigmaSpec;
-        if (!(modelFamily == "negbinomial" || modelFamily == "normal" || modelFamily == "ordinal")) {
+        // if (!(modelFamily == "negbinomial" || modelFamily == "normal" || modelFamily == "ordinal")) {
+        if (!(modelFamily == "negbinomial" || modelFamily == "normal")) {
             sigmaStr = ""
             sigmaSpec = null
         }
@@ -46,24 +93,27 @@
     <h3>Model</h3>
 
     <div class="add-and-clear" style="margin-top: 0px;">
-        current models
+        add
         <button class="single-char" on:click={() => (showAddingModel = true)}
             >+</button
-        >
+        > 
+        or remove
         <button on:click={removeModel(0, true)}>clear all</button>
     </div>
     {#if showAddingModel}
+        pick a distribution family
         <select bind:value={modelFamily}>
-            <option disabled selected value> -- select model -- </option>
-            <option value="normal">normal model</option>
-            <option value="logistic">logistic model</option>
-            <option value="poisson">poisson model</option>
-            <option value="negbinomial">negative binominal model</option>
-            <option value="ordinal">ordinal model</option>
-            <option value="multinomial">multinominal model</option>
+            <option disabled selected value> -- select family -- </option>
+            <option value="normal">normal</option>
+            <option value="logistic">logistic</option>
+            <!-- <option value="beta">beta</option> -->
+            <option value="poisson">poisson</option>
+            <option value="negbinomial">negative binominal</option>
+            <!-- <option value="ordinal">ordinal model</option>
+            <option value="multinomial">multinominal model</option> -->
         </select>
         <br />
-        mu spec: <input bind:value={muSpec} style="padding: initial;" />
+        <!-- mu spec: <input bind:value={muSpec} style="padding: initial;" />
         {#if modelFamily == "negbinomial" || modelFamily == "normal"}
             <br />
                 sigma spec: <input
@@ -76,6 +126,23 @@
                     bind:value={sigmaSpec}
                     style="padding: initial;"
                 />
+        {/if} -->
+        {#if modelFamily == "normal"}
+            mean of <span class="variable">{outcomeName}</span>: <input bind:value={muSpec} style="padding: initial;" />
+            <br />
+            std deviation of <span class="variable">{outcomeName}</span>: <input bind:value={sigmaSpec} style="padding: initial;" />
+        {:else if modelFamily == "logistic"}
+            log odds of <span class="variable">{outcomeName}</span>: <input bind:value={muSpec} style="padding: initial;" />
+        <!-- {:else if modelFamily == "beta"} TODO: add beta regression
+            expected proportion: <input bind:value={muSpec} style="padding: initial;" />
+            <br />
+            expected proportion: <input bind:value={sigmaSpec} style="padding: initial;" /> -->
+        {:else if modelFamily == "poisson"}
+            rate of <span class="variable">{outcomeName}</span>:<input bind:value={muSpec} style="padding: initial;" />
+        {:else if modelFamily == "negbinomial"}
+            rate of <span class="variable">{outcomeName}</span>: <input bind:value={muSpec} style="padding: initial;" />
+            <br />
+            dispursion in rate of <span class="variable">{outcomeName}</span>: <input bind:value={sigmaSpec} style="padding: initial;" />
         {/if}
         {#if muSpec}
             <button
@@ -83,22 +150,69 @@
                 on:click={() => (showAddingModel = false)}
                 on:click={showPredictionOrResidual = "prediction"}
             >
-                &#10003;
+                <!-- &#10003; -->
+                Fit model
             </button>
         {/if}
     {/if}
 
     {#if models.length != 0}
+        current model(s)
         {#each models as f, i}
-            <div class="current">
-                model: {f.family}
-                <br />
-                muSpec: {f.mu_spec}
-                <br />
-                sigmaSpec: {f.sigma_spec}
-                <button class="single-char" on:click={removeModel(i)}
-                    >&times;
-                </button>
+            <div class="description">
+                <div class="current">
+                    {f.name}
+                    <!-- distribution: {f.family}
+                    <br />
+                    {#if f.family == "normal"}
+                        mean of {outcomeName}: {f.mu_spec}
+                        <br />
+                        std deviation of {outcomeName}: {f.sigma_spec}
+                    {:else if f.family == "logistic"}
+                        log odds of {outcomeName}: {f.mu_spec}
+                    {:else if f.family == "poisson"}
+                        rate of {outcomeName}: {f.mu_spec}
+                    {:else if f.family == "negbinomial"}
+                        rate of {outcomeName}: {f.mu_spec}
+                        <br />
+                        dispursion in rate of {outcomeName}: {f.sigma_spec}
+                    {/if} -->
+                    <button style="text-align: right;" class="single-char" on:click={removeModel(i)}
+                        >&times;
+                    </button>
+                </div>
+                <div>
+                    This model assumes that:
+                    {#if f.family == "normal"}
+                        <ul style="margin: 1px;">
+                            <li><span class="variable">{outcomeName}</span> is a continuous variable that can be modeled using a normal distribution</li>
+                            <li>the mean of <span class="variable">{outcomeName}</span> {@html formatPredictorsAsNaturalLanguage(f.mu_spec)}</li>
+                            <li>the standard deviation of <span class="variable">{outcomeName}</span> {@html formatPredictorsAsNaturalLanguage(f.sigma_spec)}</li>
+                        </ul>
+                    {:else if f.family == "logistic"}
+                        <ul style="margin: 1px;">
+                            <li><span class="variable">{outcomeName}</span> is a binary variable that can be modeled using a binomial distribution</li>
+                            <li>the log odds of <span class="variable">{outcomeName}</span> {formatPredictorsAsNaturalLanguage(f.mu_spec)}</li>
+                            <li>the standard deviation of residual log odds {formatPredictorsAsNaturalLanguage("~1")}</li>
+                        </ul>
+                    <!-- {:else if f.family == "beta"} TODO: add beta regression
+                        expected proportion: {f.mu_spec}
+                        <br />
+                        expected proportion: {f.mu_spec} -->
+                    {:else if f.family == "poisson"}
+                        <ul style="margin: 1px;">
+                            <li><span class="variable">{outcomeName}</span> is a count variable that can be modeled using a poisson distribution</li>
+                            <li>the rate of <span class="variable">{outcomeName}</span> {formatPredictorsAsNaturalLanguage(f.mu_spec)}</li>
+                            <li>the standard deviation of residual rates {formatPredictorsAsNaturalLanguage("~1")}</li>
+                        </ul>
+                    {:else if f.family == "negbinomial"}
+                        <ul style="margin: 1px;">
+                            <li><span class="variable">{outcomeName}</span> is a count variable that is overdispursed and can be modeled using a negative binomial (i.e., a mixture of poissons with different rates)</li>
+                            <li>the average rate of <span class="variable">{outcomeName}</span> {formatPredictorsAsNaturalLanguage(f.mu_spec)}</li>
+                            <li>the dispursion in rates of <span class="variable">{outcomeName}</span> {formatPredictorsAsNaturalLanguage(f.sigma_spec)}</li>
+                        </ul>
+                    {/if}
+                </div>
             </div>
         {/each}
     {:else}
@@ -117,16 +231,16 @@
             <div class="suggestions" />
             placeholder ...
             <div class="sample">
-                normal model 12345
+                normal distribution 12345
                 <button on:click={() => (showModels = false)}>
                     &#10003;
                 </button>
             </div>
         {/if}
-        <div class="button-wrap">
+        <!-- <div class="button-wrap">
             <Button>Suggest a visualization-adjacent model to check</Button>
         </div>
-        <!-- <div class="button-wrap">
+        <div class="button-wrap">
             <Button>Is this just noise?</Button>
         </div> -->
     </div>
@@ -183,6 +297,17 @@
         background: rgba(55, 65, 92, 0.2);
         font-style: italic;
         border-radius: 0.3rem;
+    }    
+    
+    .description {
+        background: rgba(116, 125, 151, 0.2);      
+        border-radius: 0.3rem;
+    }
+
+    :global(.variable) {
+        font-family: courier, "courier new", monospace;
+        color: #FF7171;
+        font-weight: bold;
     }
 
     .title p,
