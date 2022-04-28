@@ -11,6 +11,7 @@
 	export let modeling: boolean;
 	// export let showLoadingIcon: boolean;
 	export let models: any;
+	export let outcomeName: string;
 	// export let showPredictionOrResidual;
 
 	// process input data, looking for signs that we have a model to show
@@ -24,8 +25,7 @@
 	);
 	console.log("modelcheck groups in the chart data", distinctModelGroups);
 	console.log("model to show?", haveModelToShow);
-	let outcomeName,
-		minX = Infinity,
+	let minX = Infinity,
 		maxX = Number.NEGATIVE_INFINITY,
 		minY = Infinity,
 		maxY = Number.NEGATIVE_INFINITY;
@@ -37,13 +37,13 @@
 			distinctModelGroups.unshift("data");
 		}
 
-		// get outcome name
-		outcomeName = distinctModelGroups[1].substring(
-			distinctModelGroups[1].indexOf("|") + 1, 
-			distinctModelGroups[1].indexOf("~")
-		);
-		outcomeName = outcomeName.trim();
-		console.log("outcome", outcomeName);
+		// // get outcome name
+		// outcomeName = distinctModelGroups[1].substring(
+		// 	distinctModelGroups[1].indexOf("|") + 1, 
+		// 	distinctModelGroups[1].indexOf("~")
+		// );
+		// outcomeName = outcomeName.trim();
+		// console.log("outcome", outcomeName);
 
 		// make sure color exists and encode modelcheck_group
 		vlSpec.encoding.color = vlSpec.encoding.color

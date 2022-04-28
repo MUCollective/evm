@@ -45,6 +45,7 @@
 	console.log("PREV prevSpec", prevSpec);
 	// export let residualList: any;
 	export let showPredictionOrResidual = "prediction";
+	export let outcomeName: string;
 
 	function onChange(event) {
 		showPredictionOrResidual = event.currentTarget.value;
@@ -152,72 +153,59 @@
 	function determineChartType(vlSpec: VisualizationSpec, varName: string) {
 		// determine marks for bivariate charts
 		if (vlSpec.encoding.x && vlSpec.encoding.y) {
-			if (
-				vlSpec.encoding.x.type == vlSpec.encoding.y.type &&
-				vlSpec.encoding.x.type == "quantitative"
-			) {
+			if (vlSpec.encoding.x.type == vlSpec.encoding.y.type && vlSpec.encoding.x.type == "quantitative") {
 				// case scatterplot
 				// vlSpec.mark = { type: "point", size: 30, strokeWidth: 2 };
 				vlSpec.mark = { type: "circle", size: 30 };
-			} else if (
-				vlSpec.encoding.x.type == "quantitative" &&
-				(vlSpec.encoding.y.type == "nominal" ||
-					vlSpec.encoding.y.type == "ordinal")
-			) {
+			} else if (vlSpec.encoding.x.type == "quantitative" && (vlSpec.encoding.y.type == "nominal" || vlSpec.encoding.y.type == "ordinal")) {
 				// case strips along x-axis
 				vlSpec.mark = { type: "tick", orient: "vertical" };
-			} else if (
-				vlSpec.encoding.y.type == "quantitative" &&
-				(vlSpec.encoding.x.type == "nominal" ||
-					vlSpec.encoding.x.type == "ordinal")
-			) {
+			} else if (vlSpec.encoding.y.type == "quantitative" && (vlSpec.encoding.x.type == "nominal" || vlSpec.encoding.x.type == "ordinal")) {
 				// case strips along x-axis
 				vlSpec.mark = { type: "tick", orient: "horizontal" };
-			} else if (
-				(vlSpec.encoding.x.type == "nominal" ||
-					vlSpec.encoding.x.type == "ordinal") &&
-				(vlSpec.encoding.y.type == "nominal" ||
-					vlSpec.encoding.y.type == "ordinal")
-			) {
+			} else if ((vlSpec.encoding.x.type == "nominal" || vlSpec.encoding.x.type == "ordinal") && (vlSpec.encoding.y.type == "nominal" || vlSpec.encoding.y.type == "ordinal")) {
 				// case 2d histogram
 				vlSpec.mark = { type: "circle" };
 				vlSpec.encoding.size = { field: varName, aggregate: "count" };
 			}
-			// determine marks for univariate charts
-		} else if (
-			(vlSpec.encoding.x || vlSpec.encoding.y) &&
-			!(vlSpec.encoding.x && vlSpec.encoding.y)
-		) {
-			if (
-				vlSpec.encoding.x &&
-				(vlSpec.encoding.x.type == "nominal" ||
-					vlSpec.encoding.x.type == "ordinal")
-			) {
+			if (!modeling) {
+				// assume y-axis variable is outcome
+				outcomeName = vlSpec.encoding.y.field
+			}
+		// determine marks for univariate charts
+		} else if ((vlSpec.encoding.x || vlSpec.encoding.y) && !(vlSpec.encoding.x && vlSpec.encoding.y)) {
+			if (vlSpec.encoding.x && (vlSpec.encoding.x.type == "nominal" || vlSpec.encoding.x.type == "ordinal")) {
 				// case bars along x-axis
 				vlSpec.mark = { type: "bar", orient: "vertical" };
 				vlSpec.encoding.y = { field: varName, aggregate: "count" };
-			} else if (
-				vlSpec.encoding.y &&
-				(vlSpec.encoding.y.type == "nominal" ||
-					vlSpec.encoding.y.type == "ordinal")
-			) {
+				if (!modeling) {
+					// assume x-axis variable is outcome
+					outcomeName = vlSpec.encoding.x.field
+				}
+			} else if (vlSpec.encoding.y && (vlSpec.encoding.y.type == "nominal" || vlSpec.encoding.y.type == "ordinal")) {
 				// case bars along y-axis
 				vlSpec.mark = { type: "bar", orient: "horizontal" };
 				vlSpec.encoding.x = { field: varName, aggregate: "count" };
-			} else if (
-				vlSpec.encoding.y &&
-				vlSpec.encoding.y.type == "quantitative"
-			) {
-				// case strips along x-axis
-				vlSpec.mark = { type: "tick", orient: "horizontal" };
-			} else if (
-				vlSpec.encoding.x &&
-				vlSpec.encoding.x.type == "quantitative"
-			) {
+				if (!modeling) {
+					// assume y-axis variable is outcome
+					outcomeName = vlSpec.encoding.y.field
+				}
+			} else if (vlSpec.encoding.y && vlSpec.encoding.y.type == "quantitative") {
 				// case strips along y-axis
+				vlSpec.mark = { type: "tick", orient: "horizontal" };
+				if (!modeling) {
+					// assume y-axis variable is outcome
+					outcomeName = vlSpec.encoding.y.field
+				}
+			} else if (vlSpec.encoding.x && vlSpec.encoding.x.type == "quantitative") {
+				// case strips along x-axis
 				vlSpec.mark = { type: "tick", orient: "vertical" };
+				if (!modeling) {
+					// assume x-axis variable is outcome
+					outcomeName = vlSpec.encoding.x.field
+				}
 			}
-			// otherwise don't show anything
+		// otherwise don't show anything
 		} else {
 			// reset
 			vlSpec.mark = "tick";
@@ -604,11 +592,7 @@
 				if (models.length != 0) {
 					console.log("rerunning models to reconcile state changes");
 					// get outcome name
-					let outcomeName = models[0].name.substring(
-						models[0].name.indexOf("|") + 1, 
-						models[0].name.indexOf("~")
-					);
-					outcomeName = outcomeName.trim();
+					outcomeName = models[0].name.substring(models[0].name.indexOf("|") + 1, models[0].name.indexOf("~")).trim();
 					// call server to run models
 					callModelcheck(d, outcomeName, true) // hardcoded `true' means calc residuals by default
 						.then(function (response) {
@@ -688,11 +672,7 @@
 		modeling = true;
 
 		// get outcome name
-		let outcomeName = newModel.name.substring(
-			newModel.name.indexOf("|") + 1, 
-			newModel.name.indexOf("~")
-		);
-		outcomeName = outcomeName.trim();
+		outcomeName = newModel.name.substring(newModel.name.indexOf("|") + 1, newModel.name.indexOf("~")).trim();
 
 		// make fresh copy of data to send to avoid async change conflicts
 		let passData = deepCopy(dataChanged);
@@ -1174,6 +1154,7 @@
 								bind:vlSpec
 								bind:modeling
 								bind:models
+								{outcomeName}
 							/>
 						{/key}
 					{/if}
@@ -1182,12 +1163,15 @@
 				<!-- <SaveOutput bind:dataChanged bind:vlSpec/> -->
 				<!-- <button on:click={saveFile("data_and_spec")}></button> -->
 				<Column style="min-width: 250px; max-width: 250px;">
-					<ModelPanel
-						{models}
-						{addModel}
-						{removeModel}
-						bind:showPredictionOrResidual
-					/>
+					{#key outcomeName}
+						<ModelPanel
+							{models}
+							{addModel}
+							{removeModel}
+							bind:showPredictionOrResidual
+							bind:outcomeName
+						/>
+					{/key}
 				</Column>
 			</Row>
 		</Grid>

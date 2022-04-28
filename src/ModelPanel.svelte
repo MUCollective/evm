@@ -1,8 +1,8 @@
 <script lang="ts">
     // ui compoenets
     import { Grid, Row, Column, Button } from "carbon-components-svelte";
-import App from "./App.svelte";
-import Chart from "./Chart.svelte";
+    import App from "./App.svelte";
+    import Chart from "./Chart.svelte";
 
     // props
     // export let bootstrap: any;
@@ -12,13 +12,13 @@ import Chart from "./Chart.svelte";
     export let addModel;
     export let removeModel;
     export let showPredictionOrResidual;
+    export let outcomeName;
 
     let showAddingModel = false;
-    let muSpec = "outcome ~ 1";
+    let muSpec = `${outcomeName} ~ 1`;
     let sigmaSpec = "~1";
     let modelFamily = "normal";
     let showModels = false;
-    let outcomeName = "outcome";
 
     $: muSpec, getOutcomeName();
 
@@ -31,7 +31,7 @@ import Chart from "./Chart.svelte";
         let description;
         spec = spec.slice(spec.indexOf("~") + 1).trim();
         if (spec == "1")  {// intercept model
-            description = "is constant and not impacted by any predictors";
+            description = "is constant and can be predicted without considering other variables";
         } else {
             description = "depends on "
             let terms = spec.split("+");
@@ -185,13 +185,13 @@ import Chart from "./Chart.svelte";
                     This model assumes that:
                     {#if f.family == "normal"}
                         <ul style="margin: 1px;">
-                            <li><span class="variable">{outcomeName}</span> is a continuous variable that can be modeled using a normal distribution</li>
+                            <li><span class="variable">{outcomeName}</span> is a continuous variable with variance described by a Gaussian distribution</li>
                             <li>the mean of <span class="variable">{outcomeName}</span> {@html formatPredictorsAsNaturalLanguage(f.mu_spec)}</li>
                             <li>the standard deviation of <span class="variable">{outcomeName}</span> {@html formatPredictorsAsNaturalLanguage(f.sigma_spec)}</li>
                         </ul>
                     {:else if f.family == "logistic"}
                         <ul style="margin: 1px;">
-                            <li><span class="variable">{outcomeName}</span> is a binary variable that can be modeled using a binomial distribution</li>
+                            <li><span class="variable">{outcomeName}</span> is a binary variable with variance described by a Binomial distribution</li>
                             <li>the log odds of <span class="variable">{outcomeName}</span> {formatPredictorsAsNaturalLanguage(f.mu_spec)}</li>
                             <li>the standard deviation of residual log odds {formatPredictorsAsNaturalLanguage("~1")}</li>
                         </ul>
@@ -201,13 +201,13 @@ import Chart from "./Chart.svelte";
                         expected proportion: {f.mu_spec} -->
                     {:else if f.family == "poisson"}
                         <ul style="margin: 1px;">
-                            <li><span class="variable">{outcomeName}</span> is a count variable that can be modeled using a poisson distribution</li>
+                            <li><span class="variable">{outcomeName}</span> is a count variable with variance described by a Poisson distribution</li>
                             <li>the rate of <span class="variable">{outcomeName}</span> {formatPredictorsAsNaturalLanguage(f.mu_spec)}</li>
                             <li>the standard deviation of residual rates {formatPredictorsAsNaturalLanguage("~1")}</li>
                         </ul>
                     {:else if f.family == "negbinomial"}
                         <ul style="margin: 1px;">
-                            <li><span class="variable">{outcomeName}</span> is a count variable that is overdispursed and can be modeled using a negative binomial (i.e., a mixture of poissons with different rates)</li>
+                            <li><span class="variable">{outcomeName}</span> is a count variable that is overdispursed with variance described by a Negative Binomial (i.e., a mixture of Poissons with different rates)</li>
                             <li>the average rate of <span class="variable">{outcomeName}</span> {formatPredictorsAsNaturalLanguage(f.mu_spec)}</li>
                             <li>the dispursion in rates of <span class="variable">{outcomeName}</span> {formatPredictorsAsNaturalLanguage(f.sigma_spec)}</li>
                         </ul>

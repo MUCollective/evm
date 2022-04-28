@@ -6,6 +6,7 @@ const app = new App({
 		name: 'Exploratory Modeling',
 		mounted: false,
 		modeling: false,
+		outcomeName: "outcome",
 		flipDurationMs: 300,
 		data: null,
 		dataChanged: null,
