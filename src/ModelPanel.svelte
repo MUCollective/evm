@@ -105,6 +105,8 @@
         <select bind:value={modelFamily}>
             <option disabled selected value> -- select family -- </option>
             <option value="normal">normal</option>
+            <!-- <option value="lognormal">log normal</option>
+            <option value="logitnormal">logit normal</option> -->
             <option value="logistic">logistic</option>
             <!-- <option value="beta">beta</option> -->
             <option value="poisson">poisson</option>
@@ -131,6 +133,14 @@
             mean of <span class="variable">{outcomeName}</span>: <input bind:value={muSpec} style="padding: initial;" />
             <br />
             std deviation of <span class="variable">{outcomeName}</span>: <input bind:value={sigmaSpec} style="padding: initial;" />
+        <!-- {:else if modelFamily == "lognormal"}
+            mean of <span class="variable">log({outcomeName})</span>: <input bind:value={muSpec} style="padding: initial;" />
+            <br />
+            std deviation of <span class="variable">log({outcomeName})</span>: <input bind:value={sigmaSpec} style="padding: initial;" />
+        {:else if modelFamily == "logitnormal"}
+            mean of <span class="variable">logit({outcomeName})</span>: <input bind:value={muSpec} style="padding: initial;" />
+            <br />
+            std deviation of <span class="variable">logit({outcomeName})</span>: <input bind:value={sigmaSpec} style="padding: initial;" /> -->
         {:else if modelFamily == "logistic"}
             log odds of <span class="variable">{outcomeName}</span>: <input bind:value={muSpec} style="padding: initial;" />
         <!-- {:else if modelFamily == "beta"} TODO: add beta regression
@@ -189,6 +199,18 @@
                             <li>the mean of <span class="variable">{outcomeName}</span> {@html formatPredictorsAsNaturalLanguage(f.mu_spec)}</li>
                             <li>the standard deviation of <span class="variable">{outcomeName}</span> {@html formatPredictorsAsNaturalLanguage(f.sigma_spec)}</li>
                         </ul>
+                    <!-- {:else if f.family == "lognormal"}
+                        <ul style="margin: 1px;">
+                            <li>the log transform of <span class="variable">{outcomeName}</span> is a continuous variable with variance described by a Gaussian distribution</li>
+                            <li>the mean of <span class="variable">log({outcomeName})</span> {@html formatPredictorsAsNaturalLanguage(f.mu_spec)}</li>
+                            <li>the standard deviation of <span class="variable">log({outcomeName})</span> {@html formatPredictorsAsNaturalLanguage(f.sigma_spec)}</li>
+                        </ul>
+                    {:else if f.family == "logitnormal"}
+                        <ul style="margin: 1px;">
+                            <li>the log-odds (a.k.a., logit) transform of <span class="variable">{outcomeName}</span> is a continuous variable with variance described by a Gaussian distribution</li>
+                            <li>the mean of <span class="variable">logit({outcomeName})</span> {@html formatPredictorsAsNaturalLanguage(f.mu_spec)}</li>
+                            <li>the standard deviation of <span class="variable">logit({outcomeName})</span> {@html formatPredictorsAsNaturalLanguage(f.sigma_spec)}</li>
+                        </ul> -->
                     {:else if f.family == "logistic"}
                         <ul style="margin: 1px;">
                             <li><span class="variable">{outcomeName}</span> is a binary variable with variance described by a Binomial distribution</li>

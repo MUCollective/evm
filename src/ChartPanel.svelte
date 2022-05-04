@@ -14,6 +14,15 @@
 	export let outcomeName: string;
 	// export let showPredictionOrResidual;
 
+	// get width and height of chart canvas
+	let chartCanvas = document.getElementById("chart-canvas"),
+		horzSpace = chartCanvas.offsetWidth,
+		vertSpace = chartCanvas.offsetHeight;
+	console.log("canvas", horzSpace, vertSpace);
+	// set default size
+	let defaultSize = 200,
+		minSize = 50;
+
 	// process input data, looking for signs that we have a model to show
 	let dataset = { table: dataChanged };
 	let distinctModelGroups = distinctValues(dataset.table, "modelcheck_group");
@@ -181,8 +190,10 @@
 							}
 						],
 						"signals": [
-							{"name": "child_width", "value": 200},
-							{"name": "child_height", "value": 200},
+							// {"name": "child_width", "value": 200},
+							// {"name": "child_height", "value": 200},
+							{"name": "child_width", "update": `max(${minSize}, min(${horzSpace} / length(data('column_domain')), ${defaultSize}))`},
+							{"name": "child_height", "update": `max(${minSize}, min(${vertSpace} / length(data('row_domain')), ${defaultSize}))`},
 							{
 								"name": "sample",
 								"value": 1,
@@ -195,7 +206,7 @@
 							}
 						],
 						"layout": {
-							"padding": 20,
+							"padding": 5,
 							"offset": {"rowTitle": 10, "columnTitle": 10},
 							"columns": {"signal": "length(data('column_domain'))"},
 							"bounds": "full",
@@ -418,8 +429,10 @@
 							}
 						],
 						"signals": [
-							{"name": "child_width", "value": 200},
-							{"name": "child_height", "value": 200},
+							// {"name": "child_width", "value": 200},
+							// {"name": "child_height", "value": 200},
+							{"name": "child_width", "update": `max(${minSize}, min(${horzSpace} / length(data('column_domain')), ${defaultSize}))`},
+							{"name": "child_height", "update": `max(${minSize}, min(${vertSpace} / length(data('row_domain')), ${defaultSize}))`},
 							{
 								"name": "sample",
 								"value": 1,
@@ -432,7 +445,7 @@
 							}
 						],
 						"layout": {
-							"padding": 20,
+							"padding": 5,
 							"offset": {"rowTitle": 10, "columnTitle": 10},
 							"columns": {"signal": "length(data('column_domain'))"},
 							"bounds": "full",
@@ -667,8 +680,10 @@
 							}
 						],
 						"signals": [
-							{"name": "child_width", "value": 200},
-							{"name": "child_height", "value": 200},
+							// {"name": "child_width", "value": 200},
+							// {"name": "child_height", "value": 200},
+							{"name": "child_width", "value": defaultSize},
+							{"name": "child_height", "update": `max(${minSize}, min(${vertSpace} / length(data('row_domain')), ${defaultSize}))`},
 							{
 								"name": "sample",
 								"value": 1,
@@ -681,7 +696,7 @@
 							}
 						],
 						"layout": {
-							"padding": 20,
+							"padding": 5,
 							"offset": {
 								"rowTitle": 10
 							},
@@ -892,8 +907,10 @@
 							}
 						],
 						"signals": [
-							{"name": "child_width", "value": 200},
-							{"name": "child_height", "value": 200},
+							// {"name": "child_width", "value": 200},
+							// {"name": "child_height", "value": 200},
+							{"name": "child_width", "update": `max(${minSize}, min(${horzSpace} / length(data('model_domain')), ${defaultSize}))`},
+							{"name": "child_height", "update": `max(${minSize}, min(${vertSpace} / length(data('row_domain')), ${defaultSize}))`},
 							{
 								"name": "sample",
 								"value": 1,
@@ -906,7 +923,7 @@
 							}
 						],
 						"layout": {
-							"padding": 20,
+							"padding": 5,
 							"offset": {
 								"rowTitle": 10
 							},
@@ -1166,7 +1183,7 @@
 							}
 						],
 						"layout": {
-							"padding": 20,
+							"padding": 5,
 							"offset": {
 								"rowTitle": 10
 							},
@@ -1388,6 +1405,11 @@
 							{
 							"name": "table",
 							"transform": [
+								{ // month hack
+									"type": "formula",
+									"expr": `datum[\"month\"]===\"jan\" ? 0 : datum[\"month\"]===\"feb\" ? 1 : datum[\"month\"]===\"mar\" ? 2 : datum[\"month\"]===\"apr\" ? 3 : datum[\"month\"]===\"may\" ? 4 : datum[\"month\"]===\"jun\" ? 5 : datum[\"month\"]===\"jul\" ? 6 : datum[\"month\"]===\"aug\" ? 7 : datum[\"month\"]===\"sep\" ? 8 : datum[\"month\"]===\"oct\" ? 9 : datum[\"month\"]===\"nov\" ? 10 : datum[\"month\"]===\"dec\" ? 11 : 12`,
+									"as": "column_month_sort_index"
+								},
 								{
 									"type": "filter",
 									"expr": "datum.draw == sample"
@@ -1408,12 +1430,16 @@
 							{
 								"name": "column_domain",
 								"source": "data_0",
-								"transform": [{"type": "aggregate", "groupby": [vlSpec.encoding.column.field, "modelcheck_group"]}]
+								"transform": [{"type": "aggregate", "groupby": [vlSpec.encoding.column.field, "modelcheck_group",
+									"column_month_sort_index" // month hack
+								]}]
 							}
 						],
 						"signals": [
-							{"name": "child_width", "value": 200},
-							{"name": "child_height", "value": 200},
+							// {"name": "child_width", "value": 200},
+							// {"name": "child_height", "value": 200},
+							{"name": "child_width", "update": `max(${minSize}, min(${horzSpace} / length(data('column_domain')), ${defaultSize}))`},
+							{"name": "child_height", "value": defaultSize},
 							{
 								"name": "sample",
 								"value": 1,
@@ -1426,7 +1452,7 @@
 							}
 						],
 						"layout": {
-							"padding": 20,
+							"padding": 5,
 							"offset": {
 								"rowTitle": 10
 							},
@@ -1472,10 +1498,14 @@
 								"from": {
 									"data": "column_domain"
 								},
-								"sort": {
-									"field": `datum[\"${vlSpec.encoding.column.field}\"]`,
+								"sort": { // month hack
+									"field": "datum[\"column_month_sort_index\"]",
 									"order": "ascending"
 								},
+								// "sort": {
+								// 	"field": `datum[\"${vlSpec.encoding.column.field}\"]`,
+								// 	"order": "ascending"
+								// },
 								"title": {
 									"text": {
 										"signal": `isValid(parent[\"${vlSpec.encoding.column.field}\"]) ? parent[\"${vlSpec.encoding.column.field}\"] : \"\"+parent[\"${vlSpec.encoding.column.field}\"]`
@@ -1499,6 +1529,10 @@
 								"role": "column-footer",
 								"from": {
 									"data": "column_domain"
+								},
+								"sort": { // month hack
+									"field": "datum[\"column_month_sort_index\"]",
+									"order": "ascending"
 								},
 								"encode": {"update": {"width": {"signal": "child_width"}}},
 								"axes": [

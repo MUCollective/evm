@@ -54,8 +54,10 @@
 
 	onMount(async () => {
 		// load data
-		data = await d3.json("./data/cars.json");
+		// data = await d3.json("./data/cars.json");
 		// data = await d3.csv("./data/forestfires.csv");
+		data = await d3.json("./data/modelcheck.json"); // month hack
+		// data = await d3.json("./data/misspec.json");
 		// console.log("loaded data", data);
 		dataChanged = data;
 		dataChanged = [...dataChanged];
@@ -1114,7 +1116,7 @@
 						{removeTrans}
 					/>
 				</Column>
-				<Column style="width: 100%;">
+				<Column style="width: 100%;" id="chart-canvas">
 					{#if modeling}
 						<label>
 							<input
