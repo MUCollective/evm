@@ -5,10 +5,10 @@ const app = new App({
 	props: {
 		name: 'Exploratory Modeling',
 		mounted: false,
-		// modeling: false,
-		// outcomeName: "outcome",
-		modeling: true,  		// month hack
-		outcomeName: "sales",
+		modeling: false,
+		outcomeName: "outcome",
+		// modeling: true,  		// season hack
+		// outcomeName: "sales",
 		flipDurationMs: 300,
 		data: null,
 		dataChanged: null,
@@ -19,9 +19,9 @@ const app = new App({
 		dndState: [
 			{
 				id: "variables",
-				// name: "Cars",
+				name: "Cars",
 				// name: "Forest fires",
-				name: "Sales",	// month hack
+				// name: "Sales",	// season hack
 				items: [],
 			},
 			{

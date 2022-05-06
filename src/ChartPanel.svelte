@@ -21,7 +21,8 @@
 	console.log("canvas", horzSpace, vertSpace);
 	// set default size
 	let defaultSize = 200,
-		minSize = 50;
+		minSize = 50,
+		interChartPad = 5;
 
 	// process input data, looking for signs that we have a model to show
 	let dataset = { table: dataChanged };
@@ -192,8 +193,8 @@
 						"signals": [
 							// {"name": "child_width", "value": 200},
 							// {"name": "child_height", "value": 200},
-							{"name": "child_width", "update": `max(${minSize}, min(${horzSpace} / length(data('column_domain')), ${defaultSize}))`},
-							{"name": "child_height", "update": `max(${minSize}, min(${vertSpace} / length(data('row_domain')), ${defaultSize}))`},
+							{"name": "child_width", "update": `max(${minSize}, min((${horzSpace} - 60 - ${interChartPad} * length(data('column_domain'))) / length(data('column_domain')), ${defaultSize}))`},
+							{"name": "child_height", "update": `max(${minSize}, min((${vertSpace} - 60 - ${interChartPad} * length(data('row_domain'))) / (length(data('row_domain')) + 2), ${defaultSize}))`},
 							{
 								"name": "sample",
 								"value": 1,
@@ -206,7 +207,7 @@
 							}
 						],
 						"layout": {
-							"padding": 5,
+							"padding": interChartPad,
 							"offset": {"rowTitle": 10, "columnTitle": 10},
 							"columns": {"signal": "length(data('column_domain'))"},
 							"bounds": "full",
@@ -256,7 +257,7 @@
 										"grid": false,
 										"title": vlSpec.encoding.y.field != "modelcheck_group" ? vlSpec.encoding.y.field : "",
 										"labelOverlap": true,
-										"tickCount": {"signal": "ceil(child_height/40)"},
+										"tickCount": {"signal": "ceil(child_height / 30)"},
 										"zindex": 0
 									}
 								]
@@ -292,7 +293,7 @@
 										"title": vlSpec.encoding.x.field != "modelcheck_group" ? vlSpec.encoding.x.field : "",
 										"labelFlush": true,
 										"labelOverlap": true,
-										"tickCount": {"signal": "ceil(child_width/40)"},
+										"tickCount": {"signal": "ceil(child_width / 30)"},
 										"zindex": 0
 									}
 								]
@@ -342,7 +343,7 @@
 										"orient": "bottom",
 										"gridScale": "y",
 										"grid": true,
-										"tickCount": {"signal": "ceil(child_width/40)"},
+										"tickCount": {"signal": "ceil(child_width / 30)"},
 										"domain": false,
 										"labels": false,
 										"aria": false,
@@ -356,7 +357,7 @@
 										"orient": "left",
 										"gridScale": "x",
 										"grid": true,
-										"tickCount": {"signal": "ceil(child_height/40)"},
+										"tickCount": {"signal": "ceil(child_height / 30)"},
 										"domain": false,
 										"labels": false,
 										"aria": false,
@@ -431,8 +432,8 @@
 						"signals": [
 							// {"name": "child_width", "value": 200},
 							// {"name": "child_height", "value": 200},
-							{"name": "child_width", "update": `max(${minSize}, min(${horzSpace} / length(data('column_domain')), ${defaultSize}))`},
-							{"name": "child_height", "update": `max(${minSize}, min(${vertSpace} / length(data('row_domain')), ${defaultSize}))`},
+							{"name": "child_width", "update": `max(${minSize}, min((${horzSpace} - 60 - ${interChartPad} * length(data('column_domain'))) / (length(data('column_domain')) + 2), ${defaultSize}))`},
+							{"name": "child_height", "update": `max(${minSize}, min((${vertSpace} - 60 - ${interChartPad} * length(data('row_domain'))) / length(data('row_domain')), ${defaultSize}))`},
 							{
 								"name": "sample",
 								"value": 1,
@@ -445,7 +446,7 @@
 							}
 						],
 						"layout": {
-							"padding": 5,
+							"padding": interChartPad,
 							"offset": {"rowTitle": 10, "columnTitle": 10},
 							"columns": {"signal": "length(data('column_domain'))"},
 							"bounds": "full",
@@ -492,7 +493,7 @@
 										"grid": false,
 										"title": vlSpec.encoding.y.field != "modelcheck_group" ? vlSpec.encoding.y.field : "",
 										"labelOverlap": true,
-										"tickCount": {"signal": "ceil(child_height/40)"},
+										"tickCount": {"signal": "ceil(child_height / 30)"},
 										"zindex": 0
 									}
 								]
@@ -534,7 +535,7 @@
 										"title": vlSpec.encoding.x.field != "modelcheck_group" ? vlSpec.encoding.x.field : "",
 										"labelFlush": true,
 										"labelOverlap": true,
-										"tickCount": {"signal": "ceil(child_width/40)"},
+										"tickCount": {"signal": "ceil(child_width / 30)"},
 										"zindex": 0
 									}
 								]
@@ -584,7 +585,7 @@
 										"orient": "bottom",
 										"gridScale": "y",
 										"grid": true,
-										"tickCount": {"signal": "ceil(child_width/40)"},
+										"tickCount": {"signal": "ceil(child_width / 30)"},
 										"domain": false,
 										"labels": false,
 										"aria": false,
@@ -598,7 +599,7 @@
 										"orient": "left",
 										"gridScale": "x",
 										"grid": true,
-										"tickCount": {"signal": "ceil(child_height/40)"},
+										"tickCount": {"signal": "ceil(child_height / 30)"},
 										"domain": false,
 										"labels": false,
 										"aria": false,
@@ -683,7 +684,7 @@
 							// {"name": "child_width", "value": 200},
 							// {"name": "child_height", "value": 200},
 							{"name": "child_width", "value": defaultSize},
-							{"name": "child_height", "update": `max(${minSize}, min(${vertSpace} / length(data('row_domain')), ${defaultSize}))`},
+							{"name": "child_height", "update": `max(${minSize}, min((${vertSpace} - 60 - ${interChartPad} * length(data('row_domain'))) / (length(data('row_domain')) + 2), ${defaultSize}))`},
 							{
 								"name": "sample",
 								"value": 1,
@@ -696,7 +697,7 @@
 							}
 						],
 						"layout": {
-							"padding": 5,
+							"padding": interChartPad,
 							"offset": {
 								"rowTitle": 10
 							},
@@ -751,7 +752,7 @@
 										"title": vlSpec.encoding.y.field != "modelcheck_group" ? vlSpec.encoding.y.field : "",
 										"labelOverlap": true,
 										"tickCount": {
-											"signal": "ceil(child_height/40)"
+											"signal": "ceil(child_height / 30)"
 										},
 										"zindex": 1
 									}
@@ -771,7 +772,7 @@
 										"offset": -5,
 										"labelFlush": true,
 										"labelOverlap": true,
-										"tickCount": {"signal": "ceil(child_width/40)"},
+										"tickCount": {"signal": "ceil(child_width / 30)"},
 										"zindex": 1
 									}
 								]
@@ -817,7 +818,7 @@
 										"gridScale": "y",
 										"grid": true,
 										"tickCount": {
-											"signal": "ceil(child_width/40)"
+											"signal": "ceil(child_width / 30)"
 										},
 										"domain": false,
 										"labels": false,
@@ -833,7 +834,7 @@
 										"gridScale": "x",
 										"grid": true,
 										"tickCount": {
-											"signal": "ceil(child_height/40)"
+											"signal": "ceil(child_height / 30)"
 										},
 										"domain": false,
 										"labels": false,
@@ -909,8 +910,8 @@
 						"signals": [
 							// {"name": "child_width", "value": 200},
 							// {"name": "child_height", "value": 200},
-							{"name": "child_width", "update": `max(${minSize}, min(${horzSpace} / length(data('model_domain')), ${defaultSize}))`},
-							{"name": "child_height", "update": `max(${minSize}, min(${vertSpace} / length(data('row_domain')), ${defaultSize}))`},
+							{"name": "child_width", "update": `max(${minSize}, min((${horzSpace} - 40 - ${interChartPad} * length(data('column_domain'))) / length(data('column_domain')), ${defaultSize}))`},
+							{"name": "child_height", "update": `max(${minSize}, min((${vertSpace} - 60 - ${interChartPad} * length(data('row_domain'))) / length(data('row_domain')), ${defaultSize}))`},
 							{
 								"name": "sample",
 								"value": 1,
@@ -923,7 +924,7 @@
 							}
 						],
 						"layout": {
-							"padding": 5,
+							"padding": interChartPad,
 							"offset": {
 								"rowTitle": 10
 							},
@@ -978,7 +979,7 @@
 										"title": vlSpec.encoding.y.field != "modelcheck_group" ? vlSpec.encoding.y.field : "",
 										"labelOverlap": true,
 										"tickCount": {
-											"signal": "ceil(child_height/40)"
+											"signal": "ceil(child_height / 30)"
 										},
 										"zindex": 1
 									}
@@ -999,7 +1000,7 @@
 										"offset": -5,
 										"labelFlush": true,
 										"labelOverlap": true,
-										"tickCount": {"signal": "ceil(child_width/40)"},
+										"tickCount": {"signal": "ceil(child_width / 30)"},
 										"zindex": 0
 									}
 								]
@@ -1045,7 +1046,7 @@
 										"gridScale": "y",
 										"grid": true,
 										"tickCount": {
-											"signal": "ceil(child_width/40)"
+											"signal": "ceil(child_width / 30)"
 										},
 										"domain": false,
 										"labels": false,
@@ -1061,7 +1062,7 @@
 										"gridScale": "x",
 										"grid": true,
 										"tickCount": {
-											"signal": "ceil(child_height/40)"
+											"signal": "ceil(child_height / 30)"
 										},
 										"domain": false,
 										"labels": false,
@@ -1183,7 +1184,7 @@
 							}
 						],
 						"layout": {
-							"padding": 5,
+							"padding": interChartPad,
 							"offset": {
 								"rowTitle": 10
 							},
@@ -1225,7 +1226,7 @@
 										"title": vlSpec.encoding.y.field != "modelcheck_group" ? vlSpec.encoding.y.field : "",
 										"labelOverlap": true,
 										"tickCount": {
-											"signal": "ceil(child_height/40)"
+											"signal": "ceil(child_height / 30)"
 										},
 										"zindex": 1
 									}
@@ -1283,7 +1284,7 @@
 										"labelFlush": true,
 										"labelOverlap": true,
 										"tickCount": {
-											"signal": "ceil(child_width/40)"
+											"signal": "ceil(child_width / 30)"
 										},
 										"zindex": 0
 									}
@@ -1344,7 +1345,7 @@
 										"gridScale": "y",
 										"grid": true,
 										"tickCount": {
-											"signal": "ceil(child_width/40)"
+											"signal": "ceil(child_width / 30)"
 										},
 										"domain": false,
 										"labels": false,
@@ -1360,7 +1361,7 @@
 										"gridScale": "x",
 										"grid": true,
 										"tickCount": {
-											"signal": "ceil(child_height/40)"
+											"signal": "ceil(child_height / 30)"
 										},
 										"domain": false,
 										"labels": false,
@@ -1405,11 +1406,11 @@
 							{
 							"name": "table",
 							"transform": [
-								{ // month hack
-									"type": "formula",
-									"expr": `datum[\"month\"]===\"jan\" ? 0 : datum[\"month\"]===\"feb\" ? 1 : datum[\"month\"]===\"mar\" ? 2 : datum[\"month\"]===\"apr\" ? 3 : datum[\"month\"]===\"may\" ? 4 : datum[\"month\"]===\"jun\" ? 5 : datum[\"month\"]===\"jul\" ? 6 : datum[\"month\"]===\"aug\" ? 7 : datum[\"month\"]===\"sep\" ? 8 : datum[\"month\"]===\"oct\" ? 9 : datum[\"month\"]===\"nov\" ? 10 : datum[\"month\"]===\"dec\" ? 11 : 12`,
-									"as": "column_month_sort_index"
-								},
+								// { // season hack
+								// 	"type": "formula",
+								// 	"expr": `datum[\"season\"]===\"winter\" ? 0 : datum[\"season\"]===\"spring\" ? 1 : datum[\"season\"]===\"summer\" ? 2 : datum[\"season\"]===\"dec\" ? 3 : 4`,
+								// 	"as": "column_season_sort_index"
+								// },
 								{
 									"type": "filter",
 									"expr": "datum.draw == sample"
@@ -1430,15 +1431,14 @@
 							{
 								"name": "column_domain",
 								"source": "data_0",
-								"transform": [{"type": "aggregate", "groupby": [vlSpec.encoding.column.field, "modelcheck_group",
-									"column_month_sort_index" // month hack
+								"transform": [{"type": "aggregate", "groupby": [vlSpec.encoding.column.field, "modelcheck_group"//, "column_season_sort_index" // season hack
 								]}]
 							}
 						],
 						"signals": [
 							// {"name": "child_width", "value": 200},
 							// {"name": "child_height", "value": 200},
-							{"name": "child_width", "update": `max(${minSize}, min(${horzSpace} / length(data('column_domain')), ${defaultSize}))`},
+							{"name": "child_width", "update": `max(${minSize}, min((${horzSpace} - 40 - ${interChartPad} * length(data('column_domain'))) / (length(data('column_domain')) + 2), ${defaultSize}))`},
 							{"name": "child_height", "value": defaultSize},
 							{
 								"name": "sample",
@@ -1452,7 +1452,7 @@
 							}
 						],
 						"layout": {
-							"padding": 5,
+							"padding": interChartPad,
 							"offset": {
 								"rowTitle": 10
 							},
@@ -1485,7 +1485,7 @@
 										"title": vlSpec.encoding.y.field != "modelcheck_group" ? vlSpec.encoding.y.field : "",
 										"labelOverlap": true,
 										"tickCount": {
-											"signal": "ceil(child_height/40)"
+											"signal": "ceil(child_height / 30)"
 										},
 										"zindex": 1
 									}
@@ -1498,14 +1498,14 @@
 								"from": {
 									"data": "column_domain"
 								},
-								"sort": { // month hack
-									"field": "datum[\"column_month_sort_index\"]",
-									"order": "ascending"
-								},
-								// "sort": {
-								// 	"field": `datum[\"${vlSpec.encoding.column.field}\"]`,
+								// "sort": { // season hack
+								// 	"field": "datum[\"column_season_sort_index\"]",
 								// 	"order": "ascending"
 								// },
+								"sort": {
+									"field": `datum[\"${vlSpec.encoding.column.field}\"]`,
+									"order": "ascending"
+								},
 								"title": {
 									"text": {
 										"signal": `isValid(parent[\"${vlSpec.encoding.column.field}\"]) ? parent[\"${vlSpec.encoding.column.field}\"] : \"\"+parent[\"${vlSpec.encoding.column.field}\"]`
@@ -1530,10 +1530,10 @@
 								"from": {
 									"data": "column_domain"
 								},
-								"sort": { // month hack
-									"field": "datum[\"column_month_sort_index\"]",
-									"order": "ascending"
-								},
+								// "sort": { // season hack
+								// 	"field": "datum[\"column_season_sort_index\"]",
+								// 	"order": "ascending"
+								// },
 								"encode": {"update": {"width": {"signal": "child_width"}}},
 								"axes": [
 									{
@@ -1544,7 +1544,7 @@
 										"offset": -5,
 										"labelFlush": true,
 										"labelOverlap": true,
-										"tickCount": {"signal": "ceil(child_width/40)"},
+										"tickCount": {"signal": "ceil(child_width / 30)"},
 										"zindex": 1
 									}
 								]
@@ -1590,7 +1590,7 @@
 										"gridScale": "y",
 										"grid": true,
 										"tickCount": {
-											"signal": "ceil(child_width/40)"
+											"signal": "ceil(child_width / 30)"
 										},
 										"domain": false,
 										"labels": false,
@@ -1606,7 +1606,7 @@
 										"gridScale": "x",
 										"grid": true,
 										"tickCount": {
-											"signal": "ceil(child_height/40)"
+											"signal": "ceil(child_height / 30)"
 										},
 										"domain": false,
 										"labels": false,
@@ -2229,7 +2229,7 @@
 		margin-right: 0.5rem;
 		max-height: 70vh;
 		overflow-y: scroll;
-		max-width: 40vw;
+		max-width: 53vw;
 		overflow-x: scroll;
 	}
 
