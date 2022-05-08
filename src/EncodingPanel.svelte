@@ -23,6 +23,8 @@
     export let removeFilter;
     export let addTransform;
     export let removeTrans;
+    export let formatVariable;
+    // export let getVariableTransform;
 
     export let filters: any;
     export let transformations: any;
@@ -78,7 +80,8 @@
                                     duration: flipDurationMs,
                                 }}
                             >
-                                {item.name}
+                                <!-- {item.name} -->
+                                {@html formatVariable(item.name, item.trans)}
                                 <button
                                     class="single-char"
                                     on:click={encodingToData(

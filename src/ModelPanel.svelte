@@ -1,6 +1,7 @@
 <script lang="ts">
     // ui compoenets
     import { Grid, Row, Column, Button } from "carbon-components-svelte";
+    import { key } from "vega";
     import App from "./App.svelte";
     import Chart from "./Chart.svelte";
 
@@ -12,6 +13,8 @@
     export let addModel;
     export let removeModel;
     export let showPredictionOrResidual;
+    export let formatVariable;
+    export let getVariableTransform;
     export let outcomeName;
 
     let showAddingModel = false;
@@ -21,6 +24,7 @@
     let showModels = false;
 
     $: muSpec, getOutcomeName();
+    $: outcomeName, muSpec = `${outcomeName} ~ 1`;
 
     function getOutcomeName() {
         outcomeName = muSpec.substring(muSpec.indexOf("|") + 1, muSpec.indexOf("~"));
@@ -42,7 +46,7 @@
                     let interactionTerms = terms[i].split("*");
                     console.log(interactionTerms);
                     for (let j = 0; j < interactionTerms.length; j++) {
-                        description = description + `<span class="variable">${interactionTerms[j]}</span>`;
+                        description = description + formatVariable(interactionTerms[j], getVariableTransform(interactionTerms[j]));
                         if (j == interactionTerms.length - 2) {
                             description = description + " and ";
                         } else if (j < interactionTerms.length - 2) {
@@ -51,7 +55,7 @@
                     }
                 } else {
                     // main effect term
-                    description = description + `<span class="variable">${terms[i]}</span>`;
+                    description = description + formatVariable(terms[i], getVariableTransform(terms[i]));
                 }
                 if (i == terms.length - 2) {
                     description = description + " and ";
@@ -105,8 +109,8 @@
         <select bind:value={modelFamily}>
             <option disabled selected value> -- select family -- </option>
             <option value="normal">normal</option>
-            <!-- <option value="lognormal">log normal</option>
-            <option value="logitnormal">logit normal</option> -->
+            <option value="lognormal">log normal</option>
+            <option value="logitnormal">logit normal</option>
             <option value="logistic">logistic</option>
             <!-- <option value="beta">beta</option> -->
             <option value="poisson">poisson</option>
@@ -130,29 +134,29 @@
                 />
         {/if} -->
         {#if modelFamily == "normal"}
-            mean of <span class="variable">{outcomeName}</span>: <input bind:value={muSpec} style="padding: initial;" />
+            mean of {@html formatVariable(outcomeName, getVariableTransform(outcomeName))}: <input bind:value={muSpec} style="padding: initial;" />
             <br />
-            std deviation of <span class="variable">{outcomeName}</span>: <input bind:value={sigmaSpec} style="padding: initial;" />
-        <!-- {:else if modelFamily == "lognormal"}
-            mean of <span class="variable">log({outcomeName})</span>: <input bind:value={muSpec} style="padding: initial;" />
+            std deviation of {@html formatVariable(outcomeName, getVariableTransform(outcomeName))}: <input bind:value={sigmaSpec} style="padding: initial;" />
+        {:else if modelFamily == "lognormal"}
+            mean of <span class="transform">log(</span>{@html formatVariable(outcomeName, getVariableTransform(outcomeName))}<span class="transform">)</span>: <input bind:value={muSpec} style="padding: initial;" />
             <br />
-            std deviation of <span class="variable">log({outcomeName})</span>: <input bind:value={sigmaSpec} style="padding: initial;" />
+            std deviation of <span class="transform">log(</span>{@html formatVariable(outcomeName, getVariableTransform(outcomeName))}<span class="transform">)</span>: <input bind:value={sigmaSpec} style="padding: initial;" />
         {:else if modelFamily == "logitnormal"}
-            mean of <span class="variable">logit({outcomeName})</span>: <input bind:value={muSpec} style="padding: initial;" />
+            mean of <span class="transform">logit(</span>{@html formatVariable(outcomeName, getVariableTransform(outcomeName))}<span class="transform">)</span>: <input bind:value={muSpec} style="padding: initial;" />
             <br />
-            std deviation of <span class="variable">logit({outcomeName})</span>: <input bind:value={sigmaSpec} style="padding: initial;" /> -->
+            std deviation of <span class="transform">logit(</span>{@html formatVariable(outcomeName, getVariableTransform(outcomeName))}<span class="transform">)</span>: <input bind:value={sigmaSpec} style="padding: initial;" />
         {:else if modelFamily == "logistic"}
-            log odds of <span class="variable">{outcomeName}</span>: <input bind:value={muSpec} style="padding: initial;" />
+            log odds of {@html formatVariable(outcomeName, getVariableTransform(outcomeName))}: <input bind:value={muSpec} style="padding: initial;" />
         <!-- {:else if modelFamily == "beta"} TODO: add beta regression
             expected proportion: <input bind:value={muSpec} style="padding: initial;" />
             <br />
             expected proportion: <input bind:value={sigmaSpec} style="padding: initial;" /> -->
         {:else if modelFamily == "poisson"}
-            rate of <span class="variable">{outcomeName}</span>:<input bind:value={muSpec} style="padding: initial;" />
+            rate of {@html formatVariable(outcomeName, getVariableTransform(outcomeName))}:<input bind:value={muSpec} style="padding: initial;" />
         {:else if modelFamily == "negbinomial"}
-            rate of <span class="variable">{outcomeName}</span>: <input bind:value={muSpec} style="padding: initial;" />
+            rate of {@html formatVariable(outcomeName, getVariableTransform(outcomeName))}: <input bind:value={muSpec} style="padding: initial;" />
             <br />
-            dispursion in rate of <span class="variable">{outcomeName}</span>: <input bind:value={sigmaSpec} style="padding: initial;" />
+            dispursion in rate of {@html formatVariable(outcomeName, getVariableTransform(outcomeName))}: <input bind:value={sigmaSpec} style="padding: initial;" />
         {/if}
         {#if muSpec}
             <button
@@ -195,27 +199,27 @@
                     This model assumes that:
                     {#if f.family == "normal"}
                         <ul style="margin: 1px;">
-                            <li><span class="variable">{outcomeName}</span> is a continuous variable with variance described by a Gaussian distribution</li>
-                            <li>the mean of <span class="variable">{outcomeName}</span> {@html formatPredictorsAsNaturalLanguage(f.mu_spec)}</li>
-                            <li>the standard deviation of <span class="variable">{outcomeName}</span> {@html formatPredictorsAsNaturalLanguage(f.sigma_spec)}</li>
+                            <li>{@html formatVariable(outcomeName, getVariableTransform(outcomeName))} is a continuous variable with variance described by a Gaussian distribution</li>
+                            <li>the mean of {@html formatVariable(outcomeName, getVariableTransform(outcomeName))} {@html formatPredictorsAsNaturalLanguage(f.mu_spec)}</li>
+                            <li>the standard deviation of {@html formatVariable(outcomeName, getVariableTransform(outcomeName))} {@html formatPredictorsAsNaturalLanguage(f.sigma_spec)}</li>
                         </ul>
-                    <!-- {:else if f.family == "lognormal"}
+                    {:else if f.family == "lognormal"}
                         <ul style="margin: 1px;">
-                            <li>the log transform of <span class="variable">{outcomeName}</span> is a continuous variable with variance described by a Gaussian distribution</li>
-                            <li>the mean of <span class="variable">log({outcomeName})</span> {@html formatPredictorsAsNaturalLanguage(f.mu_spec)}</li>
-                            <li>the standard deviation of <span class="variable">log({outcomeName})</span> {@html formatPredictorsAsNaturalLanguage(f.sigma_spec)}</li>
+                            <li>the log transform of {@html formatVariable(outcomeName, getVariableTransform(outcomeName))} is a continuous variable with variance described by a Gaussian distribution</li>
+                            <li>the mean of {@html formatVariable(outcomeName, getVariableTransform(outcomeName))} {@html formatPredictorsAsNaturalLanguage(f.mu_spec)}</li>
+                            <li>the standard deviation of {@html formatVariable(outcomeName, getVariableTransform(outcomeName))} {@html formatPredictorsAsNaturalLanguage(f.sigma_spec)}</li>
                         </ul>
                     {:else if f.family == "logitnormal"}
                         <ul style="margin: 1px;">
-                            <li>the log-odds (a.k.a., logit) transform of <span class="variable">{outcomeName}</span> is a continuous variable with variance described by a Gaussian distribution</li>
-                            <li>the mean of <span class="variable">logit({outcomeName})</span> {@html formatPredictorsAsNaturalLanguage(f.mu_spec)}</li>
-                            <li>the standard deviation of <span class="variable">logit({outcomeName})</span> {@html formatPredictorsAsNaturalLanguage(f.sigma_spec)}</li>
-                        </ul> -->
+                            <li>the log-odds (a.k.a., logit) transform of {@html formatVariable(outcomeName, getVariableTransform(outcomeName))} is a continuous variable with variance described by a Gaussian distribution</li>
+                            <li>the mean of {@html formatVariable(outcomeName, getVariableTransform(outcomeName))} {@html formatPredictorsAsNaturalLanguage(f.mu_spec)}</li>
+                            <li>the standard deviation of {@html formatVariable(outcomeName, getVariableTransform(outcomeName))} {@html formatPredictorsAsNaturalLanguage(f.sigma_spec)}</li>
+                        </ul>
                     {:else if f.family == "logistic"}
                         <ul style="margin: 1px;">
-                            <li><span class="variable">{outcomeName}</span> is a binary variable with variance described by a Binomial distribution</li>
-                            <li>the log odds of <span class="variable">{outcomeName}</span> {formatPredictorsAsNaturalLanguage(f.mu_spec)}</li>
-                            <li>the standard deviation of residual log odds {formatPredictorsAsNaturalLanguage("~1")}</li>
+                            <li>{@html formatVariable(outcomeName, getVariableTransform(outcomeName))} is a binary variable with variance described by a Binomial distribution</li>
+                            <li>the log odds of {@html formatVariable(outcomeName, getVariableTransform(outcomeName))} {@html formatPredictorsAsNaturalLanguage(f.mu_spec)}</li>
+                            <li>the standard deviation of residual log odds {@html formatPredictorsAsNaturalLanguage("~1")}</li>
                         </ul>
                     <!-- {:else if f.family == "beta"} TODO: add beta regression
                         expected proportion: {f.mu_spec}
@@ -223,15 +227,15 @@
                         expected proportion: {f.mu_spec} -->
                     {:else if f.family == "poisson"}
                         <ul style="margin: 1px;">
-                            <li><span class="variable">{outcomeName}</span> is a count variable with variance described by a Poisson distribution</li>
-                            <li>the rate of <span class="variable">{outcomeName}</span> {formatPredictorsAsNaturalLanguage(f.mu_spec)}</li>
-                            <li>the standard deviation of residual rates {formatPredictorsAsNaturalLanguage("~1")}</li>
+                            <li>{@html formatVariable(outcomeName, getVariableTransform(outcomeName))} is a count variable with variance described by a Poisson distribution</li>
+                            <li>the rate of {@html formatVariable(outcomeName, getVariableTransform(outcomeName))} {@html formatPredictorsAsNaturalLanguage(f.mu_spec)}</li>
+                            <li>the standard deviation of residual rates {@html formatPredictorsAsNaturalLanguage("~1")}</li>
                         </ul>
                     {:else if f.family == "negbinomial"}
                         <ul style="margin: 1px;">
-                            <li><span class="variable">{outcomeName}</span> is a count variable that is overdispursed with variance described by a Negative Binomial (i.e., a mixture of Poissons with different rates)</li>
-                            <li>the average rate of <span class="variable">{outcomeName}</span> {formatPredictorsAsNaturalLanguage(f.mu_spec)}</li>
-                            <li>the dispursion in rates of <span class="variable">{outcomeName}</span> {formatPredictorsAsNaturalLanguage(f.sigma_spec)}</li>
+                            <li>{@html formatVariable(outcomeName, getVariableTransform(outcomeName))} is a count variable that is overdispursed with variance described by a Negative Binomial (i.e., a mixture of Poissons with different rates)</li>
+                            <li>the average rate of {@html formatVariable(outcomeName, getVariableTransform(outcomeName))} {@html formatPredictorsAsNaturalLanguage(f.mu_spec)}</li>
+                            <li>the dispursion in rates of {@html formatVariable(outcomeName, getVariableTransform(outcomeName))} {@html formatPredictorsAsNaturalLanguage(f.sigma_spec)}</li>
                         </ul>
                     {/if}
                 </div>
@@ -326,11 +330,11 @@
         border-radius: 0.3rem;
     }
 
-    :global(.variable) {
+    /* :global(.variable) {
         font-family: courier, "courier new", monospace;
         color: #FF7171;
         font-weight: bold;
-    }
+    } */
 
     .title p,
     .title div {

@@ -38,14 +38,17 @@
 	export let originalDndState: { id: string; name: string; items: any[] }[];
 	export let filters: any;
 	export let transformations: any;
-	$: specChanged = 0;
-	$: showLoadingIcon = false;
 	export let models: any;
-	let prevSpec: VisualizationSpec = vlSpec;
-	console.log("PREV prevSpec", prevSpec);
-	// export let residualList: any;
 	export let showPredictionOrResidual = "prediction";
 	export let outcomeName: string;
+
+	let prevSpec: VisualizationSpec = vlSpec;
+	console.log("PREV prevSpec", prevSpec);
+
+	$: specChanged = 0;
+	$: showLoadingIcon = false;
+	$: transformations, updateStateTransforms();
+	$: outcomeName, updateStateOutcome();
 
 	function onChange(event) {
 		showPredictionOrResidual = event.currentTarget.value;
@@ -67,11 +70,36 @@
 				id: i, // gets overwritten by drag consider
 				idx: i,
 				name: d,
+				trans: "none",
+				outcome: false,
 			});
 		});
 		mounted = true;
 		originalDndState = deepCopy(dndState);
 	});
+
+	function updateStateTransforms() {
+		for (let i = 0; i < dndState.length; i++) { // shelves
+			for (let j = 0; j < dndState[i].items.length; j++) { // items w/in shelves
+				let varName = dndState[i].items[j].name,
+					appliedTrans = transformations.filter(t => t.variable == varName);
+				if (appliedTrans.length == 0) {
+					dndState[i].items[j].trans = "none";
+				} else {
+					dndState[i].items[j].trans = appliedTrans[0].transformation;
+				}
+			}
+		}	
+	}
+
+	function updateStateOutcome() {
+		for (let i = 0; i < dndState.length; i++) { // shelves
+			for (let j = 0; j < dndState[i].items.length; j++) { // items w/in shelves
+				let test = dndState[i].items[j].name == outcomeName;
+				dndState[i].items[j].outcome = test;
+			}
+		}	
+	}
 
 	function handleDndConsider(shelfId: any, e: any) {
 		const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
@@ -510,6 +538,25 @@
 				console.log(err);
 			});
 	}
+
+	function formatVariable(varName, transform) {
+		console.log("format var", varName, transform);
+		let c = (varName == outcomeName) ? "outcome" : "variable";
+		if (transform == "none") {
+			return `<span class=${c}>${varName}</span>`;
+		} else {
+			return `<span class="transform">${transform}(</span><span class=${c}>${varName}</span><span class="transform">)</span>`;
+		}
+	}
+
+	function getVariableTransform(varName) {
+        let trans = transformations.filter(t => t.variable == varName);
+        if (trans.length == 0) {
+            return "none";
+        } else {
+            return trans[0].transformation;
+        }
+    }
 
 	/**
 	* Transforming
@@ -1098,6 +1145,7 @@
 						{flipDurationMs}
 						{handleDndConsider}
 						{handleDndFinalize}
+						{formatVariable}
 					/>
 				</Column>
 				<Column style="min-width: 250px; max-width: 250px;">
@@ -1114,6 +1162,7 @@
 						{removeFilter}
 						{addTransform}
 						{removeTrans}
+						{formatVariable}
 					/>
 				</Column>
 				<Column style="width: 100%;" id="chart-canvas">
@@ -1165,15 +1214,15 @@
 				<!-- <SaveOutput bind:dataChanged bind:vlSpec/> -->
 				<!-- <button on:click={saveFile("data_and_spec")}></button> -->
 				<Column style="min-width: 250px; max-width: 250px;">
-					{#key outcomeName}
-						<ModelPanel
-							{models}
-							{addModel}
-							{removeModel}
-							bind:showPredictionOrResidual
-							bind:outcomeName
-						/>
-					{/key}
+					<ModelPanel
+						{models}
+						{addModel}
+						{removeModel}
+						{formatVariable}
+						{getVariableTransform}
+						bind:showPredictionOrResidual
+						bind:outcomeName
+					/>					
 				</Column>
 			</Row>
 		</Grid>
@@ -1186,6 +1235,24 @@
 		margin: 0;
 		padding: 0;
 	}
+
+	:global(.variable) {
+        font-family: courier, "courier new", monospace;
+        color: #3b3b3b;
+        font-weight: bold;
+    }
+
+	:global(.outcome) {
+        font-family: courier, "courier new", monospace;
+        color: #FF7171;
+        font-weight: bold;
+    }
+
+	:global(.transform) {
+        font-family: courier, "courier new", monospace;
+        color: #888888;
+        font-weight: bold;
+    }
 	main {
 		text-align: left;
 		/* padding: 1em; */

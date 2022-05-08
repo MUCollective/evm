@@ -9,6 +9,10 @@
     export let flipDurationMs: number;
     export let handleDndConsider;
     export let handleDndFinalize;
+    export let formatVariable;
+    // export let getVariableTransform;
+    
+
     function removeShadow() {
         Object.keys(dndState[0].items).forEach((d, i) => {
             console.log(d);
@@ -45,7 +49,9 @@
                 width: auto;
                 padding: 0.2rem 0.5rem;"
             >
-                {item.name}
+                <!-- {item.name} -->
+                {@html formatVariable(item.name, item.trans)}
+                
                 
             </div>
         {/each}
