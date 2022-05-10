@@ -133,11 +133,10 @@
 
     <h3>Filter</h3>
     <div class="add-and-clear" style="display: inline-block;">
-        current filters
-        <button class="single-char" on:click={() => (showAddingFilter = true)}
-            >+
-        </button>
-        <button on:click={removeFilter(0, true)}>clear all </button>
+        add
+        <button class="single-char" on:click={() => (showAddingFilter = true)}>+</button>
+        or remove
+        <button on:click={removeFilter(0, true)}>clear all</button>
     </div>
 
 
@@ -222,11 +221,10 @@
 
 <h3>Transform</h3>
 <div class="add-and-clear" style="display: inline-block;">
-    current
-    <button class="single-char" on:click={() => (showAddingTransform = true)}
-        >+
-    </button>
-    <button on:click={removeTrans(0, true)}>clear all </button>
+    add
+    <button class="single-char" on:click={() => (showAddingTransform = true)}>+</button>
+    or remove
+    <button on:click={removeTrans(0, true)}>clear all</button>
 </div>
 
 
@@ -246,7 +244,7 @@
         </div>
     {/each}
 {:else}
-    <div class="current">No transformation currently applied.</div>
+    <div class="current">No transform currently applied.</div>
 {/if}
 <!-- {/key} -->
 <br />
@@ -260,9 +258,9 @@
     </select>
     {#if transVar}
         <select bind:value={trans}>
-            <option disabled selected value> -- transformation -- </option>
-            <option value="log">log transform</option>
-            <option value="logit">log odds transform</option>
+            <option disabled selected value> -- transform -- </option>
+            <option value="log">log</option>
+            <option value="logit">log odds (a.k.a. logit)</option>
         </select>
         {#if trans}
             <button

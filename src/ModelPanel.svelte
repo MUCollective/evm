@@ -78,7 +78,7 @@
         // families that have no scale submodel should be NULL for sigma_spec
         let sigmaStr = sigmaSpec;
         // if (!(modelFamily == "negbinomial" || modelFamily == "normal" || modelFamily == "ordinal")) {
-        if (!(modelFamily == "negbinomial" || modelFamily == "normal")) {
+        if (!(modelFamily == "negbinomial" || modelFamily == "normal" || modelFamily == "lognormal" || modelFamily == "logitnormal")) {
             sigmaStr = ""
             sigmaSpec = null
         }
@@ -206,14 +206,14 @@
                     {:else if f.family == "lognormal"}
                         <ul style="margin: 1px;">
                             <li>the log transform of {@html formatVariable(outcomeName, getVariableTransform(outcomeName))} is a continuous variable with variance described by a Gaussian distribution</li>
-                            <li>the mean of {@html formatVariable(outcomeName, getVariableTransform(outcomeName))} {@html formatPredictorsAsNaturalLanguage(f.mu_spec)}</li>
-                            <li>the standard deviation of {@html formatVariable(outcomeName, getVariableTransform(outcomeName))} {@html formatPredictorsAsNaturalLanguage(f.sigma_spec)}</li>
+                            <li>the mean of <span class="transform">log(</span>{@html formatVariable(outcomeName, getVariableTransform(outcomeName))}<span class="transform">)</span> {@html formatPredictorsAsNaturalLanguage(f.mu_spec)}</li>
+                            <li>the standard deviation of <span class="transform">log(</span>{@html formatVariable(outcomeName, getVariableTransform(outcomeName))}<span class="transform">)</span> {@html formatPredictorsAsNaturalLanguage(f.sigma_spec)}</li>
                         </ul>
                     {:else if f.family == "logitnormal"}
                         <ul style="margin: 1px;">
                             <li>the log-odds (a.k.a., logit) transform of {@html formatVariable(outcomeName, getVariableTransform(outcomeName))} is a continuous variable with variance described by a Gaussian distribution</li>
-                            <li>the mean of {@html formatVariable(outcomeName, getVariableTransform(outcomeName))} {@html formatPredictorsAsNaturalLanguage(f.mu_spec)}</li>
-                            <li>the standard deviation of {@html formatVariable(outcomeName, getVariableTransform(outcomeName))} {@html formatPredictorsAsNaturalLanguage(f.sigma_spec)}</li>
+                            <li>the mean of <span class="transform">logit(</span>{@html formatVariable(outcomeName, getVariableTransform(outcomeName))}<span class="transform">)</span> {@html formatPredictorsAsNaturalLanguage(f.mu_spec)}</li>
+                            <li>the standard deviation of <span class="transform">logit(</span>{@html formatVariable(outcomeName, getVariableTransform(outcomeName))}<span class="transform">)</span> {@html formatPredictorsAsNaturalLanguage(f.sigma_spec)}</li>
                         </ul>
                     {:else if f.family == "logistic"}
                         <ul style="margin: 1px;">

@@ -30,8 +30,10 @@
 	if (distinctModelGroups.includes("undefined")) {
 		distinctModelGroups.pop(); // remove "undefined" if needed
 	}
-	let haveModelToShow = distinctModelGroups.some(
-		(elem) => elem.startsWith("normal|") || elem.startsWith("res|") // TODO: make this work for non-normal families
+	let modelNameRegex = /^.+\|/,
+		haveModelToShow = distinctModelGroups.some(
+		// (elem) => elem.startsWith("normal|") || elem.startsWith("res|") // TODO: make this work for non-normal families
+		elem => modelNameRegex.test(elem)
 	);
 	console.log("modelcheck groups in the chart data", distinctModelGroups);
 	console.log("model to show?", haveModelToShow);
