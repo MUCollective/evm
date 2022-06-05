@@ -784,8 +784,8 @@
 			console.log(dataChanged);
 			// update spec
 			delete vlSpec.encoding.color;
-			delete vlSpec.encoding.xOffset;
-			delete vlSpec.encoding.yOffset;
+			// delete vlSpec.encoding.xOffset;
+			// delete vlSpec.encoding.yOffset;
 			vlSpec = { ...vlSpec };
 			specChanged++;
 			return;
