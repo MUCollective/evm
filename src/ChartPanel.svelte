@@ -22,7 +22,8 @@
 	// set default size
 	let defaultSize = 200,
 		minSize = 50,
-		interChartPad = 5;
+		interChartPad = 5,
+		chartType = "scatterplot"; // default
 
 	// process input data, looking for signs that we have a model to show
 	let dataset = { table: dataChanged };
@@ -62,22 +63,16 @@
 			: { domain: null };
 		vlSpec.encoding.color.scale.domain = distinctModelGroups;
 
-		// // assign offsets for nominal axes, but not for quant axes
-		// if (vlSpec.mark == "bar" || vlSpec.mark.type == "bar" || vlSpec.mark == "tick" || vlSpec.mark.type == "tick") {
-		// 	if (!vlSpec.encoding.x || vlSpec.encoding.x.type == "nominal" || vlSpec.encoding.x.type == "ordinal") {
-		// 		vlSpec.encoding.xOffset = vlSpec.encoding.xOffset
-		// 			? vlSpec.encoding.xOffset
-		// 			: { field: null, type: null };
-		// 		vlSpec.encoding.xOffset.field = "modelcheck_group";
-		// 		vlSpec.encoding.xOffset.type = "ordinal";
-		// 	} else if (!vlSpec.encoding.y || vlSpec.encoding.y.type == "nominal" || vlSpec.encoding.y.type == "ordinal") {
-		// 		vlSpec.encoding.yOffset = vlSpec.encoding.yOffset
-		// 			? vlSpec.encoding.yOffset
-		// 			: { field: null, type: null };
-		// 		vlSpec.encoding.yOffset.field = "modelcheck_group";
-		// 		vlSpec.encoding.yOffset.type = "ordinal";
-		// 	}
-		// }
+		// infer chart type
+		// TODO: add contingenies for bar charts and heatmaps
+		if (vlSpec.mark == "tick" || vlSpec.mark.type == "tick") {
+			if (!vlSpec.encoding.x || vlSpec.encoding.x.type == "nominal" || vlSpec.encoding.x.type == "ordinal") {
+				chartType = "stripx";
+			} else if (!vlSpec.encoding.y || vlSpec.encoding.y.type == "nominal" || vlSpec.encoding.y.type == "ordinal") {
+				chartType = "stripy";
+			}
+		}
+		console.log("chart type", chartType);
 		console.log("chartpanel dataset", dataset);
 		console.log("models", models);
 
@@ -318,16 +313,15 @@
 								}
 							},
 							"signals": [
-								{
-									"name": "shape",
-									"value": "circle"
-								}
+								{"name": "shape", "value": "circle"},
+								{"name": chartType == "stripx" ? "x_step" : "y_step", "value": 20},
+          						{"name": "width", "update": chartType == "stripx" ? "bandspace(domain('x').length, 1, 0.5) * x_step" : "bandspace(domain('y').length, 1, 0.5) * y_step"}
 							],
 							"marks": [
 								{
 									"name": "child_marks",
-									"type": "symbol",
-									"style": ["circle"],
+									"type": chartType == "scatterplot" ? "symbol" : "rect",
+									"style": chartType == "scatterplot" ? ["circle"] : ["tick"],
 									"from": {"data": "facet"},
 									"encode": {
 										"update": originalEncoding // plug in compiled encoding for primary axes
@@ -560,16 +554,15 @@
 								}
 							},
 							"signals": [
-								{
-									"name": "shape",
-									"value": "circle"
-								}
+								{"name": "shape", "value": "circle"},
+								{"name": chartType == "stripx" ? "x_step" : "y_step", "value": 20},
+          						{"name": "width", "update": chartType == "stripx" ? "bandspace(domain('x').length, 1, 0.5) * x_step" : "bandspace(domain('y').length, 1, 0.5) * y_step"}
 							],
 							"marks": [
 								{
 									"name": "child_marks",
-									"type": "symbol",
-									"style": ["circle"],
+									"type": chartType == "scatterplot" ? "symbol" : "rect",
+									"style": chartType == "scatterplot" ? ["circle"] : ["tick"],
 									"from": {"data": "facet"},
 									"encode": {
 										"update": originalEncoding // plug in compiled encoding for primary axes
@@ -795,10 +788,9 @@
 								}
 							},
 							"signals": [
-								{
-									"name": "shape",
-									"value": "circle"
-								}
+								{"name": "shape", "value": "circle"},
+								{"name": chartType == "stripx" ? "x_step" : "y_step", "value": 20},
+          						{"name": "width", "update": chartType == "stripx" ? "bandspace(domain('x').length, 1, 0.5) * x_step" : "bandspace(domain('y').length, 1, 0.5) * y_step"}
 							],
 							"marks": [
 								{
@@ -806,7 +798,8 @@
 									"from": {
 										"data": "facet"
 									},
-									"type": "symbol",
+									"type": chartType == "scatterplot" ? "symbol" : "rect",
+									"style": chartType == "scatterplot" ? ["circle"] : ["tick"],
 									"encode": {
 										"update": originalEncoding // plug in compiled encoding for primary axes
 									}
@@ -1023,10 +1016,9 @@
 								}
 							},
 							"signals": [
-								{
-									"name": "shape",
-									"value": "circle"
-								}
+								{"name": "shape", "value": "circle"},
+								{"name": chartType == "stripx" ? "x_step" : "y_step", "value": 20},
+          						{"name": "width", "update": chartType == "stripx" ? "bandspace(domain('x').length, 1, 0.5) * x_step" : "bandspace(domain('y').length, 1, 0.5) * y_step"}
 							],
 							"marks": [
 								{
@@ -1034,7 +1026,8 @@
 									"from": {
 										"data": "facet"
 									},
-									"type": "symbol",
+									"type": chartType == "scatterplot" ? "symbol" : "rect",
+									"style": chartType == "scatterplot" ? ["circle"] : ["tick"],
 									"encode": {
 										"update": originalEncoding // plug in compiled encoding for primary axes
 									}
@@ -1326,10 +1319,9 @@
 								}
 							},
 							"signals": [
-								{
-									"name": "shape",
-									"value": "circle"
-								}
+								{"name": "shape", "value": "circle"},
+								{"name": chartType == "stripx" ? "x_step" : "y_step", "value": 20},
+          						{"name": "width", "update": chartType == "stripx" ? "bandspace(domain('x').length, 1, 0.5) * x_step" : "bandspace(domain('y').length, 1, 0.5) * y_step"}
 							],
 							"marks": [
 								{
@@ -1337,7 +1329,8 @@
 									"from": {
 										"data": "facet"
 									},
-									"type": "symbol",
+									"type": chartType == "scatterplot" ? "symbol" : "rect",
+									"style": chartType == "scatterplot" ? ["circle"] : ["tick"],
 									"encode": {
 										"update": originalEncoding // plug in compiled encoding for primary axes
 									}
@@ -1571,10 +1564,9 @@
 								}
 							},
 							"signals": [
-								{
-									"name": "shape",
-									"value": "circle"
-								}
+								{"name": "shape", "value": "circle"},
+								{"name": chartType == "stripx" ? "x_step" : "y_step", "value": 20},
+          						{"name": "width", "update": chartType == "stripx" ? "bandspace(domain('x').length, 1, 0.5) * x_step" : "bandspace(domain('y').length, 1, 0.5) * y_step"}
 							],
 							"marks": [
 								{
@@ -1582,7 +1574,8 @@
 									"from": {
 										"data": "facet"
 									},
-									"type": "symbol",
+									"type": chartType == "scatterplot" ? "symbol" : "rect",
+									"style": chartType == "scatterplot" ? ["circle"] : ["tick"],
 									"encode": {
 										"update": originalEncoding // plug in compiled encoding for primary axes
 									}
@@ -1814,10 +1807,9 @@
 								}
 							},
 							"signals": [
-								{
-									"name": "shape",
-									"value": "circle"
-								}
+								{"name": "shape", "value": "circle"},
+								{"name": chartType == "stripx" ? "x_step" : "y_step", "value": 20},
+          						{"name": "width", "update": chartType == "stripx" ? "bandspace(domain('x').length, 1, 0.5) * x_step" : "bandspace(domain('y').length, 1, 0.5) * y_step"}
 							],
 							"marks": [
 								{
@@ -1825,7 +1817,8 @@
 									"from": {
 										"data": "facet"
 									},
-									"type": "symbol",
+									"type": chartType == "scatterplot" ? "symbol" : "rect",
+									"style": chartType == "scatterplot" ? ["circle"] : ["tick"],
 									"encode": {
 										"update": originalEncoding // plug in compiled encoding for primary axes
 									}
@@ -2008,10 +2001,9 @@
 								}
 							},
 							"signals": [
-								{
-									"name": "shape",
-									"value": "circle"
-								}
+								{"name": "shape", "value": "circle"},
+								{"name": chartType == "stripx" ? "x_step" : "y_step", "value": 20},
+          						{"name": "width", "update": chartType == "stripx" ? "bandspace(domain('x').length, 1, 0.5) * x_step" : "bandspace(domain('y').length, 1, 0.5) * y_step"}
 							],
 							"marks": [
 								{
@@ -2019,7 +2011,8 @@
 									"from": {
 										"data": "facet"
 									},
-									"type": "symbol",
+									"type": chartType == "scatterplot" ? "symbol" : "rect",
+									"style": chartType == "scatterplot" ? ["circle"] : ["tick"],
 									"encode": {
 										"update": originalEncoding // plug in compiled encoding for primary axes
 									}
