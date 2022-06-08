@@ -179,7 +179,7 @@
 						{
 							"name": "row_domain",
 							"source": "data_0",
-							"transform": [{"type": "aggregate", "groupby": [vlSpec.encoding.row.field, "modelcheck_group"]}]
+							"transform": [{"type": "aggregate", "groupby": ["modelcheck_group", vlSpec.encoding.row.field]}]
 						}
 					],
 					"signals": [
@@ -221,7 +221,12 @@
 							"name": "column-title",
 							"type": "group",
 							"role": "column-title",
-							"title": {"text": "origin", "style": "guide-title", "offset": 10}
+							"title": {
+								"text": vlSpec.encoding.column.field,
+								"orient": "left",
+								"style": "guide-title",
+								"offset": 10
+							}
 						},
 						{
 							"name": "row_header",
@@ -229,7 +234,7 @@
 							"role": "row-header",
 							"from": {"data": "row_domain"},
 							"sort": {
-								"field": [`datum[\"${vlSpec.encoding.row.field}\"]`, "datum[\"modelcheck_group\"]"], 
+								"field": ["datum[\"modelcheck_group\"]", `datum[\"${vlSpec.encoding.row.field}\"]`], 
 								"order": ["ascending", "ascending"] 
 							},
 							"title": {
@@ -247,7 +252,7 @@
 									"scale": "y",
 									"orient": "left",
 									"grid": false,
-									"title": vlSpec.encoding.y.field != "modelcheck_group" ? vlSpec.encoding.y.field : "",
+									"title": vlSpec.encoding.y.field,
 									"labelOverlap": true,
 									"tickCount": {"signal": "ceil(child_height / 30)"},
 									"zindex": 0
@@ -282,7 +287,7 @@
 									"scale": "x",
 									"orient": "bottom",
 									"grid": false,
-									"title": vlSpec.encoding.x.field != "modelcheck_group" ? vlSpec.encoding.x.field : "",
+									"title": vlSpec.encoding.x.field,
 									"labelFlush": true,
 									"labelOverlap": true,
 									"tickCount": {"signal": "ceil(child_width / 30)"},
@@ -298,7 +303,253 @@
 								"facet": {
 									"name": "facet",
 									"data": "data_0",
-									"groupby": [vlSpec.encoding.row.field, "modelcheck_group", vlSpec.encoding.column.field],
+									"groupby": ["modelcheck_group", vlSpec.encoding.row.field, vlSpec.encoding.column.field],
+									"aggregate": {"cross": true}
+								}
+							},
+							"sort": {
+								"field": ["datum[\"modelcheck_group\"]", `datum[\"${vlSpec.encoding.row.field}\"]`, `datum[\"${vlSpec.encoding.column.field}\"]`],
+								"order": ["ascending", "ascending", "ascending"]
+							},
+							"encode": {
+								"update": {
+									"width": {"signal": "child_width"},
+									"height": {"signal": "child_height"}
+								}
+							},
+							"signals": [
+								{"name": "shape", "value": "circle"},
+								{"name": chartType == "stripx" ? "x_step" : "y_step", "value": 20},
+          						{"name": "width", "update": chartType == "stripx" ? "bandspace(domain('x').length, 1, 0.5) * x_step" : "bandspace(domain('y').length, 1, 0.5) * y_step"}
+							],
+							"marks": [
+								{
+									"name": "child_marks",
+									"type": chartType == "scatterplot" ? "symbol" : "rect",
+									"style": chartType == "scatterplot" ? ["circle"] : ["tick"],
+									"from": {"data": "facet"},
+									"encode": {
+										"update": originalEncoding // plug in compiled encoding for primary axes
+									}
+								}
+							],
+							"axes": [
+								{
+									"scale": "x",
+									"orient": "bottom",
+									"gridScale": "y",
+									"grid": true,
+									"tickCount": {"signal": "ceil(child_width / 30)"},
+									"domain": false,
+									"labels": false,
+									"aria": false,
+									"maxExtent": 0,
+									"minExtent": 0,
+									"ticks": false,
+									"zindex": 0
+								},
+								{
+									"scale": "y",
+									"orient": "left",
+									"gridScale": "x",
+									"grid": true,
+									"tickCount": {"signal": "ceil(child_height / 30)"},
+									"domain": false,
+									"labels": false,
+									"aria": false,
+									"maxExtent": 0,
+									"minExtent": 0,
+									"ticks": false,
+									"zindex": 0
+								}
+							]
+						}
+					],
+					"scales": originalScales, // plug in original scales to keep vegaLite settings
+					"legends": [
+						{
+							"stroke": "color",
+							"symbolType": "circle",
+							"title": "Model group",
+							"encode": {
+								"symbols": {
+									"update": {
+										"fill": {
+											"value": "transparent"
+										},
+										"opacity": {
+											"value": 0.7
+										}
+									}
+								}
+							}
+						}
+					]
+				}
+			} else {
+				// else, facet on x
+				// fill in standardized template based on vlSpec
+				vgSpec = {
+					"$schema": "https://vega.github.io/schema/vega/v5.json",
+					"background": "white",
+					"padding": 5,
+					"data": [
+						{
+							"name": "table",
+							"transform": [
+								{
+									"type": "filter",
+									"expr": "datum.draw == sample"
+								}
+							],
+							"values": [] // will be filled by Svelte-Vega
+						},
+						{
+							"name": "data_0",
+							"source": "table",
+							"transform": [
+								{
+								"type": "filter",
+								"expr": `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+								}
+							]
+						},
+						{
+							"name": "column_domain",
+							"source": "data_0",
+							"transform": [{"type": "aggregate", "groupby": ["modelcheck_group", vlSpec.encoding.column.field]}]
+						},
+						{
+							"name": "row_domain",
+							"source": "data_0",
+							"transform": [{"type": "aggregate", "groupby": [vlSpec.encoding.row.field]}]
+						}
+					],
+					"signals": [
+						// {"name": "child_width", "value": 200},
+						// {"name": "child_height", "value": 200},
+						{"name": "child_width", "update": `max(${minSize}, min((${horzSpace} - 60 - ${interChartPad} * length(data('column_domain'))) / (length(data('column_domain')) + 2), ${defaultSize}))`},
+						{"name": "child_height", "update": `max(${minSize}, min((${vertSpace} - 60 - ${interChartPad} * length(data('row_domain'))) / length(data('row_domain')), ${defaultSize}))`},
+						{
+							"name": "sample",
+							"value": 1,
+							"on": [
+								{
+									"events": "timer{500}",
+									"update": "((sample + 1) % 5) + 1"
+								}
+							]
+						}
+					],
+					"layout": {
+						"padding": interChartPad,
+						"offset": {"rowTitle": 10, "columnTitle": 10},
+						"columns": {"signal": "length(data('column_domain'))"},
+						"bounds": "full",
+						"align": "all"
+					},
+					"marks": [
+						{
+							"name": "row-title",
+							"type": "group",
+							"role": "row-title",
+							"title": {
+								"text": vlSpec.encoding.row.field,
+								"orient": "left",
+								"style": "guide-title",
+								"offset": 10
+							}
+						},
+						{
+							"name": "column-title",
+							"type": "group",
+							"role": "column-title",
+							"title": {
+								"text": vlSpec.encoding.column.field,
+								"orient": "left",
+								"style": "guide-title",
+								"offset": 10
+							}
+						},
+						{
+							"name": "row_header",
+							"type": "group",
+							"role": "row-header",
+							"from": {"data": "row_domain"},
+							"sort": {"field": `datum[\"${vlSpec.encoding.row.field}\"]`, "order": "ascending"},
+							"title": {
+								"text": {
+									"signal": `isValid(parent[\"${vlSpec.encoding.row.field}\"]) ? parent[\"${vlSpec.encoding.row.field}\"] : \"\"+parent[\"${vlSpec.encoding.row.field}\"]`
+								},
+								"orient": "left",
+								"style": "guide-label",
+								"frame": "group",
+								"offset": 10
+							},
+							"encode": {"update": {"height": {"signal": "child_height"}}},
+							"axes": [
+								{
+									"scale": "y",
+									"orient": "left",
+									"grid": false,
+									"title": vlSpec.encoding.y.field,
+									"labelOverlap": true,
+									"tickCount": {"signal": "ceil(child_height / 30)"},
+									"zindex": 0
+								}
+							]
+						},
+						{
+							"name": "column_header",
+							"type": "group",
+							"role": "column-header",
+							"from": {"data": "column_domain"},
+							"sort": {
+								"field": ["datum[\"modelcheck_group\"]", `datum[\"${vlSpec.encoding.column.field}\"]`], 
+								"order": ["ascending", "ascending"]
+							},
+							"title": {
+								"text": {
+									"signal": `isValid(parent[\"${vlSpec.encoding.column.field}\"]) ? parent[\"${vlSpec.encoding.column.field}\"] : \"\"+parent[\"${vlSpec.encoding.column.field}\"]`
+								},
+								"style": "guide-label",
+								"frame": "group",
+								"offset": 10
+							},
+							"encode": {"update": {"width": {"signal": "child_width"}}}
+						},
+						{
+							"name": "column_footer",
+							"type": "group",
+							"role": "column-footer",
+							"from": {"data": "column_domain"},
+							"sort": {
+								"field": ["datum[\"modelcheck_group\"]", `datum[\"${vlSpec.encoding.column.field}\"]`], 
+								"order": ["ascending", "ascending"]
+							},
+							"encode": {"update": {"width": {"signal": "child_width"}}},
+							"axes": [
+								{
+									"scale": "x",
+									"orient": "bottom",
+									"grid": false,
+									"title": vlSpec.encoding.x.field,
+									"labelFlush": true,
+									"labelOverlap": true,
+									"tickCount": {"signal": "ceil(child_width / 30)"},
+									"zindex": 0
+								}
+							]
+						},
+						{
+							"name": "cell",
+							"type": "group",
+							"style": "cell",
+							"from": {
+								"facet": {
+									"name": "facet",
+									"data": "data_0",
+									"groupby": ["modelcheck_group", vlSpec.encoding.column.field, vlSpec.encoding.row.field],
 									"aggregate": {"cross": true}
 								}
 							},
@@ -365,248 +616,7 @@
 						{
 							"stroke": "color",
 							"symbolType": "circle",
-							"title": "modelcheck_group",
-							"encode": {
-								"symbols": {
-									"update": {
-										"fill": {
-											"value": "transparent"
-										},
-										"opacity": {
-											"value": 0.7
-										}
-									}
-								}
-							}
-						}
-					]
-				}
-			} else {
-				// else, facet on x
-				// fill in standardized template based on vlSpec
-				vgSpec = {
-					"$schema": "https://vega.github.io/schema/vega/v5.json",
-					"background": "white",
-					"padding": 5,
-					"data": [
-						{
-							"name": "table",
-							"transform": [
-								{
-									"type": "filter",
-									"expr": "datum.draw == sample"
-								}
-							],
-							"values": [] // will be filled by Svelte-Vega
-						},
-						{
-							"name": "data_0",
-							"source": "table",
-							"transform": [
-								{
-								"type": "filter",
-								"expr": `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-								}
-							]
-						},
-						{
-							"name": "column_domain",
-							"source": "data_0",
-							"transform": [{"type": "aggregate", "groupby": [vlSpec.encoding.column.field, "modelcheck_group"]}]
-						},
-						{
-							"name": "row_domain",
-							"source": "data_0",
-							"transform": [{"type": "aggregate", "groupby": [vlSpec.encoding.row.field]}]
-						}
-					],
-					"signals": [
-						// {"name": "child_width", "value": 200},
-						// {"name": "child_height", "value": 200},
-						{"name": "child_width", "update": `max(${minSize}, min((${horzSpace} - 60 - ${interChartPad} * length(data('column_domain'))) / (length(data('column_domain')) + 2), ${defaultSize}))`},
-						{"name": "child_height", "update": `max(${minSize}, min((${vertSpace} - 60 - ${interChartPad} * length(data('row_domain'))) / length(data('row_domain')), ${defaultSize}))`},
-						{
-							"name": "sample",
-							"value": 1,
-							"on": [
-								{
-									"events": "timer{500}",
-									"update": "((sample + 1) % 5) + 1"
-								}
-							]
-						}
-					],
-					"layout": {
-						"padding": interChartPad,
-						"offset": {"rowTitle": 10, "columnTitle": 10},
-						"columns": {"signal": "length(data('column_domain'))"},
-						"bounds": "full",
-						"align": "all"
-					},
-					"marks": [
-						{
-							"name": "row-title",
-							"type": "group",
-							"role": "row-title",
-							"title": {
-								"text": vlSpec.encoding.row.field,
-								"orient": "left",
-								"style": "guide-title",
-								"offset": 10
-							}
-						},
-						{
-							"name": "column-title",
-							"type": "group",
-							"role": "column-title",
-							"title": {"text": "origin", "style": "guide-title", "offset": 10}
-						},
-						{
-							"name": "row_header",
-							"type": "group",
-							"role": "row-header",
-							"from": {"data": "row_domain"},
-							"sort": {"field": `datum[\"${vlSpec.encoding.row.field}\"]`, "order": "ascending"},
-							"title": {
-								"text": {
-									"signal": `isValid(parent[\"${vlSpec.encoding.row.field}\"]) ? parent[\"${vlSpec.encoding.row.field}\"] : \"\"+parent[\"${vlSpec.encoding.row.field}\"]`
-								},
-								"orient": "left",
-								"style": "guide-label",
-								"frame": "group",
-								"offset": 10
-							},
-							"encode": {"update": {"height": {"signal": "child_height"}}},
-							"axes": [
-								{
-									"scale": "y",
-									"orient": "left",
-									"grid": false,
-									"title": vlSpec.encoding.y.field != "modelcheck_group" ? vlSpec.encoding.y.field : "",
-									"labelOverlap": true,
-									"tickCount": {"signal": "ceil(child_height / 30)"},
-									"zindex": 0
-								}
-							]
-						},
-						{
-							"name": "column_header",
-							"type": "group",
-							"role": "column-header",
-							"from": {"data": "column_domain"},
-							"sort": {
-								"field": [`datum[\"${vlSpec.encoding.column.field}\"]`, "datum[\"modelcheck_group\"]"], 
-								"order": ["ascending", "ascending"]
-							},
-							"title": {
-								"text": {
-									"signal": `isValid(parent[\"${vlSpec.encoding.column.field}\"]) ? parent[\"${vlSpec.encoding.column.field}\"] : \"\"+parent[\"${vlSpec.encoding.column.field}\"]`
-								},
-								"style": "guide-label",
-								"frame": "group",
-								"offset": 10
-							},
-							"encode": {"update": {"width": {"signal": "child_width"}}}
-						},
-						{
-							"name": "column_footer",
-							"type": "group",
-							"role": "column-footer",
-							"from": {"data": "column_domain"},
-							"sort": {
-								"field": [`datum[\"${vlSpec.encoding.column.field}\"]`, "datum[\"modelcheck_group\"]"], 
-								"order": ["ascending", "ascending"]
-							},
-							"encode": {"update": {"width": {"signal": "child_width"}}},
-							"axes": [
-								{
-									"scale": "x",
-									"orient": "bottom",
-									"grid": false,
-									"title": vlSpec.encoding.x.field != "modelcheck_group" ? vlSpec.encoding.x.field : "",
-									"labelFlush": true,
-									"labelOverlap": true,
-									"tickCount": {"signal": "ceil(child_width / 30)"},
-									"zindex": 0
-								}
-							]
-						},
-						{
-							"name": "cell",
-							"type": "group",
-							"style": "cell",
-							"from": {
-								"facet": {
-									"name": "facet",
-									"data": "data_0",
-									"groupby": [vlSpec.encoding.column.field, "modelcheck_group", vlSpec.encoding.row.field],
-									"aggregate": {"cross": true}
-								}
-							},
-							"sort": {
-								"field": [`datum[\"${vlSpec.encoding.column.field}\"]`, "modelcheck_group", `datum[\"${vlSpec.encoding.row.field}\"]`],
-								"order": ["ascending", "ascending", "ascending"]
-							},
-							"encode": {
-								"update": {
-									"width": {"signal": "child_width"},
-									"height": {"signal": "child_height"}
-								}
-							},
-							"signals": [
-								{"name": "shape", "value": "circle"},
-								{"name": chartType == "stripx" ? "x_step" : "y_step", "value": 20},
-          						{"name": "width", "update": chartType == "stripx" ? "bandspace(domain('x').length, 1, 0.5) * x_step" : "bandspace(domain('y').length, 1, 0.5) * y_step"}
-							],
-							"marks": [
-								{
-									"name": "child_marks",
-									"type": chartType == "scatterplot" ? "symbol" : "rect",
-									"style": chartType == "scatterplot" ? ["circle"] : ["tick"],
-									"from": {"data": "facet"},
-									"encode": {
-										"update": originalEncoding // plug in compiled encoding for primary axes
-									}
-								}
-							],
-							"axes": [
-								{
-									"scale": "x",
-									"orient": "bottom",
-									"gridScale": "y",
-									"grid": true,
-									"tickCount": {"signal": "ceil(child_width / 30)"},
-									"domain": false,
-									"labels": false,
-									"aria": false,
-									"maxExtent": 0,
-									"minExtent": 0,
-									"ticks": false,
-									"zindex": 0
-								},
-								{
-									"scale": "y",
-									"orient": "left",
-									"gridScale": "x",
-									"grid": true,
-									"tickCount": {"signal": "ceil(child_height / 30)"},
-									"domain": false,
-									"labels": false,
-									"aria": false,
-									"maxExtent": 0,
-									"minExtent": 0,
-									"ticks": false,
-									"zindex": 0
-								}
-							]
-						}
-					],
-					"scales": originalScales, // plug in original scales to keep vegaLite settings
-					"legends": [
-						{
-							"stroke": "color",
-							"symbolType": "circle",
-							"title": "modelcheck_group",
+							"title": "Model group",
 							"encode": {
 								"symbols": {
 									"update": {
@@ -671,7 +681,7 @@
 						{
 							"name": "row_domain",
 							"source": "data_0",
-							"transform": [{"type": "aggregate", "groupby": [vlSpec.encoding.row.field, "modelcheck_group"]}]
+							"transform": [{"type": "aggregate", "groupby": ["modelcheck_group", vlSpec.encoding.row.field]}]
 						}
 					],
 					"signals": [
@@ -719,8 +729,8 @@
 								"data": "row_domain"
 							},
 							"sort": {
-								"field": `datum[\"${vlSpec.encoding.row.field}\"]`,
-								"order": "ascending"
+								"field": ["datum[\"modelcheck_group\"]", `datum[\"${vlSpec.encoding.row.field}\"]`],
+								"order": ["ascending", "ascending"]
 							},
 							"title": {
 								"text": {
@@ -743,7 +753,7 @@
 									"scale": "y",
 									"orient": "left",
 									"grid": false,
-									"title": vlSpec.encoding.y.field != "modelcheck_group" ? vlSpec.encoding.y.field : "",
+									"title": vlSpec.encoding.y.field,
 									"labelOverlap": true,
 									"tickCount": {
 										"signal": "ceil(child_height / 30)"
@@ -762,7 +772,7 @@
 									"scale": "x",
 									"orient": "bottom",
 									"grid": false,
-									"title": vlSpec.encoding.x.field != "modelcheck_group" ? vlSpec.encoding.x.field : "",
+									"title": vlSpec.encoding.x.field,
 									"offset": -5,
 									"labelFlush": true,
 									"labelOverlap": true,
@@ -777,9 +787,13 @@
 								"facet": {
 									"data": "data_0",
 									"name": "facet",
-									"groupby": [vlSpec.encoding.row.field, "modelcheck_group"],
+									"groupby": ["modelcheck_group", vlSpec.encoding.row.field],
 									"aggregate": {"cross": true}
 								}
+							},
+							"sort": {
+								"field": ["datum[\"modelcheck_group\"]", `datum[\"${vlSpec.encoding.row.field}\"]`],
+								"order": ["ascending", "ascending"]
 							},
 							"encode": {
 								"update": {
@@ -846,7 +860,7 @@
 						{
 							"stroke": "color",
 							"symbolType": "circle",
-							"title": "modelcheck_group",
+							"title": "Model group",
 							"encode": {
 								"symbols": {
 									"update": {
@@ -970,7 +984,7 @@
 									"scale": "y",
 									"orient": "left",
 									"grid": false,
-									"title": vlSpec.encoding.y.field != "modelcheck_group" ? vlSpec.encoding.y.field : "",
+									"title": vlSpec.encoding.y.field,
 									"labelOverlap": true,
 									"tickCount": {
 										"signal": "ceil(child_height / 30)"
@@ -990,7 +1004,7 @@
 									"scale": "x",
 									"orient": "bottom",
 									"grid": false,
-									"title": vlSpec.encoding.x.field != "modelcheck_group" ? vlSpec.encoding.x.field : "",
+									"title": vlSpec.encoding.x.field,
 									"offset": -5,
 									"labelFlush": true,
 									"labelOverlap": true,
@@ -1005,7 +1019,7 @@
 								"facet": {
 									"data": "data_0",
 									"name": "facet",
-									"groupby": [vlSpec.encoding.row.field,"modelcheck_group"],
+									"groupby": ["modelcheck_group", vlSpec.encoding.row.field],
 									"aggregate": {"cross": true}
 								}
 							},
@@ -1074,7 +1088,7 @@
 						{
 							"stroke": "color",
 							"symbolType": "circle",
-							"title": "modelcheck_group",
+							"title": "Model group",
 							"encode": {
 								"symbols": {
 									"update": {
@@ -1154,9 +1168,7 @@
 							"transform": [
 								{
 									"type": "aggregate",
-									"groupby": [
-										"modelcheck_group"
-									]
+									"groupby": ["modelcheck_group"]
 								}
 							]
 						}
@@ -1221,7 +1233,7 @@
 									"scale": "y",
 									"orient": "left",
 									"grid": false,
-									"title": vlSpec.encoding.y.field != "modelcheck_group" ? vlSpec.encoding.y.field : "",
+									"title": vlSpec.encoding.y.field,
 									"labelOverlap": true,
 									"tickCount": {
 										"signal": "ceil(child_height / 30)"
@@ -1277,7 +1289,7 @@
 									"scale": "x",
 									"orient": "bottom",
 									"grid": false,
-									"title": vlSpec.encoding.x.field != "modelcheck_group" ? vlSpec.encoding.x.field : "",
+									"title": vlSpec.encoding.x.field,
 									"offset": -5,
 									"labelFlush": true,
 									"labelOverlap": true,
@@ -1295,10 +1307,7 @@
 								"facet": {
 									"data": "data_0",
 									"name": "facet",
-									"groupby": [
-										"modelcheck_group",
-										vlSpec.encoding.column.field
-									],
+									"groupby": ["modelcheck_group", vlSpec.encoding.column.field],
 									"aggregate": {
 										"cross": true
 									}
@@ -1377,7 +1386,7 @@
 						{
 							"stroke": "color",
 							"symbolType": "circle",
-							"title": "modelcheck_group",
+							"title": "Model group",
 							"encode": {
 								"symbols": {
 									"update": {
@@ -1429,7 +1438,7 @@
 						{
 							"name": "column_domain",
 							"source": "data_0",
-							"transform": [{"type": "aggregate", "groupby": [vlSpec.encoding.column.field, "modelcheck_group"//, "column_season_sort_index" // season hack
+							"transform": [{"type": "aggregate", "groupby": ["modelcheck_group", vlSpec.encoding.column.field//, "column_season_sort_index" // season hack
 							]}]
 						}
 					],
@@ -1480,7 +1489,7 @@
 									"scale": "y",
 									"orient": "left",
 									"grid": false,
-									"title": vlSpec.encoding.y.field != "modelcheck_group" ? vlSpec.encoding.y.field : "",
+									"title": vlSpec.encoding.y.field,
 									"labelOverlap": true,
 									"tickCount": {
 										"signal": "ceil(child_height / 30)"
@@ -1501,8 +1510,8 @@
 							// 	"order": "ascending"
 							// },
 							"sort": {
-								"field": `datum[\"${vlSpec.encoding.column.field}\"]`,
-								"order": "ascending"
+								"field": ["datum[\"modelcheck_group\"]", `datum[\"${vlSpec.encoding.column.field}\"]`],
+								"order": ["ascending", "ascending"]
 							},
 							"title": {
 								"text": {
@@ -1538,7 +1547,7 @@
 									"scale": "x",
 									"orient": "bottom",
 									"grid": false,
-									"title": vlSpec.encoding.x.field != "modelcheck_group" ? vlSpec.encoding.x.field : "",
+									"title": vlSpec.encoding.x.field,
 									"offset": -5,
 									"labelFlush": true,
 									"labelOverlap": true,
@@ -1553,7 +1562,7 @@
 								"facet": {
 									"data": "data_0",
 									"name": "facet",
-									"groupby": [vlSpec.encoding.column.field, "modelcheck_group"],
+									"groupby": ["modelcheck_group", vlSpec.encoding.column.field],
 									"aggregate": {"cross": true}
 								}
 							},
@@ -1622,7 +1631,7 @@
 						{
 							"stroke": "color",
 							"symbolType": "circle",
-							"title": "modelcheck_group",
+							"title": "Model group",
 							"encode": {
 								"symbols": {
 									"update": {
@@ -1730,8 +1739,10 @@
 							"name": "row_header",
 							"type": "group",
 							"role": "row-header",
-							"from": {
-								"data": "model_domain"
+							"from": {"data": "model_domain"},
+							"sort": {
+								"field": ["datum[\"modelcheck_group\"]"],
+								"order": ["ascending"]
 							},
 							"encode": {
 								"update": {
@@ -1739,20 +1750,7 @@
 										"signal": "child_height"
 									}
 								}
-							},
-							"axes": [
-								{
-									"scale": "y",
-									"orient": "left",
-									"grid": false,
-									"title": vlSpec.encoding.y.field != "modelcheck_group" ? vlSpec.encoding.y.field : "",
-									"labelOverlap": true,
-									"tickCount": {
-										"signal": "ceil(child_height / 30)"
-									},
-									"zindex": 1
-								}
-							]
+							}
 						},
 						{
 							"name": "column_footer",
@@ -1770,7 +1768,7 @@
 									"scale": "x",
 									"orient": "bottom",
 									"grid": false,
-									"title": vlSpec.encoding.x.field != "modelcheck_group" ? vlSpec.encoding.x.field : "",
+									"title": vlSpec.encoding.x.field,
 									"offset": -5,
 									"labelFlush": true,
 									"labelOverlap": true,
@@ -1856,6 +1854,17 @@
 									"minExtent": 0,
 									"ticks": false,
 									"zindex": 0
+								},
+								{
+									"scale": "y",
+									"orient": "left",
+									"grid": false,
+									"title": vlSpec.encoding.y.field,
+									"labelOverlap": true,
+									"tickCount": {
+										"signal": "ceil(child_height / 30)"
+									},
+									"zindex": 1
 								}
 							]
 						}
@@ -1865,7 +1874,7 @@
 						{
 							"stroke": "color",
 							"symbolType": "circle",
-							"title": "modelcheck_group",
+							"title": "Model group",
 							"encode": {
 								"symbols": {
 									"update": {
@@ -1930,7 +1939,7 @@
 						}
 					],
 					"layout": {
-						"padding": interChartPad,
+						"padding": interChartPad * 3,
 						"offset": {
 							"rowTitle": 10
 						},
@@ -1955,7 +1964,7 @@
 									"scale": "y",
 									"orient": "left",
 									"grid": false,
-									"title": vlSpec.encoding.y.field != "modelcheck_group" ? vlSpec.encoding.y.field : "",
+									"title": vlSpec.encoding.y.field,
 									"labelOverlap": true,
 									"tickCount": {
 										"signal": "ceil(child_height / 30)"
@@ -1975,7 +1984,7 @@
 									"scale": "x",
 									"orient": "bottom",
 									"grid": false,
-									"title": vlSpec.encoding.x.field != "modelcheck_group" ? vlSpec.encoding.x.field : "",
+									"title": vlSpec.encoding.x.field,
 									"offset": -5,
 									"labelFlush": true,
 									"labelOverlap": true,
@@ -2059,7 +2068,7 @@
 						{
 							"stroke": "color",
 							"symbolType": "circle",
-							"title": "modelcheck_group",
+							"title": "Model group",
 							"encode": {
 								"symbols": {
 									"update": {
