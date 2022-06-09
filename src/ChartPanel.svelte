@@ -18,7 +18,7 @@
 	let chartCanvas = document.getElementById("chart-canvas"),
 		horzSpace = chartCanvas.offsetWidth,
 		vertSpace = chartCanvas.offsetHeight;
-	console.log("canvas", horzSpace, vertSpace);
+	// console.log("canvas", horzSpace, vertSpace);
 	// set default size
 	let defaultSize = 200,
 		minSize = 50,
@@ -36,8 +36,8 @@
 		// (elem) => elem.startsWith("normal|") || elem.startsWith("res|") // TODO: make this work for non-normal families
 		elem => modelNameRegex.test(elem)
 	);
-	console.log("modelcheck groups in the chart data", distinctModelGroups);
-	console.log("model to show?", haveModelToShow);
+	// console.log("modelcheck groups in the chart data", distinctModelGroups);
+	// console.log("model to show?", haveModelToShow);
 	let minX = Infinity,
 		maxX = Number.NEGATIVE_INFINITY,
 		minY = Infinity,
@@ -78,8 +78,8 @@
 
 		// vlSpec.encoding.<x or y>.scale.range = [<min of outcome>, <max of outcome>]
 
-		console.log(Object.keys(dataset));
-		console.log(dataset.table.length);
+		// console.log(Object.keys(dataset));
+		// console.log(dataset.table.length);
 
 		dataset.table.forEach((e) => {
 			// console.log(e[vlSpec.encoding.x]);
@@ -100,7 +100,7 @@
 				}
 			}
 		});
-		console.log("hardcoded domain to prevent rescaling with hops", minX, minY, maxX, maxY);
+		// console.log("hardcoded domain to prevent rescaling with hops", minX, minY, maxX, maxY);
 		// vlSpec.encoding.<x or y>.scale.range = [<min of outcome>, <max of outcome>]
 		if (typeof vlSpec.encoding.x != "undefined" && vlSpec.encoding.x.type == "quantitative") {
 			vlSpec.encoding.x.scale = vlSpec.encoding.x.scale
@@ -142,7 +142,7 @@
 			if (yIdx != -1) {
 				originalScales[yIdx].range = [{ signal: "child_height" }, 0];
 			}
-			console.log("scales", originalScales);
+			// console.log("scales", originalScales);
 			if (vlSpec.encoding.x && vlSpec.encoding.x.field == outcomeName) {
 				// when outcome is on x, facet on y
 				// fill in standardized template based on vlSpec
@@ -645,7 +645,7 @@
 			if (yIdx != -1) {
 				originalScales[yIdx].range = [{ signal: "child_height" }, 0];
 			}
-			console.log("scales", originalScales);
+			// console.log("scales", originalScales);
 			if (vlSpec.encoding.x && vlSpec.encoding.x.field == outcomeName) {
 				// when outcome is on x, facet on y
 				// fill in standardized template based on vlSpec
@@ -1113,7 +1113,7 @@
 			if (yIdx != -1) {
 				originalScales[yIdx].range = [{ signal: "child_height" }, 0];
 			}
-			console.log("scales", originalScales);
+			// console.log("scales", originalScales);
 			if (vlSpec.encoding.x && vlSpec.encoding.x.field == outcomeName) {
 				// if outcome on x, facet on y
 				// fill in standardized template based on vlSpec
@@ -1655,7 +1655,7 @@
 			if (yIdx != -1) {
 				originalScales[yIdx].range = [{ signal: "child_height" }, 0];
 			}
-			console.log("scales", originalScales);
+			// console.log("scales", originalScales);
 			if (vlSpec.encoding.x && vlSpec.encoding.x.field == outcomeName) {
 				// if outcome on x, facet on y
 				// fill in standardized template based on vlSpec
