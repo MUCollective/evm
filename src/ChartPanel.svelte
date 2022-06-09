@@ -22,7 +22,7 @@
 	// set default size
 	let defaultSize = 200,
 		minSize = 50,
-		interChartPad = 5,
+		interChartPad = 15,
 		chartType = "scatterplot"; // default
 
 	// process input data, looking for signs that we have a model to show
@@ -183,9 +183,7 @@
 						}
 					],
 					"signals": [
-						// {"name": "child_width", "value": 200},
-						// {"name": "child_height", "value": 200},
-						{"name": "child_width", "update": `max(${minSize}, min((${horzSpace} - 60 - ${interChartPad} * length(data('column_domain'))) / length(data('column_domain')), ${defaultSize}))`},
+						{"name": "child_width", "update": `max(${minSize}, min((${horzSpace} - 40 - ${interChartPad} * length(data('column_domain'))) / length(data('column_domain')), ${defaultSize}))`},
 						{"name": "child_height", "update": `max(${minSize}, min((${vertSpace} - 60 - ${interChartPad} * length(data('row_domain'))) / (length(data('row_domain')) + 2), ${defaultSize}))`},
 						{
 							"name": "sample",
@@ -426,9 +424,7 @@
 						}
 					],
 					"signals": [
-						// {"name": "child_width", "value": 200},
-						// {"name": "child_height", "value": 200},
-						{"name": "child_width", "update": `max(${minSize}, min((${horzSpace} - 60 - ${interChartPad} * length(data('column_domain'))) / (length(data('column_domain')) + 2), ${defaultSize}))`},
+						{"name": "child_width", "update": `max(${minSize}, min((${horzSpace} - 40 - ${interChartPad} * length(data('column_domain'))) / (length(data('column_domain')) + 2), ${defaultSize}))`},
 						{"name": "child_height", "update": `max(${minSize}, min((${vertSpace} - 60 - ${interChartPad} * length(data('row_domain'))) / length(data('row_domain')), ${defaultSize}))`},
 						{
 							"name": "sample",
@@ -685,8 +681,6 @@
 						}
 					],
 					"signals": [
-						// {"name": "child_width", "value": 200},
-						// {"name": "child_height", "value": 200},
 						{"name": "child_width", "value": defaultSize},
 						{"name": "child_height", "update": `max(${minSize}, min((${vertSpace} - 60 - ${interChartPad} * length(data('row_domain'))) / (length(data('row_domain')) + 2), ${defaultSize}))`},
 						{
@@ -916,9 +910,7 @@
 						}
 					],
 					"signals": [
-						// {"name": "child_width", "value": 200},
-						// {"name": "child_height", "value": 200},
-						{"name": "child_width", "update": `max(${minSize}, min((${horzSpace} - 40 - ${interChartPad} * length(data('column_domain'))) / length(data('column_domain')), ${defaultSize}))`},
+						{"name": "child_width", "update": `max(${minSize}, min((${horzSpace} - 40 - ${interChartPad} * length(data('column_domain'))) / (length(data('column_domain')) + 2), ${defaultSize}))`},
 						{"name": "child_height", "update": `max(${minSize}, min((${vertSpace} - 60 - ${interChartPad} * length(data('row_domain'))) / length(data('row_domain')), ${defaultSize}))`},
 						{
 							"name": "sample",
@@ -1174,14 +1166,8 @@
 						}
 					],
 					"signals": [
-						{
-							"name": "child_width",
-							"value": 200
-						},
-						{
-							"name": "child_height",
-							"value": 200
-						},
+						{"name": "child_width", "update": `max(${minSize}, min((${horzSpace} - 40 - ${interChartPad} * length(data('column_domain'))) / length(data('column_domain')), ${defaultSize}))`},
+						{"name": "child_height", "update": `max(${minSize}, min((${vertSpace} - 60 - ${interChartPad} * length(data('row_domain'))) / (length(data('row_domain')) + 2), ${defaultSize}))`},
 						{
 							"name": "sample",
 							"value": 1,
@@ -1443,8 +1429,6 @@
 						}
 					],
 					"signals": [
-						// {"name": "child_width", "value": 200},
-						// {"name": "child_height", "value": 200},
 						{"name": "child_width", "update": `max(${minSize}, min((${horzSpace} - 40 - ${interChartPad} * length(data('column_domain'))) / (length(data('column_domain')) + 2), ${defaultSize}))`},
 						{"name": "child_height", "value": defaultSize},
 						{
@@ -1541,6 +1525,10 @@
 							// 	"field": "datum[\"column_season_sort_index\"]",
 							// 	"order": "ascending"
 							// },
+							"sort": {
+								"field": ["datum[\"modelcheck_group\"]", `datum[\"${vlSpec.encoding.column.field}\"]`],
+								"order": ["ascending", "ascending"]
+							},
 							"encode": {"update": {"width": {"signal": "child_width"}}},
 							"axes": [
 								{
@@ -1565,6 +1553,10 @@
 									"groupby": ["modelcheck_group", vlSpec.encoding.column.field],
 									"aggregate": {"cross": true}
 								}
+							},
+							"sort": {
+								"field": ["datum[\"modelcheck_group\"]", `datum[\"${vlSpec.encoding.column.field}\"]`],
+								"order": ["ascending", "ascending"]
 							},
 							"encode": {
 								"update": {
@@ -1706,14 +1698,8 @@
 						}
 					],
 					"signals": [
-						{
-							"name": "child_width",
-							"value": 200
-						},
-						{
-							"name": "child_height",
-							"value": 200
-						},
+						{"name": "child_width", "value": defaultSize},
+						{"name": "child_height", "update": `max(${minSize}, min((${vertSpace} - 60 - ${interChartPad} * length(data('row_domain'))) / (length(data('row_domain')) + 2), ${defaultSize}))`},
 						{
 							"name": "sample",
 							"value": 1,
@@ -1925,8 +1911,8 @@
 						}
 					],
 					"signals": [
-						{"name": "child_width", "value": 200},
-						{"name": "child_height", "value": 200},
+						{"name": "child_width", "update": `max(${minSize}, min((${horzSpace} - 40 - ${interChartPad} * length(data('column_domain'))) / (length(data('column_domain')) + 2), ${defaultSize}))`},
+						{"name": "child_height", "value": defaultSize},
 						{
 							"name": "sample",
 							"value": 1,
@@ -1939,7 +1925,7 @@
 						}
 					],
 					"layout": {
-						"padding": interChartPad * 3,
+						"padding": interChartPad,
 						"offset": {
 							"rowTitle": 10
 						},
@@ -2089,6 +2075,36 @@
 			
 		}
 
+	} else {
+		// when no model check to show, edit default chart dimensions to keep defaults consistent
+		vgSpec.padding = 5;
+		if (vgSpec.signals) {
+			let areColumns = vgSpec.data.filter((d) => d.name == "column_domain").length > 0,
+				areRows = vgSpec.data.filter((d) => d.name == "row_domain").length > 0,
+				isStripX = vgSpec.signals.filter((d) => d.name == "x_step").length > 0,
+				isStripY = vgSpec.signals.filter((d) => d.name == "y_step").length > 0,
+				childWidthIdx = vgSpec.signals.findIndex((d) => d.name == "child_width"),
+				childHeightIdx = vgSpec.signals.findIndex((d) => d.name == "child_height");
+			if (areColumns && isStripX) {
+				vgSpec.signals[childWidthIdx] = {"name": "child_width", "update": "bandspace(domain('x').length, 1, 0.5) * x_step"};
+			} else if (areColumns) {
+				vgSpec.signals[childWidthIdx] = {"name": "child_width", "update": `max(${minSize}, min((${horzSpace} - 40 - ${interChartPad} * length(data('column_domain'))) / (length(data('column_domain')) + 2), ${defaultSize}))`};
+			}
+			if (areRows && isStripY) {
+				vgSpec.signals[childHeightIdx] = {"name": "child_height", "update": "bandspace(domain('y').length, 1, 0.5) * y_step"};
+			} else if (areRows) {
+				vgSpec.signals[childHeightIdx] = {"name": "child_height", "update": `max(${minSize}, min((${vertSpace} - 60 - ${interChartPad} * length(data('row_domain'))) / (length(data('row_domain')) + 2), ${defaultSize}))`};
+			}
+		}
+		if (vgSpec.layout) {
+			vgSpec.layout.padding = interChartPad;
+		}
+		if (vgSpec.width) {
+			vgSpec.width = 200;
+		}
+		if (vgSpec.height) {
+			vgSpec.height = 200;
+		}
 	}
 	console.log("use vgSpec", vgSpec);
 
