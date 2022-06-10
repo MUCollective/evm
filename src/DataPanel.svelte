@@ -13,11 +13,11 @@
     // export let getVariableTransform;
     
 
-    function removeShadow() {
-        Object.keys(dndState[0].items).forEach((d, i) => {
-            console.log(d);
-        });
-    }
+    // function removeShadow() {
+    //     Object.keys(dndState[0].items).forEach((d, i) => {
+    //         console.log(d);
+    //     });
+    // }
 </script>
 
 <!-- data panel -->

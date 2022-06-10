@@ -43,7 +43,7 @@
 	export let outcomeName: string;
 
 	let prevSpec: VisualizationSpec = vlSpec;
-	console.log("PREV prevSpec", prevSpec);
+	let displayHeight;
 
 	$: specChanged = 0;
 	$: showLoadingIcon = false;
@@ -61,7 +61,7 @@
 		// data = await d3.csv("./data/forestfires.csv");
 		// data = await d3.json("./data/modelcheck.json"); // season hack
 		// data = await d3.json("./data/misspec.json");
-		// console.log("loaded data", data);
+		console.log("loaded data", data);
 		dataChanged = data;
 		dataChanged = [...dataChanged];
 		// populate dropzone items with variable names from data
@@ -74,6 +74,7 @@
 				outcome: false,
 			});
 		});
+		displayHeight = window.innerHeight * 2 / 3;
 		mounted = true;
 		originalDndState = deepCopy(dndState);
 	});
@@ -104,29 +105,29 @@
 	function handleDndConsider(shelfId: any, e: any) {
 		const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
 		dndState[shelfIdx].items = e.detail.items;
-		console.log("in consider");
-		console.log(dndState);
-		console.log(dndState[shelfIdx]);
+		// console.log("in consider");
+		// console.log(dndState);
+		// console.log(dndState[shelfIdx]);
 	}
 
 	function handleDndFinalize(shelfId: any, e: any) {
-		console.log("finalize");
-		console.log("shelfId", shelfId);
-		console.log("e", e);
+		// console.log("finalize");
+		// console.log("shelfId", shelfId);
+		// console.log("e", e);
 		if (e.srcElement.id == "variables") {
 			dndState[0].items.forEach((d) => {
 				if (typeof d.isDndShadowItem != "undefined") {
-					console.log("shadow item");
+					// console.log("shadow item");
 					delete d.isDndShadowItem;
 				}
 			});
 		}
-		console.log(dndState, "after change");
+		// console.log(dndState, "after change");
 		if (e.srcElement.id != "variables") {
 			const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
-			console.log("handle dnd finalize");
-			console.log("dndState[shelfIdx].items");
-			console.log(dndState[shelfIdx].items);
+			// console.log("handle dnd finalize");
+			// console.log("dndState[shelfIdx].items");
+			// console.log(dndState[shelfIdx].items);
 			var varName = e.detail.items[0].name;
 			if (
 				dndState[shelfIdx].items[dndState[shelfIdx].items.length - 1]
@@ -145,8 +146,8 @@
 				var varType,
 					varValues = data.map((row) => row[varName]),
 					varUnique = [...new Set(varValues)];
-				console.log(varName);
-				console.log("varUnique", varUnique);
+				// console.log(varName);
+				// console.log("varUnique", varUnique);
 				if (typeof varUnique[0] == "number" && varUnique.length > 9) {
 					varType = "quantitative";
 				} else if (typeof varUnique[0] == "number") {
@@ -176,7 +177,7 @@
 			determineChartType(vlSpec, varName);
 			vlSpec = { ...vlSpec };
 			specChanged++;
-			console.log("vlspec:", vlSpec);
+			// console.log("vlspec:", vlSpec);
 		}
 	}
 
@@ -195,6 +196,7 @@
 				vlSpec.mark = { type: "tick", orient: "horizontal" };
 			} else if ((vlSpec.encoding.x.type == "nominal" || vlSpec.encoding.x.type == "ordinal") && (vlSpec.encoding.y.type == "nominal" || vlSpec.encoding.y.type == "ordinal")) {
 				// case 2d histogram
+				// TODO: make this a heatmap
 				vlSpec.mark = { type: "circle" };
 				vlSpec.encoding.size = { field: varName, aggregate: "count" };
 			}
@@ -392,7 +394,7 @@
 				// update data
 				let temp = values[0];
 				filters = [...temp];
-				console.log("filters after add filter", filters);
+				// console.log("filters after add filter", filters);
 			})
 			.then(() => {
 				// reconcile state changes
@@ -422,7 +424,7 @@
 			.then((values) => {
 				filterTemp = values[0];
 				filters = [...filterTemp];
-				console.log("filters after remove filter", filters);
+				// console.log("filters after remove filter", filters);
 			})
 			.then(() => {
 				// reconcile state changes
@@ -487,7 +489,7 @@
 	}
 
 	function addTransform(transVar, transform) {
-		console.log("adding transformation")
+		// console.log("adding transformation")
 		transformations.push({
 			variable: transVar,
 			transformation: transform,
@@ -498,7 +500,7 @@
 				// update data
 				let temp = values[0];
 				transformations = [...temp];
-				console.log("transformations after add tranform", transformations);
+				// console.log("transformations after add tranform", transformations);
 			})
 			.then(() => {
 				// reconcile state changes
@@ -528,7 +530,7 @@
 			.then((values) => {
 				transTemp = values[0];
 				transformations = [...transTemp];
-				console.log("transformations after remove transform", transformations);
+				// console.log("transformations after remove transform", transformations);
 			})
 			.then(() => {
 				// reconcile state changes
@@ -540,7 +542,7 @@
 	}
 
 	function formatVariable(varName, transform) {
-		console.log("format var", varName, transform);
+		// console.log("format var", varName, transform);
 		let c = (varName == outcomeName) ? "outcome" : "variable";
 		if (transform == "none") {
 			return `<span class=${c}>${varName}</span>`;
@@ -572,7 +574,7 @@
 			.then((values) => {
 				tempData = values[0];
 				dataChanged = [...tempData];
-				console.log("data after reset to original", dataChanged);
+				// console.log("data after reset to original", dataChanged);
 				// do we still need to filter, transform, or model?
 				let finished = filters.length == 0 && transformations.length == 0 && models.length == 0; 
 				if (finished) {
@@ -598,7 +600,7 @@
 							);
 						});
 						dataChanged = [...d];
-						console.log("data after applying filters", dataChanged);
+						// console.log("data after applying filters", dataChanged);
 						// do we still need to transform or model?
 						let finished = transformations.length == 0 && models.length == 0; 
 						if (finished) {
@@ -624,7 +626,7 @@
 							);
 						});
 						dataChanged = [...d];
-						console.log("data after applying transformations", dataChanged);
+						// console.log("data after applying transformations", dataChanged);
 						// do we still need to model?
 						let finished = models.length == 0; 
 						if (finished) {
@@ -639,7 +641,7 @@
 			.then((d) => {
 				// apply models
 				if (models.length != 0) {
-					console.log("rerunning models to reconcile state changes");
+					// console.log("rerunning models to reconcile state changes");
 					// get outcome name
 					outcomeName = models[0].name.substring(models[0].name.indexOf("|") + 1, models[0].name.indexOf("~")).trim();
 					// call server to run models
@@ -651,8 +653,8 @@
 							return fetchData(response);
 						})
 						.then(function (modelData) {
-							console.log("this should be a the data with model predictions");
-							console.log(modelData);
+							// console.log("this should be a the data with model predictions");
+							// console.log(modelData);
 							// modelData = modelData.filter((row) => row.draw === 1);
 							dataModelOutput = [...modelData];
 							// update dataChanged
@@ -682,9 +684,9 @@
 
 	// call main event handler for modeling
 	async function callModelcheck(data, outcomeName, calcResiduals = true) {
-		console.log("calling server");
-		console.log("models", models);
-		console.log("data", data);
+		// console.log("calling server");
+		// console.log("models", models);
+		// console.log("data", data);
 
 		showLoadingIcon = true; // do this for individual operations? NO, TOO MUCH LAG IN FEEDBACK
 
@@ -712,7 +714,7 @@
 	// }
 	// families that have no scale submodel should be NULL for sigma_spec
 	async function addModel(newModel) {
-		console.log("adding model");
+		// console.log("adding model");
 		showPredictionOrResidual = "prediction";
 		
 		// add the model to our queue
@@ -781,17 +783,17 @@
 			// revert to data only
 			dataChanged = removeModelOutputs();
 			dataChanged = [...dataChanged];
-			console.log(dataChanged);
+			// console.log(dataChanged);
 			// update spec
 			delete vlSpec.encoding.color;
-			delete vlSpec.encoding.xOffset;
-			delete vlSpec.encoding.yOffset;
+			// delete vlSpec.encoding.xOffset;
+			// delete vlSpec.encoding.yOffset;
 			vlSpec = { ...vlSpec };
 			specChanged++;
 			return;
 		} else {
 			// remove selected model
-			console.log("models object", models);
+			// console.log("models object", models);
 			var removedModel = models[index];
 			if (index != 0) {
 				modelTemp = models
@@ -807,17 +809,17 @@
 				// update global models queue
 				[modelTemp, removedModel] = values;
 				models = [...modelTemp];
-				console.log("models after promise", models);
-				console.log("removed model", removedModel);
+				// console.log("models after promise", models);
+				// console.log("removed model", removedModel);
 				return removedModel;
 			})
 			.then(function (removedModel) {
-				console.log("deleting models");
+				// console.log("deleting models");
 				dataChanged = dataChanged.filter(
 					(row) => !(row.modelcheck_group == removedModel.name || row.modelcheck_group == ("res| " + removedModel.name))
 				);
 				dataChanged = [...dataChanged];
-				console.log("after remove model data", dataChanged);
+				// console.log("after remove model data", dataChanged);
 
 				specChanged++;
 			})
@@ -839,7 +841,7 @@
 				// update data
 				let temp = values[0];
 				dataChanged = [...temp];
-				console.log("data after show residuals filter", dataChanged);
+				// console.log("data after show residuals filter", dataChanged);
 				// update chart
 				showLoadingIcon = false;
 				specChanged++;
@@ -863,7 +865,7 @@
 				// update data
 				let temp = values[0];
 				dataChanged = [...temp];
-				console.log("data after hide residuals filter", dataChanged);
+				// console.log("data after hide residuals filter", dataChanged);
 				// update chart
 				showLoadingIcon = false;
 				specChanged++;
@@ -1165,7 +1167,7 @@
 						{formatVariable}
 					/>
 				</Column>
-				<Column style="width: 100%;" id="chart-canvas">
+				<Column style="width: 100%; height: {displayHeight}px" id="chart-canvas">
 					{#if modeling}
 						<label>
 							<input

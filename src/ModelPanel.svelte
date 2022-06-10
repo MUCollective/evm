@@ -44,7 +44,7 @@
                     // interaction term
                     description = description + "the interaction of "
                     let interactionTerms = terms[i].split("*");
-                    console.log(interactionTerms);
+                    // console.log(interactionTerms);
                     for (let j = 0; j < interactionTerms.length; j++) {
                         description = description + formatVariable(interactionTerms[j], getVariableTransform(interactionTerms[j]));
                         if (j == interactionTerms.length - 2) {
