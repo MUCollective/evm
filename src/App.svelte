@@ -43,7 +43,7 @@
 	export let outcomeName: string;
 
 	let prevSpec: VisualizationSpec = vlSpec;
-	// console.log("PREV prevSpec", prevSpec);
+	let displayHeight;
 
 	$: specChanged = 0;
 	$: showLoadingIcon = false;
@@ -74,6 +74,7 @@
 				outcome: false,
 			});
 		});
+		displayHeight = window.innerHeight * 2 / 3;
 		mounted = true;
 		originalDndState = deepCopy(dndState);
 	});
@@ -195,6 +196,7 @@
 				vlSpec.mark = { type: "tick", orient: "horizontal" };
 			} else if ((vlSpec.encoding.x.type == "nominal" || vlSpec.encoding.x.type == "ordinal") && (vlSpec.encoding.y.type == "nominal" || vlSpec.encoding.y.type == "ordinal")) {
 				// case 2d histogram
+				// TODO: make this a heatmap
 				vlSpec.mark = { type: "circle" };
 				vlSpec.encoding.size = { field: varName, aggregate: "count" };
 			}
@@ -1165,7 +1167,7 @@
 						{formatVariable}
 					/>
 				</Column>
-				<Column style="width: 100%;" id="chart-canvas">
+				<Column style="width: 100%; height: {displayHeight}px" id="chart-canvas">
 					{#if modeling}
 						<label>
 							<input
