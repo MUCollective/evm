@@ -197,8 +197,11 @@
 			} else if ((vlSpec.encoding.x.type == "nominal" || vlSpec.encoding.x.type == "ordinal") && (vlSpec.encoding.y.type == "nominal" || vlSpec.encoding.y.type == "ordinal")) {
 				// case 2d histogram
 				// TODO: make this a heatmap
-				vlSpec.mark = { type: "circle" };
-				vlSpec.encoding.size = { field: varName, aggregate: "count" };
+				// vlSpec.mark = { type: "circle" };
+				// vlSpec.encoding.size = { field: varName, aggregate: "count" };
+				vlSpec.mark = { type: "rect" };
+				vlSpec.encoding.color = { field: varName, aggregate: "count", "scale": { "range": ["#00ffff", "#1F77B4"] }};
+				vlSpec.config = { axis: { grid: true, tickBand: "extent" }};
 			}
 			if (!modeling) {
 				// assume y-axis variable is outcome
@@ -210,6 +213,7 @@
 				// case bars along x-axis
 				vlSpec.mark = { type: "bar", orient: "vertical" };
 				vlSpec.encoding.y = { field: varName, aggregate: "count" };
+				vlSpec.config = { axis: { grid: true, tickBand: "extent" }};
 				if (!modeling) {
 					// assume x-axis variable is outcome
 					outcomeName = vlSpec.encoding.x.field
@@ -218,6 +222,7 @@
 				// case bars along y-axis
 				vlSpec.mark = { type: "bar", orient: "horizontal" };
 				vlSpec.encoding.x = { field: varName, aggregate: "count" };
+				vlSpec.config = { axis: { grid: true, tickBand: "extent" }};
 				if (!modeling) {
 					// assume y-axis variable is outcome
 					outcomeName = vlSpec.encoding.y.field
@@ -243,10 +248,10 @@
 			vlSpec.mark = "tick";
 			delete vlSpec.encoding.x;
 			delete vlSpec.encoding.y;
-			delete vlSpec.encoding.size;
 			delete vlSpec.encoding.color;
 			delete vlSpec.encoding.row;
 			delete vlSpec.encoding.column;
+			delete vlSpec.config;
 		}
 	}
 

@@ -1,11 +1,14 @@
+# Exploratory Visual Modeling (EVM)
 
+This is the codebase for the interface presented in Chapter 6 of my disseration. 
+You can find the corresponding github repo at https://github.com/MUCollective/exploratory_modeling
 
 ## Get started
 
 Install the dependencies...
 
 ```bash
-cd exploratory_modeling
+cd interface
 npm install
 sh scripts/semverFix.sh
 ```
@@ -99,5 +102,5 @@ This is (presumably) due to async error while loading Comparator component of Se
 
 Or, simply run the following script at the `exploratory_modeling` directory
 ```
-exploratory_modeling > sh scripts/semverFix.sh
+interface > sh scripts/semverFix.sh
 ```

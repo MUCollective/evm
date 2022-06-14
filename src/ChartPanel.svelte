@@ -19,11 +19,16 @@
 		horzSpace = chartCanvas.offsetWidth,
 		vertSpace = chartCanvas.offsetHeight;
 	// console.log("canvas", horzSpace, vertSpace);
-	// set default size
+
+	// set default chart appearance
 	let defaultSize = 200,
 		minSize = 20,
 		interChartPad = 10,
 		stripSize = 15,
+		minX = Infinity,
+		maxX = Number.NEGATIVE_INFINITY,
+		minY = Infinity,
+		maxY = Number.NEGATIVE_INFINITY,
 		chartType = "scatterplot"; // default
 
 	// process input data, looking for signs that we have a model to show
@@ -34,22 +39,14 @@
 	}
 	let modelNameRegex = /^.+\|/,
 		haveModelToShow = distinctModelGroups.some(
-		// (elem) => elem.startsWith("normal|") || elem.startsWith("res|") // TODO: make this work for non-normal families
 		elem => modelNameRegex.test(elem)
 	);
-	// console.log("modelcheck groups in the chart data", distinctModelGroups);
-	// console.log("model to show?", haveModelToShow);
-
-	let minX = Infinity,
-		maxX = Number.NEGATIVE_INFINITY,
-		minY = Infinity,
-		maxY = Number.NEGATIVE_INFINITY;
 
 	// infer chart type
 	getChartType();
 	$: vlSpec, getChartType();
 
-	// color and facet for modelcheck
+	// add color scale to vega-lite spec for modelcheck
 	if (modeling && haveModelToShow) {
 		// add "data" if needed (to maintain consistent colors for model predictions vs residuals)
 		if (!distinctModelGroups.includes("data")) {
@@ -69,53 +66,14 @@
 			: { domain: null };
 		vlSpec.encoding.color.scale.domain = distinctModelGroups;
 
-		// vlSpec.encoding.<x or y>.scale.range = [<min of outcome>, <max of outcome>]
-
-		// console.log(Object.keys(dataset));
-		// console.log(dataset.table.length);
-
-		dataset.table.forEach((e) => {
-			// console.log(e[vlSpec.encoding.x]);
-			if (typeof vlSpec.encoding.x != "undefined") {
-				if (e[vlSpec.encoding.x.field] < minX) {
-					minX = e[vlSpec.encoding.x.field];
-				}
-				if (e[vlSpec.encoding.x.field] > maxX) {
-					maxX = e[vlSpec.encoding.x.field];
-				}
-			}
-			if (typeof vlSpec.encoding.y != "undefined") {
-				if (e[vlSpec.encoding.y.field] < minY) {
-					minY = e[vlSpec.encoding.y.field];
-				}
-				if (e[vlSpec.encoding.y.field] > maxY) {
-					maxY = e[vlSpec.encoding.y.field];
-				}
-			}
-		});
-		// console.log("hardcoded domain to prevent rescaling with hops", minX, minY, maxX, maxY);
-		// vlSpec.encoding.<x or y>.scale.range = [<min of outcome>, <max of outcome>]
-		if (typeof vlSpec.encoding.x != "undefined" && vlSpec.encoding.x.type == "quantitative") {
-			vlSpec.encoding.x.scale = vlSpec.encoding.x.scale
-				? vlSpec.encoding.x.scale
-				: { domain: null };
-			vlSpec.encoding.x.scale.domain = [minX, maxX];
-		}
-		if (typeof vlSpec.encoding.y != "undefined" && vlSpec.encoding.y.type == "quantitative") {
-			vlSpec.encoding.y.scale = vlSpec.encoding.y.scale
-				? vlSpec.encoding.y.scale
-				: { domain: null };
-			vlSpec.encoding.y.scale.domain = [minY, maxY];
-		}
-
 		vlSpec = { ...vlSpec };
 	}
-
 	console.log("vega-lite spec", vlSpec);
 
-	// convert vega-lite spec to vega to add modelchecks
+	// convert vega-lite spec to vega to add model checks
 	let vgSpec = vegaLite.compile(vlSpec).spec;
 	console.log("compiled vega spec", vgSpec);
+
 	if (modeling && haveModelToShow) {
 		// // faceting for scatterplots
 		// if (vlSpec.mark.type == "circle") {
@@ -137,9 +95,11 @@
 				yIdx = originalScales.findIndex((elem) => elem.name == "y");
 			if (xIdx != -1) {
 				originalScales[xIdx].range = [0, { signal: "child_width" }];
+				originalScales[xIdx].domain = { data: "data_0", fields: [{ signal: "x_domain" }] };
 			}
 			if (yIdx != -1) {
 				originalScales[yIdx].range = [{ signal: "child_height" }, 0];
+				originalScales[yIdx].domain = { data: "data_0", fields: [{ signal: "y_domain" }] };
 			}
 			// console.log("scales", originalScales);
 			if (vlSpec.encoding.x && vlSpec.encoding.x.field == outcomeName) {
@@ -190,6 +150,18 @@
 							"update": chartType == "stripy_uni"
 								? `${minSize}`
 								: `max(${minSize}, min((${vertSpace} - 40 - ${interChartPad} * length(data('row_domain'))) / (length(data('row_domain')) + 2), ${defaultSize}))`
+						},
+						{
+							"name": "x_domain", 
+							"update": chartType == "stripx" || chartType == "barx" || chartType == "heatmap" 
+								? `sequence(${minX}, ${maxX + 1})`
+								: `[${minX}, ${maxX}]`
+						},
+    					{
+							"name": "y_domain", 
+							"update": chartType == "stripy" || chartType == "bary" || chartType == "heatmap" 
+								? `sequence(${minY}, ${maxY + 1})`
+								: `[${minY}, ${maxY}]`
 						},
 						{
 							"name": "sample",
@@ -294,6 +266,12 @@
 									"orient": "bottom",
 									"grid": false,
 									"title": vlSpec.encoding.x.field,
+									"labelAlign": (chartType == "stripx" || chartType == "barx" || chartType == "heatmap") 
+										? "right"
+										: "center",
+      								"labelAngle": (chartType == "stripx" || chartType == "barx" || chartType == "heatmap") 
+										? 270
+										: 0,
 									"labelFlush": true,
 									"labelOverlap": true,
 									"tickCount": {"signal": "ceil(child_width / 30)"},
@@ -400,14 +378,16 @@
 					"legends": [
 						{
 							"stroke": "color",
-							"symbolType": "circle",
+							"fill": "color",
+							"symbolType": chartType.startsWith("strip") 
+								? "stroke"
+								: chartType.startsWith("bar")
+									? "square"
+									: "circle",
 							"title": "Model group",
 							"encode": {
 								"symbols": {
 									"update": {
-										"fill": {
-											"value": "transparent"
-										},
 										"opacity": {
 											"value": 0.7
 										}
@@ -466,6 +446,18 @@
 								: `max(${minSize}, min((${horzSpace} - 40 - ${interChartPad} * length(data('column_domain'))) / (length(data('column_domain')) + 2), ${defaultSize}))`
 						},
 						{"name": "child_height", "update": `max(${minSize}, min((${vertSpace} - 40 - ${interChartPad} * length(data('row_domain'))) / length(data('row_domain')), ${defaultSize}))`},
+						{
+							"name": "x_domain", 
+							"update": chartType == "stripx" || chartType == "barx" || chartType == "heatmap" 
+								? `sequence(${minX}, ${maxX + 1})`
+								: `[${minX}, ${maxX}]`
+						},
+    					{
+							"name": "y_domain", 
+							"update": chartType == "stripy" || chartType == "bary" || chartType == "heatmap" 
+								? `sequence(${minY}, ${maxY + 1})`
+								: `[${minY}, ${maxY}]`
+						},
 						{
 							"name": "sample",
 							"value": 1,
@@ -572,6 +564,12 @@
 										"orient": "bottom",
 										"grid": false,
 										"title": vlSpec.encoding.x.field,
+										"labelAlign": (chartType == "stripx" || chartType == "barx" || chartType == "heatmap") 
+											? "right"
+											: "center",
+										"labelAngle": (chartType == "stripx" || chartType == "barx" || chartType == "heatmap") 
+											? 270
+											: 0,
 										"labelFlush": true,
 										"labelOverlap": true,
 										"tickCount": {"signal": "ceil(child_width / 30)"},
@@ -678,14 +676,16 @@
 					"legends": [
 						{
 							"stroke": "color",
-							"symbolType": "circle",
+							"fill": "color",
+							"symbolType": chartType.startsWith("strip") 
+								? "stroke"
+								: chartType.startsWith("bar")
+									? "square"
+									: "circle",
 							"title": "Model group",
 							"encode": {
 								"symbols": {
 									"update": {
-										"fill": {
-											"value": "transparent"
-										},
 										"opacity": {
 											"value": 0.7
 										}
@@ -714,9 +714,11 @@
 				yIdx = originalScales.findIndex((elem) => elem.name == "y");
 			if (xIdx != -1) {
 				originalScales[xIdx].range = [0, { signal: "child_width" }];
+				originalScales[xIdx].domain = { data: "data_0", fields: [{ signal: "x_domain" }] };
 			}
 			if (yIdx != -1) {
 				originalScales[yIdx].range = [{ signal: "child_height" }, 0];
+				originalScales[yIdx].domain = { data: "data_0", fields: [{ signal: "y_domain" }] };
 			}
 			// console.log("scales", originalScales);
 			if (vlSpec.encoding.x && vlSpec.encoding.x.field == outcomeName) {
@@ -762,6 +764,18 @@
 							"update": chartType == "stripy_uni" 
 								? `${minSize}`
 								: `max(${minSize}, min((${vertSpace} - 40 - ${interChartPad} * length(data('row_domain'))) / (length(data('row_domain')) + 2), ${defaultSize}))`
+						},
+						{
+							"name": "x_domain", 
+							"update": chartType == "stripx" || chartType == "barx" || chartType == "heatmap" 
+								? `sequence(${minX}, ${maxX + 1})`
+								: `[${minX}, ${maxX}]`
+						},
+    					{
+							"name": "y_domain", 
+							"update": chartType == "stripy" || chartType == "bary" || chartType == "heatmap" 
+								? `sequence(${minY}, ${maxY + 1})`
+								: `[${minY}, ${maxY}]`
 						},
 						{
 							"name": "sample",
@@ -849,7 +863,12 @@
 									"orient": "bottom",
 									"grid": false,
 									"title": vlSpec.encoding.x.field,
-									"offset": -5,
+									"labelAlign": (chartType == "stripx" || chartType == "barx" || chartType == "heatmap") 
+										? "right"
+										: "center",
+      								"labelAngle": (chartType == "stripx" || chartType == "barx" || chartType == "heatmap") 
+										? 270
+										: 0,
 									"labelFlush": true,
 									"labelOverlap": true,
 									"tickCount": {"signal": "ceil(child_width / 30)"},
@@ -962,14 +981,16 @@
 					"legends": [
 						{
 							"stroke": "color",
-							"symbolType": "circle",
+							"fill": "color",
+							"symbolType": chartType.startsWith("strip") 
+								? "stroke"
+								: chartType.startsWith("bar")
+									? "square"
+									: "circle",
 							"title": "Model group",
 							"encode": {
 								"symbols": {
 									"update": {
-										"fill": {
-											"value": "transparent"
-										},
 										"opacity": {
 											"value": 0.7
 										}
@@ -1028,6 +1049,18 @@
 								: `max(${minSize}, min((${horzSpace} - 40 - ${interChartPad} * length(data('column_domain'))) / (length(data('column_domain')) + 2), ${defaultSize}))`
 						},
 						{"name": "child_height", "update": `max(${minSize}, min((${vertSpace} - 40 - ${interChartPad} * length(data('row_domain'))) / length(data('row_domain')), ${defaultSize}))`},
+						{
+							"name": "x_domain", 
+							"update": chartType == "stripx" || chartType == "barx" || chartType == "heatmap" 
+								? `sequence(${minX}, ${maxX + 1})`
+								: `[${minX}, ${maxX}]`
+						},
+    					{
+							"name": "y_domain", 
+							"update": chartType == "stripy" || chartType == "bary" || chartType == "heatmap" 
+								? `sequence(${minY}, ${maxY + 1})`
+								: `[${minY}, ${maxY}]`
+						},
 						{
 							"name": "sample",
 							"value": 1,
@@ -1115,7 +1148,12 @@
 										"orient": "bottom",
 										"grid": false,
 										"title": vlSpec.encoding.x.field,
-										"offset": -5,
+										"labelAlign": (chartType == "stripx" || chartType == "barx" || chartType == "heatmap") 
+											? "right"
+											: "center",
+										"labelAngle": (chartType == "stripx" || chartType == "barx" || chartType == "heatmap") 
+											? 270
+											: 0,
 										"labelFlush": true,
 										"labelOverlap": true,
 										"tickCount": {"signal": "ceil(child_width / 30)"},
@@ -1224,14 +1262,16 @@
 					"legends": [
 						{
 							"stroke": "color",
-							"symbolType": "circle",
+							"fill": "color",
+							"symbolType": chartType.startsWith("strip") 
+								? "stroke"
+								: chartType.startsWith("bar")
+									? "square"
+									: "circle",
 							"title": "Model group",
 							"encode": {
 								"symbols": {
 									"update": {
-										"fill": {
-											"value": "transparent"
-										},
 										"opacity": {
 											"value": 0.7
 										}
@@ -1260,9 +1300,11 @@
 				yIdx = originalScales.findIndex((elem) => elem.name == "y");
 			if (xIdx != -1) {
 				originalScales[xIdx].range = [0, { signal: "child_width" }];
+				originalScales[xIdx].domain = { data: "data_0", fields: [{ signal: "x_domain" }] };
 			}
 			if (yIdx != -1) {
 				originalScales[yIdx].range = [{ signal: "child_height" }, 0];
+				originalScales[yIdx].domain = { data: "data_0", fields: [{ signal: "y_domain" }] };
 			}
 			// console.log("scales", originalScales);
 			if (vlSpec.encoding.x && vlSpec.encoding.x.field == outcomeName) {
@@ -1323,6 +1365,18 @@
 							"update": chartType == "stripy_uni"
 								? `${minSize}`
 								: `max(${minSize}, min((${vertSpace} - 40 - ${interChartPad} * length(data('row_domain'))) / (length(data('row_domain')) + 2), ${defaultSize}))`
+						},
+						{
+							"name": "x_domain", 
+							"update": chartType == "stripx" || chartType == "barx" || chartType == "heatmap" 
+								? `sequence(${minX}, ${maxX + 1})`
+								: `[${minX}, ${maxX}]`
+						},
+    					{
+							"name": "y_domain", 
+							"update": chartType == "stripy" || chartType == "bary" || chartType == "heatmap" 
+								? `sequence(${minY}, ${maxY + 1})`
+								: `[${minY}, ${maxY}]`
 						},
 						{
 							"name": "sample",
@@ -1434,7 +1488,12 @@
 									"orient": "bottom",
 									"grid": false,
 									"title": vlSpec.encoding.x.field,
-									"offset": -5,
+									"labelAlign": (chartType == "stripx" || chartType == "barx" || chartType == "heatmap") 
+										? "right"
+										: "center",
+      								"labelAngle": (chartType == "stripx" || chartType == "barx" || chartType == "heatmap") 
+										? 270
+										: 0,
 									"labelFlush": true,
 									"labelOverlap": true,
 									"tickCount": {
@@ -1556,14 +1615,16 @@
 					"legends": [
 						{
 							"stroke": "color",
-							"symbolType": "circle",
+							"fill": "color",
+							"symbolType": chartType.startsWith("strip") 
+								? "stroke"
+								: chartType.startsWith("bar")
+									? "square"
+									: "circle",
 							"title": "Model group",
 							"encode": {
 								"symbols": {
 									"update": {
-										"fill": {
-											"value": "transparent"
-										},
 										"opacity": {
 											"value": 0.7
 										}
@@ -1623,6 +1684,18 @@
 								: `max(${minSize}, min((${horzSpace} - 40 - ${interChartPad} * length(data('column_domain'))) / (length(data('column_domain')) + 2), ${defaultSize}))`
 						},
 						{"name": "child_height", "value": defaultSize},
+						{
+							"name": "x_domain", 
+							"update": chartType == "stripx" || chartType == "barx" || chartType == "heatmap" 
+								? `sequence(${minX}, ${maxX + 1})`
+								: `[${minX}, ${maxX}]`
+						},
+    					{
+							"name": "y_domain", 
+							"update": chartType == "stripy" || chartType == "bary" || chartType == "heatmap" 
+								? `sequence(${minY}, ${maxY + 1})`
+								: `[${minY}, ${maxY}]`
+						},
 						{
 							"name": "sample",
 							"value": 1,
@@ -1730,7 +1803,12 @@
 										"orient": "bottom",
 										"grid": false,
 										"title": vlSpec.encoding.x.field,
-										"offset": -5,
+										"labelAlign": (chartType == "stripx" || chartType == "barx" || chartType == "heatmap") 
+											? "right"
+											: "center",
+										"labelAngle": (chartType == "stripx" || chartType == "barx" || chartType == "heatmap") 
+											? 270
+											: 0,
 										"labelFlush": true,
 										"labelOverlap": true,
 										"tickCount": {"signal": "ceil(child_width / 30)"},
@@ -1843,14 +1921,16 @@
 					"legends": [
 						{
 							"stroke": "color",
-							"symbolType": "circle",
+							"fill": "color",
+							"symbolType": chartType.startsWith("strip") 
+								? "stroke"
+								: chartType.startsWith("bar")
+									? "square"
+									: "circle",
 							"title": "Model group",
 							"encode": {
 								"symbols": {
 									"update": {
-										"fill": {
-											"value": "transparent"
-										},
 										"opacity": {
 											"value": 0.7
 										}
@@ -1878,9 +1958,11 @@
 				yIdx = originalScales.findIndex((elem) => elem.name == "y");
 			if (xIdx != -1) {
 				originalScales[xIdx].range = [0, { signal: "child_width" }];
+				originalScales[xIdx].domain = { data: "data_0", fields: [{ signal: "x_domain" }] };
 			}
 			if (yIdx != -1) {
 				originalScales[yIdx].range = [{ signal: "child_height" }, 0];
+				originalScales[yIdx].domain = { data: "data_0", fields: [{ signal: "y_domain" }] };
 			}
 			// console.log("scales", originalScales);
 			if (vlSpec.encoding.x && vlSpec.encoding.x.field == outcomeName) {
@@ -1935,6 +2017,18 @@
 								: `max(${minSize}, min((${vertSpace} - 40 - ${interChartPad} * length(data('row_domain'))) / (length(data('row_domain')) + 2), ${defaultSize}))`
 						},
 						{
+							"name": "x_domain", 
+							"update": chartType == "stripx" || chartType == "barx" || chartType == "heatmap" 
+								? `sequence(${minX}, ${maxX + 1})`
+								: `[${minX}, ${maxX}]`
+						},
+    					{
+							"name": "y_domain", 
+							"update": chartType == "stripy" || chartType == "bary" || chartType == "heatmap" 
+								? `sequence(${minY}, ${maxY + 1})`
+								: `[${minY}, ${maxY}]`
+						},
+						{
 							"name": "sample",
 							"value": 1,
 							"on": [
@@ -1977,7 +2071,12 @@
 									"orient": "bottom",
 									"grid": false,
 									"title": vlSpec.encoding.x.field,
-									"offset": -5,
+									"labelAlign": (chartType == "stripx" || chartType == "barx" || chartType == "heatmap") 
+										? "right"
+										: "center",
+      								"labelAngle": (chartType == "stripx" || chartType == "barx" || chartType == "heatmap") 
+										? 270
+										: 0,
 									"labelFlush": true,
 									"labelOverlap": true,
 									"tickCount": {
@@ -2108,14 +2207,16 @@
 					"legends": [
 						{
 							"stroke": "color",
-							"symbolType": "circle",
+							"fill": "color",
+							"symbolType": chartType.startsWith("strip") 
+								? "stroke"
+								: chartType.startsWith("bar")
+									? "square"
+									: "circle",
 							"title": "Model group",
 							"encode": {
 								"symbols": {
 									"update": {
-										"fill": {
-											"value": "transparent"
-										},
 										"opacity": {
 											"value": 0.7
 										}
@@ -2169,6 +2270,18 @@
 								: `max(${minSize}, min((${horzSpace} - 40 - ${interChartPad} * length(data('column_domain'))) / (length(data('column_domain')) + 2), ${defaultSize}))`
 						},
 						{"name": "child_height", "value": defaultSize},
+						{
+							"name": "x_domain", 
+							"update": chartType == "stripx" || chartType == "barx" || chartType == "heatmap" 
+								? `sequence(${minX}, ${maxX + 1})`
+								: `[${minX}, ${maxX}]`
+						},
+    					{
+							"name": "y_domain", 
+							"update": chartType == "stripy" || chartType == "bary" || chartType == "heatmap" 
+								? `sequence(${minY}, ${maxY + 1})`
+								: `[${minY}, ${maxY}]`
+						},
 						{
 							"name": "sample",
 							"value": 1,
@@ -2229,7 +2342,12 @@
 									"orient": "bottom",
 									"grid": false,
 									"title": vlSpec.encoding.x.field,
-									"offset": -5,
+									"labelAlign": (chartType == "stripx" || chartType == "barx" || chartType == "heatmap") 
+										? "right"
+										: "center",
+      								"labelAngle": (chartType == "stripx" || chartType == "barx" || chartType == "heatmap") 
+										? 270
+										: 0,
 									"labelFlush": true,
 									"labelOverlap": true,
 									"tickCount": {"signal": "ceil(child_width / 30)"},
@@ -2338,14 +2456,16 @@
 					"legends": [
 						{
 							"stroke": "color",
-							"symbolType": "circle",
+							"fill": "color",
+							"symbolType": chartType.startsWith("strip") 
+								? "stroke"
+								: chartType.startsWith("bar")
+									? "square"
+									: "circle",
 							"title": "Model group",
 							"encode": {
 								"symbols": {
 									"update": {
-										"fill": {
-											"value": "transparent"
-										},
 										"opacity": {
 											"value": 0.7
 										}
@@ -2361,27 +2481,42 @@
 
 	} else {
 		// when no model check to show, edit default chart dimensions to keep defaults consistent
-		vgSpec.padding = 5;
 		if (vgSpec.signals) {
+			// child width and height
 			let areColumns = vgSpec.data.filter((d) => d.name == "column_domain").length > 0,
 				areRows = vgSpec.data.filter((d) => d.name == "row_domain").length > 0,
 				childWidthIdx = vgSpec.signals.findIndex((d) => d.name == "child_width"),
 				childHeightIdx = vgSpec.signals.findIndex((d) => d.name == "child_height");
 			if (areColumns && chartType == "stripx") {
 				vgSpec.signals[childWidthIdx] = {"name": "child_width", "update": "bandspace(domain('x').length, 1, 0.5) * x_step"};
-			} else if (areColumns && chartType == "stripx_uni") {
-				// TODO: probably need hardcode signals at inner level of nested marks; not sure if this depends on columns only 
 			} else if (areColumns) {
 				vgSpec.signals[childWidthIdx] = {"name": "child_width", "update": `max(${minSize}, min((${horzSpace} - 40 - ${interChartPad} * length(data('column_domain'))) / (length(data('column_domain')) + 2), ${defaultSize}))`};
 			}
 			if (areRows && chartType == "stripy") {
 				vgSpec.signals[childHeightIdx] = {"name": "child_height", "update": "bandspace(domain('y').length, 1, 0.5) * y_step"};
+			} else if (areColumns && chartType == "stripx_uni") {
+				// TODO: probably need hardcode signals at inner level of nested marks; not sure if this depends on columns only 
 			} else if (areRows && chartType == "stripy_uni") {
 				// TODO: probably need hardcode signals at inner level of nested marks; not sure if this depends on rows only
 			} else if (areRows) {
 				vgSpec.signals[childHeightIdx] = {"name": "child_height", "update": `max(${minSize}, min((${vertSpace} - 40 - ${interChartPad} * length(data('row_domain'))) / (length(data('row_domain')) + 2), ${defaultSize}))`};
 			}
 		}
+		// // x/y domains
+		// vgSpec.signals.push({
+		// 	"name": "x_domain", 
+		// 	"update": chartType == "stripx" || chartType == "barx" || chartType == "heatmap" 
+		// 		? `sequence(${minX}, ${maxX + 1})`
+		// 		: `[${minX}, ${maxX}]`
+		// });
+		// vgSpec.signals.push({
+		// 	"name": "y_domain", 
+		// 	"update": chartType == "stripy" || chartType == "bary" || chartType == "heatmap" 
+		// 		? `sequence(${minY}, ${maxY + 1})`
+		// 		: `[${minY}, ${maxY}]`
+		// });
+		// other settings:
+		vgSpec.padding = 5;
 		if (vgSpec.layout) {
 			vgSpec.layout.padding = interChartPad;
 		}
@@ -2428,14 +2563,14 @@
 			} else if ((vlSpec.encoding.x.type == "nominal" || vlSpec.encoding.x.type == "ordinal") && (vlSpec.encoding.y.type == "nominal" || vlSpec.encoding.y.type == "ordinal")) {
 				chartType = "heatmap";
 				horzSpace = horzSpace / 1.5;
-			} //else "scatterplot"
+			} else if (vlSpec.encoding.x && (vlSpec.encoding.x.type == "nominal" || vlSpec.encoding.x.type == "ordinal") && vlSpec.encoding.y && vlSpec.encoding.y.aggregate) {
+				chartType = "barx";
+			} else if (vlSpec.encoding.y && (vlSpec.encoding.y.type == "nominal" || vlSpec.encoding.y.type == "ordinal") && vlSpec.encoding.x && vlSpec.encoding.x.aggregate) {
+				chartType = "bary";
+			} // else "scatterplot"
 		} else {
 			// univariate charts
-			if (vlSpec.encoding.x && (vlSpec.encoding.x.type == "nominal" || vlSpec.encoding.x.type == "ordinal")) {
-				chartType = "barx";
-			} else if (vlSpec.encoding.y && (vlSpec.encoding.y.type == "nominal" || vlSpec.encoding.y.type == "ordinal")) {
-				chartType = "bary";
-			} else if (vlSpec.encoding.y && vlSpec.encoding.y.type == "quantitative") {
+			if (vlSpec.encoding.y && vlSpec.encoding.y.type == "quantitative") {
 				chartType = "stripx_uni";
 				horzSpace = horzSpace / 4;
 			} else if (vlSpec.encoding.x && vlSpec.encoding.x.type == "quantitative") {
@@ -2446,6 +2581,94 @@
 		console.log("chart type", chartType);
 		console.log("stripSize", stripSize);
 		console.log("models", models);
+
+		updateDataDomain(); // needs to know chart type, and should be recomputed when chart type is determined
+	}
+
+	function updateDataDomain() {
+		// reset default values
+		minX = Infinity;
+		maxX = Number.NEGATIVE_INFINITY;
+		minY = Infinity;
+		maxY = Number.NEGATIVE_INFINITY;
+
+		// min/max from individual records
+		dataset.table.forEach((e) => {
+			if (chartType != "stripx_uni" && chartType != "bary") { 
+				// x variable exists, and is not an aggregate count
+				if (e[vlSpec.encoding.x.field] < minX) {
+					minX = e[vlSpec.encoding.x.field];
+				}
+				if (e[vlSpec.encoding.x.field] > maxX) {
+					maxX = e[vlSpec.encoding.x.field];
+				}
+			}
+			if (chartType != "stripy_uni" && chartType != "barx") { 
+				// y variable exists, and is not an aggregate count
+				if (e[vlSpec.encoding.y.field] < minY) {
+					minY = e[vlSpec.encoding.y.field];
+				}
+				if (e[vlSpec.encoding.y.field] > maxY) {
+					maxY = e[vlSpec.encoding.y.field];
+				}
+			}
+		});
+
+		// min/max from counts
+		if (chartType == "bary") { 
+			// compute max count to display on x axis; min = 0
+			minX = 0;
+			if (vlSpec.encoding.row && vlSpec.encoding.column) {
+				maxX = maxGroupCount([vlSpec.encoding.y.field, vlSpec.encoding.row.field, vlSpec.encoding.column.field]);
+			} else if (vlSpec.encoding.row) {
+				maxX = maxGroupCount([vlSpec.encoding.y.field, vlSpec.encoding.row.field]);
+			} else if (vlSpec.encoding.column) {
+				maxX = maxGroupCount([vlSpec.encoding.y.field, vlSpec.encoding.column.field]);
+			} else {
+				maxX = maxGroupCount([vlSpec.encoding.y.field]);
+			}
+		} else if (chartType == "barx") { 
+			// compute max count to display on y axis; min = 0
+			minY = 0;
+			if (vlSpec.encoding.row && vlSpec.encoding.column) {
+				maxY = maxGroupCount([vlSpec.encoding.x.field, vlSpec.encoding.row.field, vlSpec.encoding.column.field]);
+			} else if (vlSpec.encoding.row) {
+				maxY = maxGroupCount([vlSpec.encoding.x.field, vlSpec.encoding.row.field]);
+			} else if (vlSpec.encoding.column) {
+				maxY = maxGroupCount([vlSpec.encoding.x.field, vlSpec.encoding.column.field]);
+			} else {
+				maxY = maxGroupCount([vlSpec.encoding.x.field]);
+			}
+		} else if (chartType == "stripx_uni") { 
+			minX = 0; // placeholder values for non-existant scales
+			maxX = 0;
+		} else if (chartType == "stripy_uni") { 
+			minY = 0; // placeholder values for non-existant scales
+			maxY = 0;
+		}
+
+		console.log("x/y min/max", minX, maxX, minY, maxY);
+	}
+
+	function maxGroupCount(groupBySet) {
+		// get counts per group
+		let counts = dataset.table.reduce((r, row) => {
+			// id for variable set intersection for current row
+			let setId = "";
+			groupBySet.forEach((field) => {
+				setId += "_" + row[field];
+			})
+			// count how often we see this unique set
+			r[setId] = ++r[setId] || 1;
+
+			return r;
+		}, {});
+
+		// reformat JSON
+		let setCounts = Object.keys(counts).map((key) => ({ "setId": key, "count": counts[key] }));
+
+		// compute max count
+		return setCounts.reduce((acc, set) => acc = acc > set.count ? acc : set.count, 0);
 	}
 </script>
 
