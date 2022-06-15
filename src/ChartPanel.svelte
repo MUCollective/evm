@@ -27,8 +27,10 @@
 		stripSize = 15,
 		minX = Infinity,
 		maxX = Number.NEGATIVE_INFINITY,
+		uniqueX = [],
 		minY = Infinity,
 		maxY = Number.NEGATIVE_INFINITY,
+		uniqueY = [],
 		chartType = "scatterplot"; // default
 
 	// process input data, looking for signs that we have a model to show
@@ -154,13 +156,15 @@
 						{
 							"name": "x_domain", 
 							"update": chartType == "stripx" || chartType == "barx" || chartType == "heatmap" 
-								? `sequence(${minX}, ${maxX + 1})`
+								? `[${uniqueX}]`
+								// ? `sequence(${minX}, ${maxX + 1})`
 								: `[${minX}, ${maxX}]`
 						},
     					{
 							"name": "y_domain", 
 							"update": chartType == "stripy" || chartType == "bary" || chartType == "heatmap" 
-								? `sequence(${minY}, ${maxY + 1})`
+								? `[${uniqueY}]`
+								// ? `sequence(${minY}, ${maxY + 1})`
 								: `[${minY}, ${maxY}]`
 						},
 						{
@@ -449,13 +453,15 @@
 						{
 							"name": "x_domain", 
 							"update": chartType == "stripx" || chartType == "barx" || chartType == "heatmap" 
-								? `sequence(${minX}, ${maxX + 1})`
+								? `[${uniqueX}]`
+								// ? `sequence(${minX}, ${maxX + 1})`
 								: `[${minX}, ${maxX}]`
 						},
     					{
 							"name": "y_domain", 
 							"update": chartType == "stripy" || chartType == "bary" || chartType == "heatmap" 
-								? `sequence(${minY}, ${maxY + 1})`
+								? `[${uniqueY}]`
+								// ? `sequence(${minY}, ${maxY + 1})`
 								: `[${minY}, ${maxY}]`
 						},
 						{
@@ -768,13 +774,15 @@
 						{
 							"name": "x_domain", 
 							"update": chartType == "stripx" || chartType == "barx" || chartType == "heatmap" 
-								? `sequence(${minX}, ${maxX + 1})`
+								? `[${uniqueX}]`
+								// ? `sequence(${minX}, ${maxX + 1})`
 								: `[${minX}, ${maxX}]`
 						},
     					{
 							"name": "y_domain", 
 							"update": chartType == "stripy" || chartType == "bary" || chartType == "heatmap" 
-								? `sequence(${minY}, ${maxY + 1})`
+								? `[${uniqueY}]`
+								// ? `sequence(${minY}, ${maxY + 1})`
 								: `[${minY}, ${maxY}]`
 						},
 						{
@@ -1052,13 +1060,15 @@
 						{
 							"name": "x_domain", 
 							"update": chartType == "stripx" || chartType == "barx" || chartType == "heatmap" 
-								? `sequence(${minX}, ${maxX + 1})`
+								? `[${uniqueX}]`
+								// ? `sequence(${minX}, ${maxX + 1})`
 								: `[${minX}, ${maxX}]`
 						},
     					{
 							"name": "y_domain", 
 							"update": chartType == "stripy" || chartType == "bary" || chartType == "heatmap" 
-								? `sequence(${minY}, ${maxY + 1})`
+								? `[${uniqueY}]`
+								// ? `sequence(${minY}, ${maxY + 1})`
 								: `[${minY}, ${maxY}]`
 						},
 						{
@@ -1369,13 +1379,15 @@
 						{
 							"name": "x_domain", 
 							"update": chartType == "stripx" || chartType == "barx" || chartType == "heatmap" 
-								? `sequence(${minX}, ${maxX + 1})`
+								? `[${uniqueX}]`	
+								// ? `sequence(${minX}, ${maxX + 1})`
 								: `[${minX}, ${maxX}]`
 						},
     					{
 							"name": "y_domain", 
 							"update": chartType == "stripy" || chartType == "bary" || chartType == "heatmap" 
-								? `sequence(${minY}, ${maxY + 1})`
+								? `[${uniqueY}]`
+								// ? `sequence(${minY}, ${maxY + 1})`
 								: `[${minY}, ${maxY}]`
 						},
 						{
@@ -1687,13 +1699,15 @@
 						{
 							"name": "x_domain", 
 							"update": chartType == "stripx" || chartType == "barx" || chartType == "heatmap" 
-								? `sequence(${minX}, ${maxX + 1})`
+								? `[${uniqueX}]`
+								// ? `sequence(${minX}, ${maxX + 1})`
 								: `[${minX}, ${maxX}]`
 						},
     					{
 							"name": "y_domain", 
 							"update": chartType == "stripy" || chartType == "bary" || chartType == "heatmap" 
-								? `sequence(${minY}, ${maxY + 1})`
+								? `[${uniqueY}]`	
+								// ? `sequence(${minY}, ${maxY + 1})`
 								: `[${minY}, ${maxY}]`
 						},
 						{
@@ -2019,13 +2033,15 @@
 						{
 							"name": "x_domain", 
 							"update": chartType == "stripx" || chartType == "barx" || chartType == "heatmap" 
-								? `sequence(${minX}, ${maxX + 1})`
+								? `[${uniqueX}]`
+								// ? `sequence(${minX}, ${maxX + 1})`
 								: `[${minX}, ${maxX}]`
 						},
     					{
 							"name": "y_domain", 
 							"update": chartType == "stripy" || chartType == "bary" || chartType == "heatmap" 
-								? `sequence(${minY}, ${maxY + 1})`
+								? `[${uniqueY}]`	
+								// ? `sequence(${minY}, ${maxY + 1})`
 								: `[${minY}, ${maxY}]`
 						},
 						{
@@ -2273,13 +2289,15 @@
 						{
 							"name": "x_domain", 
 							"update": chartType == "stripx" || chartType == "barx" || chartType == "heatmap" 
-								? `sequence(${minX}, ${maxX + 1})`
+								? `[${uniqueX}]`	
+								// ? `sequence(${minX}, ${maxX + 1})`
 								: `[${minX}, ${maxX}]`
 						},
     					{
 							"name": "y_domain", 
 							"update": chartType == "stripy" || chartType == "bary" || chartType == "heatmap" 
-								? `sequence(${minY}, ${maxY + 1})`
+								? `[${uniqueY}]`	
+								// ? `sequence(${minY}, ${maxY + 1})`
 								: `[${minY}, ${maxY}]`
 						},
 						{
@@ -2589,8 +2607,10 @@
 		// reset default values
 		minX = Infinity;
 		maxX = Number.NEGATIVE_INFINITY;
+		uniqueX = [];
 		minY = Infinity;
 		maxY = Number.NEGATIVE_INFINITY;
+		uniqueY = [];
 
 		// min/max from individual records
 		dataset.table.forEach((e) => {
@@ -2602,6 +2622,9 @@
 				if (e[vlSpec.encoding.x.field] > maxX) {
 					maxX = e[vlSpec.encoding.x.field];
 				}
+				if ((chartType == "stripx" || chartType == "barx" || chartType == "heatmap") && !uniqueX.includes(e[vlSpec.encoding.x.field])) {
+					uniqueX.push(e[vlSpec.encoding.x.field]);
+				}
 			}
 			if (chartType != "stripy_uni" && chartType != "barx") { 
 				// y variable exists, and is not an aggregate count
@@ -2610,6 +2633,9 @@
 				}
 				if (e[vlSpec.encoding.y.field] > maxY) {
 					maxY = e[vlSpec.encoding.y.field];
+				}
+				if ((chartType == "stripy" || chartType == "bary" || chartType == "heatmap") && !uniqueY.includes(e[vlSpec.encoding.y.field])) {
+					uniqueY.push(e[vlSpec.encoding.y.field]);
 				}
 			}
 		});
@@ -2647,7 +2673,10 @@
 			maxY = 0;
 		}
 
-		console.log("x/y min/max", minX, maxX, minY, maxY);
+		uniqueX.sort();
+		uniqueY.sort().reverse();
+
+		console.log("x/y min/max", minX, maxX, uniqueX, minY, maxY, uniqueY);
 	}
 
 	function maxGroupCount(groupBySet) {
