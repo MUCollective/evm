@@ -2614,7 +2614,7 @@
 
 		// min/max from individual records
 		dataset.table.forEach((e) => {
-			if (chartType != "stripx_uni" && chartType != "bary") { 
+			if (vlSpec.encoding.x && chartType != "stripx_uni" && chartType != "bary") { 
 				// x variable exists, and is not an aggregate count
 				if (e[vlSpec.encoding.x.field] < minX) {
 					minX = e[vlSpec.encoding.x.field];
@@ -2626,7 +2626,7 @@
 					uniqueX.push(e[vlSpec.encoding.x.field]);
 				}
 			}
-			if (chartType != "stripy_uni" && chartType != "barx") { 
+			if (vlSpec.encoding.y && chartType != "stripy_uni" && chartType != "barx") { 
 				// y variable exists, and is not an aggregate count
 				if (e[vlSpec.encoding.y.field] < minY) {
 					minY = e[vlSpec.encoding.y.field];

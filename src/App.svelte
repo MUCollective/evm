@@ -24,14 +24,6 @@
 	export let dataChanged: any;
 	export let dataModelOutput: any;
 	export let vlSpec: VisualizationSpec;
-	// export let vlSpecModel: VisualizationSpec;
-	// export let facet: any;
-	// should be a valid vega-lite spec
-	// if you update "data", then the data set for the visualization is updated.
-	// if you update "vlSpec", then the Vega-Lite spec is updated.
-	// if you want multiple vega-lite visualizations, then make it into an array,
-	// then duplicate "VegaLite" panel with the "vlSpec" argument changed.
-	export const visUpdate = writable(vlSpec);
 	// controls the rendering of drag and drop elements
 	export let dndState: { id: string; name: string; items: any[] }[];
 	export let flipDurationMs: number;
@@ -129,10 +121,7 @@
 			// console.log("dndState[shelfIdx].items");
 			// console.log(dndState[shelfIdx].items);
 			var varName = e.detail.items[0].name;
-			if (
-				dndState[shelfIdx].items[dndState[shelfIdx].items.length - 1]
-					.name != varName
-			) {
+			if (dndState[shelfIdx].items[dndState[shelfIdx].items.length - 1].name != varName) {
 				encodingToData(
 					dndState[shelfIdx].name,
 					shelfId,
@@ -195,10 +184,7 @@
 				// case strips along x-axis
 				vlSpec.mark = { type: "tick", orient: "horizontal" };
 			} else if ((vlSpec.encoding.x.type == "nominal" || vlSpec.encoding.x.type == "ordinal") && (vlSpec.encoding.y.type == "nominal" || vlSpec.encoding.y.type == "ordinal")) {
-				// case 2d histogram
-				// TODO: make this a heatmap
-				// vlSpec.mark = { type: "circle" };
-				// vlSpec.encoding.size = { field: varName, aggregate: "count" };
+				// case heatmap
 				vlSpec.mark = { type: "rect" };
 				vlSpec.encoding.color = { field: varName, aggregate: "count", "scale": { "range": ["#00ffff", "#1F77B4"] }};
 				vlSpec.config = { axis: { grid: true, tickBand: "extent" }};
@@ -254,79 +240,6 @@
 			delete vlSpec.config;
 		}
 	}
-
-	// function changeMark(selected: any) {
-	// 	vlSpec.mark = selected;
-	// 	vlSpec = { ...vlSpec };
-	// 	specChanged++;
-	// }
-
-	// function changeAggregation(aggr: any, shelfId: any) {
-	// 	if (shelfId == "x-drop" && typeof vlSpec.encoding.x != "undefined") {
-	// 		if (aggr == "none") {
-	// 			if (typeof vlSpec.encoding.x.aggregate != "undefined") {
-	// 				delete vlSpec.encoding.x.aggregate;
-	// 			}
-	// 		} else {
-	// 			vlSpec.encoding.x.aggregate = aggr;
-	// 		}
-	// 	} else if (
-	// 		shelfId == "y-drop" &&
-	// 		typeof vlSpec.encoding.y != "undefined"
-	// 	) {
-	// 		if (aggr == "none") {
-	// 			if (typeof vlSpec.encoding.y.aggregate != "undefined") {
-	// 				delete vlSpec.encoding.y.aggregate;
-	// 			}
-	// 		} else {
-	// 			vlSpec.encoding.y.aggregate = aggr;
-	// 		}
-	// 	} else if (
-	// 		shelfId == "col-drop" &&
-	// 		typeof vlSpec.encoding.column != "undefined"
-	// 	) {
-	// 		if (aggr == "none") {
-	// 			if (typeof vlSpec.encoding.column.aggregate != "undefined") {
-	// 				delete vlSpec.encoding.column.aggregate;
-	// 			}
-	// 		} else {
-	// 			vlSpec.encoding.column.aggregate = aggr;
-	// 		}
-	// 	} else if (
-	// 		shelfId == "row-drop" &&
-	// 		typeof vlSpec.encoding.row != "undefined"
-	// 	) {
-	// 		if (aggr == "none") {
-	// 			if (typeof vlSpec.encoding.row.aggregate != "undefined") {
-	// 				delete vlSpec.encoding.row.aggregate;
-	// 			}
-	// 		} else {
-	// 			vlSpec.encoding.row.aggregate = aggr;
-	// 		}
-	// 	}
-	// 	if (aggr == "sum") {
-	// 		vlSpec.mark = "bar";
-	// 	}
-	// 	if (
-	// 		typeof vlSpec.encoding.x != "undefined" &&
-	// 		typeof vlSpec.encoding.x.aggregate == "undefined" &&
-	// 		typeof vlSpec.encoding.y != "undefined" &&
-	// 		typeof vlSpec.encoding.y.aggregate == "undefined"
-	// 	) {
-	// 		if (vlSpec.encoding.x && vlSpec.encoding.y) {
-	// 			if (
-	// 				vlSpec.encoding.x.type == vlSpec.encoding.y.type &&
-	// 				vlSpec.encoding.x.type == "quantitative"
-	// 			) {
-	// 				vlSpec.mark = "point";
-	// 			}
-	// 		} else {
-	// 			vlSpec.mark = "tick";
-	// 		}
-	// 	}
-	// 	vlSpec = { ...vlSpec };
-	// 	specChanged++;
-	// }
 
 	/**
 	* Filtering
@@ -886,67 +799,6 @@
 	* end
 	*/
 
-	// // call model on server
-	// async function callModel(mu, sigma = "~ 1", useData, model = "normal") {
-	// 	console.log("calling server!!");
-
-	// 	console.log(models.length);
-
-	// 	console.log("mu:", mu, "data:", useData);
-	// 	showLoadingIcon = true;
-	// 	ocpu.seturl("//kalealex.ocpu.io/modelcheck/R");
-	// 	var url;
-	// 	if (model == "normal") {
-	// 		url = await ocpu.rpc("normal_model_check", {
-	// 			mu_spec: mu,
-	// 			sigma_spec: sigma,
-	// 			data: JSON.stringify(useData),
-	// 		});
-	// 	} else if (model == "ordinal") {
-	// 		url = await ocpu.rpc("ordinal_model_check", {
-	// 			mu_spec: mu,
-	// 			disp_spec: sigma,
-	// 			data: JSON.stringify(useData),
-	// 		});
-	// 	} else if (model == "multinomial") {
-	// 		url = await ocpu.rpc("multinomial_model_check", {
-	// 			spec: mu,
-	// 			data: JSON.stringify(useData),
-	// 		});
-	// 	} else {
-	// 		const model_name = model + "_model_check";
-	// 		console.log(model_name);
-	// 		url = await ocpu.rpc(model_name, {
-	// 			mu_spec: mu,
-	// 			data: JSON.stringify(useData),
-	// 		});
-	// 	}
-	// 	return url.split("\n")[0];
-	// }
-
-	// async function calculate_residuals(useData) {
-	// 	showLoadingIcon = true;
-	// 	ocpu.seturl("//kalealex.ocpu.io/modelcheck/R");
-	// 	var url;
-	// 	console.log("in calc residual", useData);
-	// 	console.log(models);
-	// 	url = await ocpu.rpc("calc_residuals", {
-	// 		df: JSON.stringify(useData),
-	// 		outcome_name: "mpg",
-	// 	});
-	// 	return url.split("\n")[0];
-	// }
-
-	// // merge dataframes containing model results on server
-	// async function mergeModels(oldData, newData) {
-	// 	ocpu.seturl("//kalealex.ocpu.io/modelcheck/R");
-	// 	const url = await ocpu.rpc("merge_modelchecks", {
-	// 		df_old: JSON.stringify(oldData),
-	// 		df_new: JSON.stringify(newData),
-	// 	});
-	// 	return url.split("\n")[0];
-	// }
-
 	// fetch data from open cpu given a url
 	async function fetchData(url) {
 		const newData = await fetch(
@@ -964,92 +816,22 @@
 		return newData;
 	}
 
-	// function showResidual() {
-	// 	console.log("residual!!!!!!!");
-	// 	// if (residualList.length !== 0) {
-	// 	// 	console.log("there are residuals");
-	// 	// 	console.log(models);
-	// 	// } else {
-	// 	calculate_residuals(dataChanged)
-	// 		.then(function (response) {
-	// 			showLoadingIcon = true;
-	// 			// console.log("this should be a url for residual");
-	// 			// console.log(response);
-	// 			return fetchData(response);
-	// 		})
-	// 		.then(function (residualData) {
-	// 			console.log("this should be a the data with residual");
-	// 			console.log(residualData);
-	// 			// console.log("residual output", uniqueModelcheckGroups(residualData));
-	// 			// delete vlSpec.encoding.color;
-	// 			residualData = residualData.filter(
-	// 				(row) => row.modelcheck_group.startsWith("res") //&& row.draw === 1
-	// 			);
-	// 			residualData = [...residualData];
-	// 			// console.log("residual after filter", uniqueModelcheckGroups(residualData));
-	// 			const tempData = deepCopy(dataChanged);
-	// 			dataChanged = residualData;
-	// 			dataChanged = [...dataChanged];
-	// 			// console.log("residual after reassignment to dataChanged", uniqueModelcheckGroups(dataChanged));
-	// 			console.log("this should have only residuals");
-	// 			console.log(dataChanged);
-	// 			// console.log(vlSpec.encoding.color);
-	// 			// console.log(specChanged);
-	// 			showLoadingIcon = false;
-	// 			specChanged++;
-	// 			// console.log(specChanged);
-	// 			// console.log("data object in vlSpec", vlSpec.data);
-	// 			return tempData;
-	// 		})
-	// 		.then(function (tempData) {
-	// 			dataChanged = tempData;
-	// 			dataChanged = [...dataChanged];
-	// 			// console.log("restored dataChanged from tempData", uniqueModelcheckGroups(dataChanged));
-	// 			// console.log(dataChanged);
-	// 		});
-	// 	// }
-	// 	console.log(vlSpec);
-	// }
-
-	// function unshowResidual() {
-	// 	console.log("unshowResidual");
-	// 	console.log(dataChanged);
-	// 	dataChanged = [...dataChanged];
-	// 	showLoadingIcon = false;
-	// 	specChanged++;
-	// 	// }
-	// }
-
 	function encodingToData(variable: any, shelfId: any, item: any) {
 		// console.log("variable", variable, "shelfId", shelfId, "item", item);
-		// console.log("before any changes", vlSpec.encoding);
-		// console.log(typeof dndState[0]);
-		// console.log(item);
 		const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
-		// console.log("why doesn't it change", dndState[shelfIdx]);
 		dndState[shelfIdx].items = [];
-		// console.log(
-		// 	"?????",
-		// 	dndState[shelfIdx],
-		// 	"this should be empty",
-		// 	dndState[shelfIdx].items
-		// );
-		// console.log(dndState[0]);
 		dndState[0].items.push(item[item.length - 1]);
-		// console.log("now?????", dndState[shelfIdx]);
-		// console.log(dndState);
 		dndState = [...dndState];
-		let remainingVarName; // for determining chart type
-		delete vlSpec.encoding.size; // clear aggregation 2d histogram (we'll add it back if needed)
+		let remainingVarName; // argument for determiningChartType
+		delete vlSpec.encoding.color; // clear colorscale (we'll add it back if needed)
 		if (shelfId == "x-drop") {
 			delete vlSpec.encoding.x;
 			if (vlSpec.encoding.y && vlSpec.encoding.y.aggregate) {
 				delete vlSpec.encoding.y; // clear aggregation for bar chart
-			}
+			} 
 			remainingVarName = vlSpec.encoding.y
 				? vlSpec.encoding.y.field
 				: undefined;
-			// vlSpec.mark = "tick";
 		} else if (shelfId == "y-drop") {
 			delete vlSpec.encoding.y;
 			if (vlSpec.encoding.x && vlSpec.encoding.x.aggregate) {
@@ -1058,20 +840,17 @@
 			remainingVarName = vlSpec.encoding.x
 				? vlSpec.encoding.x.field
 				: undefined;
-			// vlSpec.mark = "tick";
-		}
-		if (shelfId == "row-drop") {
+		} else if (shelfId == "row-drop") {
 			delete vlSpec.encoding.row;
-		}
-		if (shelfId == "col-drop") {
+		} else if (shelfId == "col-drop") {
 			delete vlSpec.encoding.column;
 		}
 		if (!remainingVarName) {
 			remainingVarName = vlSpec.encoding.y
 				? vlSpec.encoding.y.field
 				: vlSpec.encoding.x
-				? vlSpec.encoding.x.field
-				: undefined;
+					? vlSpec.encoding.x.field
+					: undefined;
 		}
 		if (remainingVarName) {
 			determineChartType(vlSpec, remainingVarName);
@@ -1080,10 +859,9 @@
 			vlSpec.mark = "tick";
 			delete vlSpec.encoding.x;
 			delete vlSpec.encoding.y;
-			delete vlSpec.encoding.size;
 			delete vlSpec.encoding.color;
-			delete vlSpec.encoding.row;
-			delete vlSpec.encoding.column;
+			// delete vlSpec.encoding.row;
+			// delete vlSpec.encoding.column;
 		}
 		vlSpec = { ...vlSpec };
 		specChanged++;
@@ -1103,18 +881,6 @@
 		}
 		return outObject;
 	}
-	// function uniqueModelcheckGroups(dataObj) {
-	// 	var lookup = {};
-	// 	var result = [];
-	// 	for (var item, i = 0; item = dataObj[i++];) {
-	// 		var name = item.modelcheck_group;
-	// 		if (!(name in lookup)) {
-	// 			lookup[name] = 1;
-	// 			result.push(name);
-	// 		}
-	// 	}
-	// 	return result;
-	// }
 
 	// function saveFile(fileName) {
 	//     // var a = document.createElement("a");
