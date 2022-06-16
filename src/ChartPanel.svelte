@@ -2505,17 +2505,17 @@
 				areRows = vgSpec.data.filter((d) => d.name == "row_domain").length > 0,
 				childWidthIdx = vgSpec.signals.findIndex((d) => d.name == "child_width"),
 				childHeightIdx = vgSpec.signals.findIndex((d) => d.name == "child_height");
-			if (areColumns && chartType == "stripx") {
+			if (areColumns && (chartType == "stripx" || chartType == "barx")) {
 				vgSpec.signals[childWidthIdx] = {"name": "child_width", "update": "bandspace(domain('x').length, 1, 0.5) * x_step"};
 			} else if (areColumns) {
 				vgSpec.signals[childWidthIdx] = {"name": "child_width", "update": `max(${minSize}, min((${horzSpace} - 40 - ${interChartPad} * length(data('column_domain'))) / (length(data('column_domain')) + 2), ${defaultSize}))`};
 			}
-			if (areRows && chartType == "stripy") {
+			if (areRows && (chartType == "stripy"|| chartType == "bary")) {
 				vgSpec.signals[childHeightIdx] = {"name": "child_height", "update": "bandspace(domain('y').length, 1, 0.5) * y_step"};
-			} else if (areColumns && chartType == "stripx_uni") {
-				// TODO: probably need hardcode signals at inner level of nested marks; not sure if this depends on columns only 
-			} else if (areRows && chartType == "stripy_uni") {
-				// TODO: probably need hardcode signals at inner level of nested marks; not sure if this depends on rows only
+			// } else if (areColumns && chartType == "stripx_uni") {
+			// 	// TODO: probably need hardcode signals at inner level of nested marks; not sure if this depends on columns only 
+			// } else if (areRows && chartType == "stripy_uni") {
+			// 	// TODO: probably need hardcode signals at inner level of nested marks; not sure if this depends on rows only
 			} else if (areRows) {
 				vgSpec.signals[childHeightIdx] = {"name": "child_height", "update": `max(${minSize}, min((${vertSpace} - 40 - ${interChartPad} * length(data('row_domain'))) / (length(data('row_domain')) + 2), ${defaultSize}))`};
 			}
