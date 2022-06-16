@@ -85,9 +85,15 @@
 			let cellIdx = vgSpec.marks.findIndex((elem) => elem.name == "cell"),
 				originalEncoding = vgSpec.marks[cellIdx].marks[0].encode.update;
 			if (chartType == "stripx") {
-				originalEncoding.width = {signal: "x_step"};
+				originalEncoding.width = { signal: "x_step" };
 			} else if (chartType == "stripy") {
-				originalEncoding.height = {signal: "y_step"};
+				originalEncoding.height = { signal: "y_step" };
+			} else if (chartType == "barx") {
+				originalEncoding.y = { scale: "y", value: 0 };
+				originalEncoding.y2 = { scale: "y", field: "__count" };
+			} else if (chartType == "bary") {
+				originalEncoding.x = { scale: "x", value: 0 };
+				originalEncoding.x2 = { scale: "x", field: "__count" };
 			} else {
 				originalEncoding.shape = {signal: "shape"};
 			}
@@ -104,7 +110,7 @@
 				originalScales[yIdx].domain = { data: "data_0", fields: [{ signal: "y_domain" }] };
 			}
 			// console.log("scales", originalScales);
-			if (vlSpec.encoding.x && vlSpec.encoding.x.field == outcomeName) {
+			if (vlSpec.encoding.x && vlSpec.encoding.x.field == outcomeName && !(chartType == "bary" || chartType == "heatmap")) {
 				// when outcome is on x, facet on y
 				// fill in standardized template based on vlSpec
 				vgSpec = {
@@ -125,14 +131,28 @@
 						{
 							"name": "data_0",
 							"source": "table",
-							"transform": [
-								{
-								"type": "filter",
-								"expr": chartType == "stripy_uni"
-									? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"])`
-									: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-								}
-							]
+							"transform": chartType == "barx" 
+								? [
+									{
+										"type": "filter",
+										"expr": `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"])`
+									},
+									{
+										"type": "aggregate", 
+										"groupby": ["modelcheck_group", vlSpec.encoding.column.field, vlSpec.encoding.row.field, vlSpec.encoding.x.field],
+										"ops": ["count"],
+										"fields": [null],
+										"as": ["__count"]
+									}
+								]
+								: [
+									{
+										"type": "filter",
+										"expr": chartType == "stripy_uni"
+											? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"])`
+											: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+									}
+								]
 						},
 						{
 							"name": "column_domain",
@@ -234,7 +254,9 @@
 										"scale": "y",
 										"orient": "left",
 										"grid": false,
-										"title": vlSpec.encoding.y.field,
+										"title": chartType == "barx" 
+											? "Count of Records"
+											: vlSpec.encoding.y.field,
 										"labelOverlap": true,
 										"tickCount": {"signal": "ceil(child_height / 30)"},
 										"zindex": 0
@@ -323,7 +345,11 @@
 								{
 									"name": "child_marks",
 									"type": chartType == "scatterplot" ? "symbol" : "rect",
-									"style": chartType == "scatterplot" ? ["circle"] : ["tick"],
+									"style": chartType == "scatterplot" 
+										? ["circle"] 
+										: chartType.startsWith("bar")
+											? ["bar"]
+											: ["tick"], // case startsWith("strip")
 									"from": {"data": "facet"},
 									"encode": {
 										"update": originalEncoding // plug in compiled encoding for primary axes
@@ -422,14 +448,28 @@
 						{
 							"name": "data_0",
 							"source": "table",
-							"transform": [
-								{
-								"type": "filter",
-								"expr": chartType == "stripx_uni"
-									? `isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-									: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-								}
-							]
+							"transform": chartType == "bary" 
+								? [
+									{
+										"type": "filter",
+										"expr": `isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+									},
+									{
+										"type": "aggregate", 
+										"groupby": ["modelcheck_group", vlSpec.encoding.column.field, vlSpec.encoding.row.field, vlSpec.encoding.y.field],
+										"ops": ["count"],
+										"fields": [null],
+										"as": ["__count"]
+									}
+								]
+								: [
+									{
+										"type": "filter",
+										"expr": chartType == "stripx_uni" 
+											? `isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+											: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+									}
+								]
 						},
 						{
 							"name": "column_domain",
@@ -569,7 +609,9 @@
 										"scale": "x",
 										"orient": "bottom",
 										"grid": false,
-										"title": vlSpec.encoding.x.field,
+										"title": chartType == "bary" 
+											? "Count of Records"
+											: vlSpec.encoding.x.field,
 										"labelAlign": (chartType == "stripx" || chartType == "barx" || chartType == "heatmap") 
 											? "right"
 											: "center",
@@ -623,7 +665,11 @@
 								{
 									"name": "child_marks",
 									"type": chartType == "scatterplot" ? "symbol" : "rect",
-									"style": chartType == "scatterplot" ? ["circle"] : ["tick"],
+									"style": chartType == "scatterplot" 
+										? ["circle"] 
+										: chartType.startsWith("bar")
+											? ["bar"]
+											: ["tick"], // case startsWith("strip")
 									"from": {"data": "facet"},
 									"encode": {
 										"update": originalEncoding // plug in compiled encoding for primary axes
@@ -708,9 +754,15 @@
 			let cellIdx = vgSpec.marks.findIndex((elem) => elem.name == "cell"),
 				originalEncoding = vgSpec.marks[cellIdx].marks[0].encode.update;
 			if (chartType == "stripx") {
-				originalEncoding.width = {signal: "x_step"};
+				originalEncoding.width = { signal: "x_step" };
 			} else if (chartType == "stripy") {
-				originalEncoding.height = {signal: "y_step"};
+				originalEncoding.height = { signal: "y_step" };
+			} else if (chartType == "barx") {
+				originalEncoding.y = { scale: "y", value: 0 };
+				originalEncoding.y2 = { scale: "y", field: "__count" };
+			} else if (chartType == "bary") {
+				originalEncoding.x = { scale: "x", value: 0 };
+				originalEncoding.x2 = { scale: "x", field: "__count" };
 			} else {
 				originalEncoding.shape = {signal: "shape"};
 			}
@@ -727,7 +779,7 @@
 				originalScales[yIdx].domain = { data: "data_0", fields: [{ signal: "y_domain" }] };
 			}
 			// console.log("scales", originalScales);
-			if (vlSpec.encoding.x && vlSpec.encoding.x.field == outcomeName) {
+			if (vlSpec.encoding.x && vlSpec.encoding.x.field == outcomeName && !(chartType == "bary" || chartType == "heatmap")) {
 				// when outcome is on x, facet on y
 				// fill in standardized template based on vlSpec
 				vgSpec = {
@@ -748,14 +800,28 @@
 						{
 							"name": "data_0",
 							"source": "table",
-							"transform": [
-								{
-									"type": "filter",
-									"expr": chartType == "stripy_uni"
-										? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"])`
-										: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-								}
-							]
+							"transform": chartType == "barx" 
+								? [
+									{
+										"type": "filter",
+										"expr": `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"])`
+									},
+									{
+										"type": "aggregate", 
+										"groupby": ["modelcheck_group", vlSpec.encoding.row.field, vlSpec.encoding.x.field],
+										"ops": ["count"],
+										"fields": [null],
+										"as": ["__count"]
+									}
+								]
+								: [
+									{
+										"type": "filter",
+										"expr": chartType == "stripy_uni"
+											? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"])`
+											: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+									}
+								]
 						},
 						{
 							"name": "row_domain",
@@ -851,7 +917,9 @@
 										"scale": "y",
 										"orient": "left",
 										"grid": false,
-										"title": vlSpec.encoding.y.field,
+										"title": chartType == "barx" 
+											? "Count of Records"
+											: vlSpec.encoding.y.field,
 										"labelOverlap": true,
 										"tickCount": {
 											"signal": "ceil(child_height / 30)"
@@ -925,7 +993,11 @@
 										"data": "facet"
 									},
 									"type": chartType == "scatterplot" ? "symbol" : "rect",
-									"style": chartType == "scatterplot" ? ["circle"] : ["tick"],
+									"style": chartType == "scatterplot" 
+										? ["circle"] 
+										: chartType.startsWith("bar")
+											? ["bar"]
+											: ["tick"], // case startsWith("strip")
 									"encode": {
 										"update": originalEncoding // plug in compiled encoding for primary axes
 									}
@@ -1029,14 +1101,28 @@
 						{
 							"name": "data_0",
 							"source": "table",
-							"transform": [
-								{
-									"type": "filter",
-									"expr": chartType == "stripx_uni"
-										? `isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-										: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-								}
-							]
+							"transform": chartType == "bary" 
+								? [
+									{
+										"type": "filter",
+										"expr": `isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+									},
+									{
+										"type": "aggregate", 
+										"groupby": ["modelcheck_group", vlSpec.encoding.row.field, vlSpec.encoding.y.field],
+										"ops": ["count"],
+										"fields": [null],
+										"as": ["__count"]
+									}
+								]
+								: [
+									{
+										"type": "filter",
+										"expr": chartType == "stripx_uni" 
+											? `isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+											: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+									}
+								]
 						},
 						{
 							"name": "row_domain",
@@ -1157,7 +1243,9 @@
 										"scale": "x",
 										"orient": "bottom",
 										"grid": false,
-										"title": vlSpec.encoding.x.field,
+										"title": chartType == "bary" 
+											? "Count of Records"
+											: vlSpec.encoding.x.field,
 										"labelAlign": (chartType == "stripx" || chartType == "barx" || chartType == "heatmap") 
 											? "right"
 											: "center",
@@ -1208,7 +1296,11 @@
 										"data": "facet"
 									},
 									"type": chartType == "scatterplot" ? "symbol" : "rect",
-									"style": chartType == "scatterplot" ? ["circle"] : ["tick"],
+									"style": chartType == "scatterplot" 
+										? ["circle"] 
+										: chartType.startsWith("bar")
+											? ["bar"]
+											: ["tick"], // case startsWith("strip")
 									"encode": {
 										"update": originalEncoding // plug in compiled encoding for primary axes
 									}
@@ -1298,9 +1390,15 @@
 			let cellIdx = vgSpec.marks.findIndex((elem) => elem.name == "cell"),
 				originalEncoding = vgSpec.marks[cellIdx].marks[0].encode.update;
 			if (chartType == "stripx") {
-				originalEncoding.width = {signal: "x_step"};
+				originalEncoding.width = { signal: "x_step" };
 			} else if (chartType == "stripy") {
-				originalEncoding.height = {signal: "y_step"};
+				originalEncoding.height = { signal: "y_step" };
+			} else if (chartType == "barx") {
+				originalEncoding.y = { scale: "y", value: 0 };
+				originalEncoding.y2 = { scale: "y", field: "__count" };
+			} else if (chartType == "bary") {
+				originalEncoding.x = { scale: "x", value: 0 };
+				originalEncoding.x2 = { scale: "x", field: "__count" };
 			} else {
 				originalEncoding.shape = {signal: "shape"};
 			}
@@ -1317,7 +1415,7 @@
 				originalScales[yIdx].domain = { data: "data_0", fields: [{ signal: "y_domain" }] };
 			}
 			// console.log("scales", originalScales);
-			if (vlSpec.encoding.x && vlSpec.encoding.x.field == outcomeName) {
+			if (vlSpec.encoding.x && vlSpec.encoding.x.field == outcomeName && !(chartType == "bary" || chartType == "heatmap")) {
 				// if outcome on x, facet on y
 				// fill in standardized template based on vlSpec
 				vgSpec = {
@@ -1338,14 +1436,28 @@
 						{
 							"name": "data_0",
 							"source": "table",
-							"transform": [
-								{
-									"type": "filter",
-									"expr": chartType == "stripy_uni"
-										? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"])`
-										: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-								}
-							]
+							"transform": chartType == "barx" 
+								? [
+									{
+										"type": "filter",
+										"expr": `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"])`
+									},
+									{
+										"type": "aggregate", 
+										"groupby": ["modelcheck_group", vlSpec.encoding.column.field, vlSpec.encoding.x.field],
+										"ops": ["count"],
+										"fields": [null],
+										"as": ["__count"]
+									}
+								]
+								: [
+									{
+										"type": "filter",
+										"expr": chartType == "stripy_uni"
+											? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"])`
+											: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+									}
+								]
 						},
 						{
 							"name": "column_domain",
@@ -1443,7 +1555,9 @@
 										"scale": "y",
 										"orient": "left",
 										"grid": false,
-										"title": vlSpec.encoding.y.field,
+										"title": chartType == "barx" 
+											? "Count of Records"
+											: vlSpec.encoding.y.field,
 										"labelOverlap": true,
 										"tickCount": {
 											"signal": "ceil(child_height / 30)"
@@ -1563,7 +1677,11 @@
 										"data": "facet"
 									},
 									"type": chartType == "scatterplot" ? "symbol" : "rect",
-									"style": chartType == "scatterplot" ? ["circle"] : ["tick"],
+									"style": chartType == "scatterplot" 
+										? ["circle"] 
+										: chartType.startsWith("bar")
+											? ["bar"]
+											: ["tick"], // case startsWith("strip")
 									"encode": {
 										"update": originalEncoding // plug in compiled encoding for primary axes
 									}
@@ -1672,14 +1790,28 @@
 						{
 							"name": "data_0",
 							"source": "table",
-							"transform": [
-								{
-									"type": "filter",
-									"expr": chartType == "stripx_uni"
-										? `isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-										: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-								}
-							]
+							"transform": chartType == "bary" 
+								? [
+									{
+										"type": "filter",
+										"expr": `isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+									},
+									{
+										"type": "aggregate", 
+										"groupby": ["modelcheck_group", vlSpec.encoding.column.field, vlSpec.encoding.y.field],
+										"ops": ["count"],
+										"fields": [null],
+										"as": ["__count"]
+									}
+								]
+								: [
+									{
+										"type": "filter",
+										"expr": chartType == "stripx_uni" 
+											? `isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+											: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+									}
+								]
 						},
 						{
 							"name": "column_domain",
@@ -1816,7 +1948,9 @@
 										"scale": "x",
 										"orient": "bottom",
 										"grid": false,
-										"title": vlSpec.encoding.x.field,
+										"title": chartType == "bary" 
+											? "Count of Records"
+											: vlSpec.encoding.x.field,
 										"labelAlign": (chartType == "stripx" || chartType == "barx" || chartType == "heatmap") 
 											? "right"
 											: "center",
@@ -1871,7 +2005,11 @@
 										"data": "facet"
 									},
 									"type": chartType == "scatterplot" ? "symbol" : "rect",
-									"style": chartType == "scatterplot" ? ["circle"] : ["tick"],
+									"style": chartType == "scatterplot" 
+										? ["circle"] 
+										: chartType.startsWith("bar")
+											? ["bar"]
+											: ["tick"], // case startsWith("strip")
 									"encode": {
 										"update": originalEncoding // plug in compiled encoding for primary axes
 									}
@@ -1960,9 +2098,15 @@
 			// borrow encoding info from compiled spec
 			let originalEncoding = vgSpec.marks[0].encode.update;
 			if (chartType == "stripx") {
-				originalEncoding.width = {signal: "x_step"};
+				originalEncoding.width = { signal: "x_step" };
 			} else if (chartType == "stripy") {
-				originalEncoding.height = {signal: "y_step"};
+				originalEncoding.height = { signal: "y_step" };
+			} else if (chartType == "barx") {
+				originalEncoding.y = { scale: "y", value: 0 };
+				originalEncoding.y2 = { scale: "y", field: "__count" };
+			} else if (chartType == "bary") {
+				originalEncoding.x = { scale: "x", value: 0 };
+				originalEncoding.x2 = { scale: "x", field: "__count" };
 			} else {
 				originalEncoding.shape = {signal: "shape"};
 			}
@@ -1979,7 +2123,7 @@
 				originalScales[yIdx].domain = { data: "data_0", fields: [{ signal: "y_domain" }] };
 			}
 			// console.log("scales", originalScales);
-			if (vlSpec.encoding.x && vlSpec.encoding.x.field == outcomeName) {
+			if (vlSpec.encoding.x && vlSpec.encoding.x.field == outcomeName && !(chartType == "bary" || chartType == "heatmap")) {
 				// if outcome on x, facet on y
 				// fill in standardized template based on vlSpec
 				vgSpec = {
@@ -2000,14 +2144,28 @@
 						{
 							"name": "data_0",
 							"source": "table",
-							"transform": [
-								{
-									"type": "filter",
-									"expr": chartType == "stripy_uni"
-									? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"])`
-									: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-								}
-							]
+							"transform": chartType == "barx" 
+								? [
+									{
+										"type": "filter",
+										"expr": `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"])`
+									},
+									{
+										"type": "aggregate", 
+										"groupby": ["modelcheck_group", vlSpec.encoding.x.field],
+										"ops": ["count"],
+										"fields": [null],
+										"as": ["__count"]
+									}
+								]
+								: [
+									{
+										"type": "filter",
+										"expr": chartType == "stripy_uni"
+											? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"])`
+											: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+									}
+								]
 						},
 						{
 							"name": "row_domain",
@@ -2148,7 +2306,11 @@
 										"data": "facet"
 									},
 									"type": chartType == "scatterplot" ? "symbol" : "rect",
-									"style": chartType == "scatterplot" ? ["circle"] : ["tick"],
+									"style": chartType == "scatterplot" 
+										? ["circle"] 
+										: chartType.startsWith("bar")
+											? ["bar"]
+											: ["tick"], // case startsWith("strip")
 									"encode": {
 										"update": originalEncoding // plug in compiled encoding for primary axes
 									}
@@ -2209,7 +2371,9 @@
 									"scale": "y",
 									"orient": "left",
 									"grid": false,
-									"title": vlSpec.encoding.y.field,
+									"title": chartType == "barx" 
+											? "Count of Records"
+											: vlSpec.encoding.y.field,
 									"labelOverlap": true,
 									"tickCount": {
 										"signal": "ceil(child_height / 30)"
@@ -2263,14 +2427,28 @@
 						{
 							"name": "data_0",
 							"source": "table",
-							"transform": [
-								{
-									"type": "filter",
-									"expr": chartType == "stripx_uni" 
-									? `isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-									: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-								}
-							]
+							"transform": chartType == "bary" 
+								? [
+									{
+										"type": "filter",
+										"expr": `isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+									},
+									{
+										"type": "aggregate", 
+										"groupby": ["modelcheck_group", vlSpec.encoding.y.field],
+										"ops": ["count"],
+										"fields": [null],
+										"as": ["__count"]
+									}
+								]
+								: [
+									{
+										"type": "filter",
+										"expr": chartType == "stripx_uni" 
+											? `isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+											: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+									}
+								]
 						},
 						{
 							"name": "column_domain",
@@ -2359,7 +2537,9 @@
 									"scale": "x",
 									"orient": "bottom",
 									"grid": false,
-									"title": vlSpec.encoding.x.field,
+									"title": chartType == "bary" 
+										? "Count of Records"
+										: vlSpec.encoding.x.field,
 									"labelAlign": (chartType == "stripx" || chartType == "barx" || chartType == "heatmap") 
 										? "right"
 										: "center",
@@ -2410,7 +2590,11 @@
 										"data": "facet"
 									},
 									"type": chartType == "scatterplot" ? "symbol" : "rect",
-									"style": chartType == "scatterplot" ? ["circle"] : ["tick"],
+									"style": chartType == "scatterplot" 
+										? ["circle"] 
+										: chartType.startsWith("bar")
+											? ["bar"]
+											: ["tick"], // case startsWith("strip")
 									"encode": {
 										"update": originalEncoding // plug in compiled encoding for primary axes
 									}
@@ -2644,27 +2828,31 @@
 		if (chartType == "bary") { 
 			// compute max count to display on x axis; min = 0
 			minX = 0;
+			let set = modeling ? ["modelcheck_group", "draw"] : [];
 			if (vlSpec.encoding.row && vlSpec.encoding.column) {
-				maxX = maxGroupCount([vlSpec.encoding.y.field, vlSpec.encoding.row.field, vlSpec.encoding.column.field]);
+				set = set.concat([vlSpec.encoding.y.field, vlSpec.encoding.row.field, vlSpec.encoding.column.field]);
 			} else if (vlSpec.encoding.row) {
-				maxX = maxGroupCount([vlSpec.encoding.y.field, vlSpec.encoding.row.field]);
+				set = set.concat([vlSpec.encoding.y.field, vlSpec.encoding.row.field]);
 			} else if (vlSpec.encoding.column) {
-				maxX = maxGroupCount([vlSpec.encoding.y.field, vlSpec.encoding.column.field]);
+				set = set.concat([vlSpec.encoding.y.field, vlSpec.encoding.column.field]);
 			} else {
-				maxX = maxGroupCount([vlSpec.encoding.y.field]);
+				set = set.concat([vlSpec.encoding.y.field]);
 			}
+			maxX = maxGroupCount(set);
 		} else if (chartType == "barx") { 
 			// compute max count to display on y axis; min = 0
 			minY = 0;
+			let set = modeling ? ["modelcheck_group", "draw"] : [];
 			if (vlSpec.encoding.row && vlSpec.encoding.column) {
-				maxY = maxGroupCount([vlSpec.encoding.x.field, vlSpec.encoding.row.field, vlSpec.encoding.column.field]);
+				set = set.concat([vlSpec.encoding.x.field, vlSpec.encoding.row.field, vlSpec.encoding.column.field]);
 			} else if (vlSpec.encoding.row) {
-				maxY = maxGroupCount([vlSpec.encoding.x.field, vlSpec.encoding.row.field]);
+				set = set.concat([vlSpec.encoding.x.field, vlSpec.encoding.row.field]);
 			} else if (vlSpec.encoding.column) {
-				maxY = maxGroupCount([vlSpec.encoding.x.field, vlSpec.encoding.column.field]);
+				set = set.concat([vlSpec.encoding.x.field, vlSpec.encoding.column.field]);
 			} else {
-				maxY = maxGroupCount([vlSpec.encoding.x.field]);
+				set = set.concat([vlSpec.encoding.x.field]);
 			}
+			maxY = maxGroupCount(set);
 		} else if (chartType == "stripx_uni") { 
 			minX = 0; // placeholder values for non-existant scales
 			maxX = 0;
@@ -2673,8 +2861,8 @@
 			maxY = 0;
 		}
 
-		uniqueX.sort();
-		uniqueY.sort().reverse();
+		uniqueX.sort((a, b) => comparator(a, b));
+		uniqueY.sort((a, b) => comparator(b, a));
 
 		console.log("x/y min/max", minX, maxX, uniqueX, minY, maxY, uniqueY);
 	}
@@ -2698,6 +2886,17 @@
 
 		// compute max count
 		return setCounts.reduce((acc, set) => acc = acc > set.count ? acc : set.count, 0);
+	}
+
+	function comparator(a, b) {
+		a = isNaN(a) ? a : +a;
+		b = isNaN(b) ? b : +b;
+		if (a < b) {
+			return -1;
+		} else if (a > b) {
+			return 1;
+		}
+		return 0;
 	}
 </script>
 
