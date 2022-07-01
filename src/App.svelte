@@ -36,6 +36,7 @@
 
 	let prevSpec: VisualizationSpec = vlSpec;
 	let displayHeight;
+	let needDomainUpdate = false;
 
 	$: specChanged = 0;
 	$: showLoadingIcon = false;
@@ -158,9 +159,11 @@
 				}
 				if (shelfId == "row-drop") {
 					vlSpec.encoding.row = { field: e.detail.items[0].name };
+					needDomainUpdate = true;
 				}
 				if (shelfId == "col-drop") {
 					vlSpec.encoding.column = { field: e.detail.items[0].name };
+					needDomainUpdate = true;
 				}
 			}
 			determineChartType(vlSpec, varName);
@@ -186,7 +189,14 @@
 			} else if ((vlSpec.encoding.x.type == "nominal" || vlSpec.encoding.x.type == "ordinal") && (vlSpec.encoding.y.type == "nominal" || vlSpec.encoding.y.type == "ordinal")) {
 				// case heatmap
 				vlSpec.mark = { type: "rect" };
-				vlSpec.encoding.color = { field: varName, aggregate: "count", "scale": { "range": ["#00ffff", "#1F77B4"] }};
+				vlSpec.encoding.color = { 
+					field: varName, 
+					aggregate: "count", 
+					scale: { 
+						scheme: "greys"
+						// range: ["#ffffff", "#1F77B4"] 
+					}
+				};
 				vlSpec.config = { axis: { grid: true, tickBand: "extent" }};
 			}
 			if (!modeling) {
@@ -703,7 +713,10 @@
 			dataChanged = [...dataChanged];
 			// console.log(dataChanged);
 			// update spec
-			delete vlSpec.encoding.color;
+			let isHeatmap = (vlSpec.encoding.x && vlSpec.encoding.y) && (vlSpec.encoding.x.type == "nominal" || vlSpec.encoding.x.type == "ordinal") && (vlSpec.encoding.y.type == "nominal" || vlSpec.encoding.y.type == "ordinal");
+			if (!isHeatmap) {
+				delete vlSpec.encoding.color;
+			}
 			// delete vlSpec.encoding.xOffset;
 			// delete vlSpec.encoding.yOffset;
 			vlSpec = { ...vlSpec };
@@ -748,6 +761,7 @@
 
 	function showResiduals() {
 		showLoadingIcon = true;
+		needDomainUpdate = true;
 
 		// update dataChanged
 		dataChanged = deepCopy(dataModelOutput).filter(
@@ -772,6 +786,7 @@
 
 	function hideResiduals() {
 		showLoadingIcon = true;
+		needDomainUpdate = true;
 
 		// update dataChanged
 		dataChanged = deepCopy(dataModelOutput).filter(
@@ -842,8 +857,10 @@
 				: undefined;
 		} else if (shelfId == "row-drop") {
 			delete vlSpec.encoding.row;
+			needDomainUpdate = true;
 		} else if (shelfId == "col-drop") {
 			delete vlSpec.encoding.column;
+			needDomainUpdate = true;
 		}
 		if (!remainingVarName) {
 			remainingVarName = vlSpec.encoding.y
@@ -976,6 +993,7 @@
 							<ChartPanel
 								bind:dataChanged
 								bind:vlSpec
+								bind:needDomainUpdate
 								bind:modeling
 								bind:models
 								{outcomeName}
