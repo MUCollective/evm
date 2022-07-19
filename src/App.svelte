@@ -38,6 +38,14 @@
 	let displayHeight;
 	let needDomainUpdate = false;
 
+	let modelChecking = false;
+
+	const datasetNameToPath = {
+		'Cars': 'cars.json',
+		'Forest Fires': 'forestfires.csv',
+		// TODO: Add housing dataset
+	}
+
 	$: specChanged = 0;
 	$: showLoadingIcon = false;
 	$: transformations, updateStateTransforms();
@@ -48,15 +56,37 @@
 		// console.log(showPredictionOrResidual);
 	}
 
-	onMount(async () => {
+	const loadData = async (datasetName) => {
+		const datasetPath = datasetNameToPath[datasetName];
+		if (datasetPath.endsWith('.csv')) {
+			const data = await d3.csv("./data/" + datasetPath, (d) => 
+								 Object.assign({}, ...Object.keys(d).map(key => {
+									if (!isNaN(d[key]) && !isNaN(parseFloat(d[key]))) {
+										return {[key]: +d[key]};
+									} else {
+										return {[key]: d[key]};
+									}
+								})));
+			return data;
+		} else if (datasetPath.endsWith('.json')) {
+			const data = await d3.json("./data/" + datasetPath);
+			return data;
+		}
+	}
+
+	const mountData = async () => {
 		// load data
-		data = await d3.json("./data/cars.json");
+		// data = await d3.json("./data/cars.json");
+		data = await loadData(dndState[0].name)
 		// data = await d3.csv("./data/forestfires.csv");
 		// data = await d3.json("./data/modelcheck.json"); // season hack
 		// data = await d3.json("./data/misspec.json");
 		console.log("loaded data", data);
 		dataChanged = data;
 		dataChanged = [...dataChanged];
+		for (let i = 0; i < dndState.length; ++i) {
+			dndState[i].items = [];
+		}
 		// populate dropzone items with variable names from data
 		Object.keys(data[0]).forEach((d, i) => {
 			dndState[0].items.push({
@@ -70,7 +100,43 @@
 		displayHeight = window.innerHeight * 2 / 3;
 		mounted = true;
 		originalDndState = deepCopy(dndState);
-	});
+		console.log("dndState", dndState);
+
+		modeling = false;
+
+		modelChecking = false;
+
+		specChanged = 0;
+		showLoadingIcon = false;
+		filters = []
+		transformations = []
+		models = []
+
+		vlSpec = {
+			$schema: "https://vega.github.io/schema/vega-lite/v5.json",
+			description: "A simple bar chart with embedded data.",
+			data: {
+				name: "table",
+			},
+			mark: "tick",
+			encoding: {
+				// x: { field: "", type: "nominal" },
+				// y: { field: "", type: "quantitative", aggregate: "mean" },
+			},
+			transform :[]
+		}
+	}
+
+	onMount(mountData);
+
+	function changeDataset(datasetName) {
+		dndState[0].name = datasetName;
+		mountData();
+	}
+
+	function changeModelChecking() {
+		modelChecking = !modelChecking;
+	}
 
 	function updateStateTransforms() {
 		for (let i = 0; i < dndState.length; i++) { // shelves
@@ -925,7 +991,7 @@
 </svelte:head>
 
 <main>
-	<Header {name} />
+	<Header {name} {datasetNameToPath} {dndState} {changeDataset} {modelChecking} {changeModelChecking}/>
 	{#if mounted}
 		<Grid fullWidth>
 			<Row style="display: flex; flex-wrap: nowrap;">
@@ -1004,6 +1070,7 @@
 				<!-- <div><button>save</button></div> -->
 				<!-- <SaveOutput bind:dataChanged bind:vlSpec/> -->
 				<!-- <button on:click={saveFile("data_and_spec")}></button> -->
+				{#if modelChecking}
 				<Column style="min-width: 250px; max-width: 250px;">
 					<ModelPanel
 						{models}
@@ -1015,6 +1082,7 @@
 						bind:outcomeName
 					/>					
 				</Column>
+				{/if}
 			</Row>
 		</Grid>
 	{/if}
