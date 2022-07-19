@@ -2,7 +2,7 @@
 	import { VisualizationSpec, EmbedOptions, vegaLite } from "vega-embed";
 	// import { VegaLite } from "svelte-vega";
 	import { Vega } from "svelte-vega";
-	import { prevent_default } from "svelte/internal";
+	import { onMount, prevent_default } from "svelte/internal";
 	import { id } from "vega";
 
 	// from App.svelte
@@ -36,7 +36,7 @@
 		uniqueY = [],
 		minC = 0, // min count encoded by heatmap color will always be zero
 		maxC = -1,
-		chartType = "scatterplot"; // default
+		chartType = "";
 
 	// process input data, looking for signs that we have a model to show
 	let dataset = { table: dataChanged };
@@ -53,6 +53,12 @@
 	// infer chart type
 	getChartType();
 	$: vlSpec, getChartType();
+
+	onMount(() => {
+		// each change to specChanged will re-mount this component
+		// when this happens we should update the data domain to avoid assigning inf values to x/y min/max
+		needDomainUpdate = true;
+	})
 
 	// add color scale to vega-lite spec for modelcheck
 	// unless this is a heatmap
@@ -3145,7 +3151,9 @@
 				newChartType = "barx";
 			} else if (vlSpec.encoding.y && (vlSpec.encoding.y.type == "nominal" || vlSpec.encoding.y.type == "ordinal") && vlSpec.encoding.x && vlSpec.encoding.x.aggregate) {
 				newChartType = "bary";
-			} // else "scatterplot"
+			} else {
+				newChartType = "scatterplot";
+			}
 		} else {
 			// univariate charts
 			if (vlSpec.encoding.y && vlSpec.encoding.y.type == "quantitative") {
@@ -3258,6 +3266,18 @@
 		} else if (chartType == "stripy_uni") { 
 			minY = 0; // placeholder values for non-existant scales
 			maxY = 0;
+		}
+
+		// nudge bounds to avoid "jerky" HOPs
+		if (!(Number.isInteger(minX) && Number.isInteger(maxX))) {
+			let nudge = (maxX - minX) / 100;
+			minX = minX - nudge;
+			maxX = maxX + nudge;
+		}
+		if (!(Number.isInteger(minY) && Number.isInteger(maxY))) {
+			let nudge = (maxY - minY) / 100;
+			minY = minY - nudge;
+			maxY = maxY + nudge;
 		}
 
 		// sort unique values for axis domains
