@@ -9,6 +9,7 @@
 	let src = "./logo.png";
 
 	let datasetName = dndState[0].name;
+	export let userId = "";
 </script>
 
 
@@ -77,9 +78,20 @@
 	</div>
 
 	<div class="column-box">
+		<div class="box">
+			<h4 style="margin-bottom: 6px;">
+				user id
+			</h4>
+		</div>
+		<div class="box">
+			<input bind:value={userId} style="padding: initial;" />
+		</div>
+	</div>
+
+	<div class="column-box">
 		<div class="row-box">
 			<div class="box">
-				<h4 class="dataset-name" style="margin-bottom: 6px;">
+				<h4 style="margin-bottom: 6px;">
 				dataset
 			</h4></div>
 			<div class="box">
@@ -102,7 +114,7 @@
 		
 		<div class="row-box">
 			<div class="box">
-			<h4 class="dataset-name" style="margin-bottom: 6px;">
+			<h4 style="margin-bottom: 6px;">
 				model checking
 			</h4>
 			</div>

@@ -19,8 +19,8 @@ const app = new App({
 		dndState: [
 			{
 				id: "variables",
-				name: "Cars",
-				// name: "Forest fires",
+				// name: "Cars",
+				name: "Forest fires",
 				// name: "Sales",	// season hack
 				items: [],
 			},

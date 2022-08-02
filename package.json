@@ -28,9 +28,13 @@
     "typescript": "^4.0.0"
   },
   "dependencies": {
+    "@google-cloud/bigquery": "^6.0.1",
+    "@google-cloud/bigquery-connection": "^2.0.0",
     "@rollup/plugin-json": "^4.1.0",
     "d3": "^7.0.3",
+    "google-auth-library": "^8.1.1",
     "jquery": "^3.6.0",
+    "readline-promise": "^1.0.5",
     "sirv-cli": "^1.0.0",
     "svelte-vega": "^1.1.0",
     "vega": "^5.21.0",
