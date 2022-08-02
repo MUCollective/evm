@@ -102,10 +102,16 @@ Setting up your client credentials if needed (see [this guide](https://cloud.goo
 
 You may want to save the client secret JSON file into this directory, and note the file path for later.
 
-Run the backend.
+Install the dependencies...
 
 ```shell
 cd backend
+pip install -r requirements.txt
+```
+
+...run the backend:
+
+```shell
 python app.py <PATH_TO_CLIENT_SECRET> <PROJECT_NAME>
 ```
 
