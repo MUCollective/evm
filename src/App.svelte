@@ -12,6 +12,7 @@
 	import ModelPanel from "./ModelPanel.svelte";
 	// import SaveOutput from "./SaveOutput.svelte";
 	import { writable, get } from "svelte/store";
+    import { mode } from "d3";
 	// import type { forEach } from "vega-lite/build/src/encoding";
 
 	// props
@@ -40,9 +41,54 @@
 
 	let modelChecking = false;
 
+    let userId = '';
+
+    // const logSave = false;
+    const logSave = true;
+
+    const logSaveUrl = uri => `http://127.0.0.1:8000${uri}`;
+
+    const updateLogs = async (info) => {
+        if (!logSave) {
+            return;
+        }
+        console.log('update logs!')
+        const current = new Date();
+        return fetch(
+            logSaveUrl('/add'),
+            {
+                method: 'POST',
+                body: JSON.stringify({
+                    userId,
+                    'time': {
+                        year: current.getFullYear(), 
+                        month: current.getMonth() + 1, 
+                        date: current.getDate(),
+                        hour: current.getHours(),
+                        minute: current.getMinutes(),
+                        second: current.getSeconds()
+                    },
+                    'datasetName': dndState[0].name,
+                    'modelChecking': modelChecking,
+                    'modeling': modeling,
+                    'vlSpec': vlSpec,
+                    dndState,
+                    filters,
+                    transformations,
+                    models,
+                    showPredictionOrResidual,
+                    info
+                })
+            }
+        ).then(res => {
+            console.log(res);
+            return res.json()})
+    }
+
 	const datasetNameToPath = {
-		'Cars': 'cars.json',
-		'Forest Fires': 'forestfires.csv',
+		// 'Cars': 'cars.json',
+		'Forest fires': 'eval_forestfires.csv',
+		'Students': 'eval_students.csv',
 		// TODO: Add housing dataset
 	}
 
@@ -50,6 +96,15 @@
 	$: showLoadingIcon = false;
 	$: transformations, updateStateTransforms();
 	$: outcomeName, updateStateOutcome();
+
+    // $: dndState, updateLogs();
+    // $: modelChecking, updateLogs();
+    // $: modeling, updateLogs();
+    // $: vlSpec, updateLogs();
+    // $: filters, updateLogs();
+    // $: transformations, updateLogs();
+    // $: models, updateLogs();
+    // $: showPredictionOrResidual, updateLogs();
 
 	function onChange(event) {
 		showPredictionOrResidual = event.currentTarget.value;
@@ -125,9 +180,12 @@
 			},
 			transform :[]
 		}
+        updateLogs('load dataset ' + dndState[0].name)
 	}
 
-	onMount(mountData);
+	onMount(async () => {
+		await mountData();
+	});
 
 	function changeDataset(datasetName) {
 		dndState[0].name = datasetName;
@@ -136,6 +194,9 @@
 
 	function changeModelChecking() {
 		modelChecking = !modelChecking;
+		models = [];
+		modeling = false;
+        updateLogs(modelChecking ? 'turn on model checking ' : 'turn off model checking')
 	}
 
 	function updateStateTransforms() {
@@ -237,6 +298,7 @@
 			specChanged++;
 			// console.log("vlspec:", vlSpec);
 		}
+        updateLogs(`dnd finalize, shelf: [${e.srcElement.id}], variable: [${varName}]`)
 	}
 
 	function determineChartType(vlSpec: VisualizationSpec, varName: string) {
@@ -397,6 +459,7 @@
 			.catch(function (err) {
 				console.log(err);
 			});
+        updateLogs(`add filter, variable: [${varToFilter}] condition: [${includeOrExclude}] [${condition}] value: [${conditionValue1}] [${conditionValue2}]`)
 	}
 
 	function removeFilter(index, clearAll = false) {
@@ -427,6 +490,7 @@
 			.catch(function (err) {
 				console.log(err);
 			});
+        updateLogs(`remove filter, index: [${clearAll ? 'all' : index}]`)
 	}
 
 	/**
@@ -503,6 +567,7 @@
 			.catch(function (err) {
 				console.log(err);
 			});
+        updateLogs(`add transformation, variable: [${transVar}] transform: [${transform}]`)
 	}
 
 	function removeTrans(index, clearAll = false) {
@@ -533,6 +598,7 @@
 			.catch(function (err) {
 				console.log(err);
 			});
+        updateLogs(`remove transformation, index: [${clearAll ? 'all' : index}]`)
 	}
 
 	function formatVariable(varName, transform) {
@@ -748,6 +814,7 @@
 				console.log(err);
 			});
 		// specChanged++; // not sure if this is necessary
+        updateLogs(`add model, family: [${newModel.family}] mu_spec: [${newModel.mu_spec}] sigma_spec: [${newModel.sigma_spec}]`)
 	}
 
 	// revert to data only
@@ -823,6 +890,7 @@
 			.catch(function (err) {
 				console.log(err);
 			});
+        updateLogs(`remove model, index: [${removeAll ? 'all' : index}]`)
 	}
 
 	function showResiduals() {
@@ -848,6 +916,7 @@
 				console.log(err);
 			});
 		// specChanged++;
+        updateLogs('show residuals')
 	}
 
 	function hideResiduals() {
@@ -873,6 +942,7 @@
 				console.log(err);
 			});
 		// specChanged++;
+        updateLogs('hide residuals')
 	}
 
 	/**
@@ -991,7 +1061,7 @@
 </svelte:head>
 
 <main>
-	<Header {name} {datasetNameToPath} {dndState} {changeDataset} {modelChecking} {changeModelChecking}/>
+	<Header {name} {datasetNameToPath} {dndState} {changeDataset} {modelChecking} {changeModelChecking} bind:userId/>
 	{#if mounted}
 		<Grid fullWidth>
 			<Row style="display: flex; flex-wrap: nowrap;">

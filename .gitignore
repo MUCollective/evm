@@ -7,3 +7,5 @@ modelcheck.json
 misspec.json
 
 .idea
+
+*/client_secret*.json

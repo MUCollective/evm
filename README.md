@@ -94,6 +94,41 @@ npm run build
 surge public my-project.surge.sh
 ```
 
+## Save interaction logs to Google Cloud
+
+This template provides a interface to save all user interaction logs to database. You need to get access to the "evm-interaction-logs" project by contacting the contributors.
+
+Setting up your client credentials if needed (see [this guide](https://cloud.google.com/bigquery/docs/authentication/end-user-installed) for using client credential to authenticate the API).
+
+You may want to save the client secret JSON file into this directory, and note the file path for later.
+
+Run the backend.
+
+```shell
+cd backend
+python app.py <PATH_TO_CLIENT_SECRET> <PROJECT_NAME>
+```
+
+If you don't need to save the logs, you can turn it off by changing `logSave` to `false` in `src/App.svelte`.
+
+```javascript
+...
+
+let modelChecking = false;
+
+let userId = '';
+
+const logSave = false;
+// const logSave = true;
+
+const logSaveUrl = uri => `http://127.0.0.1:8000${uri}`;
+
+const updateLogs = async (info) => {
+    if (!logSave) {
+
+...
+```
+
 # FIX: Vega-Lite & Semver
 Whenever you clone this repo, access `./node_modules/semver/ranges` directory and open `outside.js` and `subset.js`.
 Comment out line 3 of each file (which is `const { ANY } = Comparator`).
