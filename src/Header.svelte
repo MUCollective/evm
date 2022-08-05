@@ -124,7 +124,7 @@
 					checked={modelChecking}
 					on:change={changeModelChecking}
 					type="radio"
-					name="includeExclude"
+					name="modelCheckingOnOff"
 					value={true}
 				/> on
 			</label>
@@ -133,7 +133,7 @@
 					checked={!modelChecking}
 					on:change={changeModelChecking}
 					type="radio"
-					name="includeExclude"
+					name="modelCheckingOnOff"
 					value={false}
 				/> off
 			</label>
