@@ -46,6 +46,8 @@
 
     let userId = '';
 
+    let ordinalSortIndex = {};
+
     const logSave = false;
     // const logSave = true;
 
@@ -94,6 +96,8 @@
 		'Students': 'eval_students.csv',
 		// TODO: Add housing dataset
 	}
+
+    const ordinalSortIndexPath = "./ordinal_sort_index.json";
 
 	$: specChanged = 0;
 	$: showLoadingIcon = false;
@@ -183,6 +187,7 @@
 			},
 			transform :[]
 		}
+        ordinalSortIndex = await d3.json(ordinalSortIndexPath);
         updateLogs('load dataset ' + dndState[0].name)
 	}
 
@@ -1142,6 +1147,7 @@
 								bind:modeling
 								bind:models
 								{outcomeName}
+                                {ordinalSortIndex}
 							/>
 						{/key}
 					{/if}
