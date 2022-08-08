@@ -19,7 +19,7 @@ sh scripts/semverFix.sh
 npm run dev
 ```
 
-Navigate to [localhost:5000](http://localhost:5000). You should see your app running. Edit a component file in `src`, save it, and reload the page to see your changes.
+Navigate to [localhost:5555](http://localhost:5555). You should see your app running. Edit a component file in `src`, save it, and reload the page to see your changes. We used port 5555 because port 5000 will be occupied for users of Mac OS v12 (Monterey). You can change the port by opening `package.json` and editing the value of `{ "scripts": {... "start": "sirv public --no-clear --port 5555" }}`.
 
 By default, the server will only respond to requests from localhost. To allow connections from other computers, edit the `sirv` commands in package.json to include the option `--host 0.0.0.0`.
 
