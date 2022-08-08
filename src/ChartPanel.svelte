@@ -4,6 +4,7 @@
 	import { Vega } from "svelte-vega";
 	import { onMount, prevent_default } from "svelte/internal";
 	import { id } from "vega";
+	import { sortOrdinal } from "./vgSpecUtil"
 
 	// from App.svelte
 	export let dataChanged: any;
@@ -15,6 +16,7 @@
 	// export let showLoadingIcon: boolean;
 	export let models: any;
 	export let outcomeName: string;
+	export let ordinalSortIndex: any;
 	// export let showPredictionOrResidual;
 
 	// get width and height of chart canvas
@@ -3111,7 +3113,8 @@
 		}
 	}
 	console.log("use vgSpec", vgSpec);
-
+	vgSpec = sortOrdinal(vgSpec, {vlSpec, ordinalSortIndex});
+	console.log("vgSpec (after sorting ordinal)", vgSpec);
 
 	function distinctValues(dataObj, key) {
 		var lookup = {};

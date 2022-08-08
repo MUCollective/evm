@@ -15,6 +15,9 @@
     import { mode } from "d3";
 	// import type { forEach } from "vega-lite/build/src/encoding";
 
+    import {notifications} from './notifications.js'
+	import Toast from './Toast.svelte'
+
 	// props
 	export let name: string;
 	export let mounted: boolean;
@@ -43,8 +46,10 @@
 
     let userId = '';
 
-    // const logSave = false;
-    const logSave = true;
+    let ordinalSortIndex = {};
+
+    const logSave = false;
+    // const logSave = true;
 
     const logSaveUrl = uri => `http://127.0.0.1:8000${uri}`;
 
@@ -91,6 +96,8 @@
 		'Students': 'eval_students.csv',
 		// TODO: Add housing dataset
 	}
+
+    const ordinalSortIndexPath = "./ordinal_sort_index.json";
 
 	$: specChanged = 0;
 	$: showLoadingIcon = false;
@@ -180,6 +187,7 @@
 			},
 			transform :[]
 		}
+        ordinalSortIndex = await d3.json(ordinalSortIndexPath);
         updateLogs('load dataset ' + dndState[0].name)
 	}
 
@@ -782,6 +790,7 @@
 		models = [...models];
 		modeling = true;
 
+        const cachedOutcomeName = deepCopy(outcomeName);
 		// get outcome name
 		outcomeName = newModel.name.substring(newModel.name.indexOf("|") + 1, newModel.name.indexOf("~")).trim();
 
@@ -811,6 +820,11 @@
 				specChanged++;
 			})
 			.catch(function (err) {
+                modeling = models.length > 1;
+                models = models.slice(0, -1);
+                outcomeName = cachedOutcomeName;
+                showLoadingIcon = false;
+                notifications.danger('Adding a model failed, please check the parameters!', 2000)
 				console.log(err);
 			});
 		// specChanged++; // not sure if this is necessary
@@ -1100,7 +1114,7 @@
 								on:change={onChange}
 								on:click={hideResiduals}
 								type="radio"
-								name="includeExclude"
+								name="showPredictionOrResidual"
 								value="prediction"
 							/> prediction
 						</label>
@@ -1111,7 +1125,7 @@
 								on:change={onChange}
 								on:click={showResiduals}
 								type="radio"
-								name="includeExclude"
+								name="showPredictionOrResidual"
 								value="residual"
 							/> residual
 						</label>
@@ -1133,6 +1147,7 @@
 								bind:modeling
 								bind:models
 								{outcomeName}
+                                {ordinalSortIndex}
 							/>
 						{/key}
 					{/if}
@@ -1156,6 +1171,7 @@
 			</Row>
 		</Grid>
 	{/if}
+    <Toast />
 </main>
 
 <style>
