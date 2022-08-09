@@ -49,6 +49,10 @@
 		flex: 1 1 0;
 	}
 
+	.row-box .label {
+		flex-grow: 2;
+	}
+
     h4:first-of-type {
         margin-top: 3px;
     }
@@ -72,8 +76,8 @@
     }
 </style>
 
-<div id="header" style="margin: 0px 0px 20px 0px;">
-	<div class="logo-box">
+<div id="header" style="margin: 0px;">
+	<div class="logo-box" style="height: 100%;">
 		<img src="./logo.png" alt="header"/>
 	</div>
 
@@ -90,7 +94,7 @@
 
 	<div class="column-box">
 		<div class="row-box">
-			<div class="box">
+			<div class="box label">
 				<h4 style="margin-bottom: 6px;">
 				dataset
 			</h4></div>
@@ -113,30 +117,32 @@
 		</div>
 		
 		<div class="row-box">
-			<div class="box">
-			<h4 style="margin-bottom: 6px;">
-				model checking
-			</h4>
+			<div class="box label">
+				<h4 style="margin-bottom: 6px;">
+					model checks
+				</h4>
 			</div>
 			<div class="box">
-			<label>
-				<input
-					checked={modelChecking}
-					on:change={changeModelChecking}
-					type="radio"
-					name="modelCheckingOnOff"
-					value={true}
-				/> on
-			</label>
-			<label>
-				<input
-					checked={!modelChecking}
-					on:change={changeModelChecking}
-					type="radio"
-					name="modelCheckingOnOff"
-					value={false}
-				/> off
-			</label>
+				<label>
+					<input
+						checked={modelChecking}
+						on:change={changeModelChecking}
+						type="radio"
+						name="modelCheckingOnOff"
+						value={true}
+					/> on
+				</label>
+			</div>
+			<div class="box">
+				<label>
+					<input
+						checked={!modelChecking}
+						on:change={changeModelChecking}
+						type="radio"
+						name="modelCheckingOnOff"
+						value={false}
+					/> off
+				</label>
 			</div>
 		</div>
 	</div>
