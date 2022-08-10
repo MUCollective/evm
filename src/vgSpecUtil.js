@@ -54,6 +54,9 @@ const sortOrdinalOnColumnRow = (sortVgSpec, {cell, sortIndex, vlSpec}) => {
 
 
     //region groupby sort index
+    if (vlSpec.mark.type === "bar" || vlSpec.mark.type === "rect") {
+        sortVgSpec.data[1].transform[0].groupby.push(sortIndexField);
+    }
     sortVgSpec.data.find(v => v.name === `${cell}_domain`).transform[0].groupby.push(sortIndexField);
     //endregion
 
