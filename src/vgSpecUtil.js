@@ -24,7 +24,8 @@ const sortOrdinalOnAxe = (sortVgSpec, {axe, sortIndex, vlSpec}) => {
 
     //region groupby sort index
     if (vlSpec.mark.type === "bar" || vlSpec.mark.type === "rect") {
-        sortVgSpec.data[1].transform[0].groupby.push(sortIndexField);
+        let aggIdx = sortVgSpec.data[1].transform.findIndex((elem) => elem.type == "aggregate");
+        sortVgSpec.data[1].transform[aggIdx].groupby.push(sortIndexField);
     }
     //endregion
 
@@ -81,10 +82,10 @@ const sortOrdinal = (vgSpec, {vlSpec, ordinalSortIndex}) => {
 
 	const sortIndex = ordinalSortIndex;
 
-    if (vlSpec.encoding.x && Object.keys(sortIndex).includes(vlSpec.encoding.x.field)) {
+    if (vlSpec.encoding.x && Object.keys(sortIndex).includes(vlSpec.encoding.x.field) && !vlSpec.encoding.x.aggregate) {
         sortOrdinalOnAxe(sortVgSpec, {axe: 'x', sortIndex, vlSpec});
     }
-    if (vlSpec.encoding.y && Object.keys(sortIndex).includes(vlSpec.encoding.y.field)) {
+    if (vlSpec.encoding.y && Object.keys(sortIndex).includes(vlSpec.encoding.y.field) && !vlSpec.encoding.y.aggregate) {
         sortOrdinalOnAxe(sortVgSpec, {axe: 'y', sortIndex, vlSpec});
     }
     if (vlSpec.encoding.column && Object.keys(sortIndex).includes(vlSpec.encoding.column.field)) {

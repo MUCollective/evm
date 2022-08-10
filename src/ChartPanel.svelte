@@ -38,7 +38,11 @@
 		uniqueY = [],
 		minC = 0, // min count encoded by heatmap color will always be zero
 		maxC = -1,
-		chartType = "";
+		chartType = "",
+		customSortX = false,
+		customSortY = false,
+		strX = false,
+		strY = false;
 
 	// process input data, looking for signs that we have a model to show
 	let dataset = { table: dataChanged };
@@ -92,12 +96,6 @@
 	console.log("compiled vega spec", vgSpec);
 
 	if (modeling && haveModelToShow) {
-		// are either the x or y encodings custom sorted?
-		let customSortX = vlSpec.encoding.x ? Object.keys(ordinalSortIndex).includes(vlSpec.encoding.x.field) : false,
-			customSortY = vlSpec.encoding.y ? Object.keys(ordinalSortIndex).includes(vlSpec.encoding.y.field) : false;
-		// are any values of either X or Y strings?
-		let strX = uniqueX.reduce((prev, curr) => (prev || (!Number.isNaN(curr) && isNaN(curr))), false),
-			strY = uniqueY.reduce((prev, curr) => (prev || (!Number.isNaN(curr) && isNaN(curr))), false);
 		
 		if (vlSpec.encoding.row && vlSpec.encoding.column) {
 			// borrow encoding info from compiled spec
@@ -147,7 +145,7 @@
 				});
 			}
 			// console.log("scales", originalScales);
-			if (vlSpec.encoding.x && vlSpec.encoding.x.field == outcomeName && !(chartType == "bary" || chartType == "heatmap")) {
+			if (facetTall()) {
 				// when outcome is on x, facet on y
 				// fill in standardized template based on vlSpec
 				vgSpec = {
@@ -168,36 +166,37 @@
 						{
 							"name": "data_0",
 							"source": "table",
-							"transform": chartType == "barx" 
-								? [
-									{
-										"type": "filter",
-										"expr": (customSortX || strX)
-											? `isValid(datum[\"${vlSpec.encoding.x.field}\"])` 
-											: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"])`
-									},
-									{
-										"type": "aggregate", 
-										"groupby": ["modelcheck_group", vlSpec.encoding.column.field, vlSpec.encoding.row.field, vlSpec.encoding.x.field],
-										"ops": ["count"],
-										"fields": [null],
-										"as": ["__count"]
-									}
-								]
-								: [
-									{
-										"type": "filter",
-										"expr": chartType == "stripy_uni"
-											? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"])`
-											: (customSortX || strX) && (customSortY || strY)
-												? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-												: (customSortX || strX)
-													? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-													: (customSortY || strY)
-														? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-														: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-									}
-								]
+							"transform": getFilterSyntax(["modelcheck_group", vlSpec.encoding.column.field, vlSpec.encoding.row.field])
+							// chartType == "barx" 
+							// 	? [
+							// 		{
+							// 			"type": "filter",
+							// 			"expr": (customSortX || strX)
+							// 				? `isValid(datum[\"${vlSpec.encoding.x.field}\"])` 
+							// 				: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"])`
+							// 		},
+							// 		{
+							// 			"type": "aggregate", 
+							// 			"groupby": ["modelcheck_group", vlSpec.encoding.column.field, vlSpec.encoding.row.field, vlSpec.encoding.x.field],
+							// 			"ops": ["count"],
+							// 			"fields": [null],
+							// 			"as": ["__count"]
+							// 		}
+							// 	]
+							// 	: [
+							// 		{
+							// 			"type": "filter",
+							// 			"expr": chartType == "stripy_uni"
+							// 				? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"])`
+							// 				: (customSortX || strX) && (customSortY || strY)
+							// 					? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
+							// 					: (customSortX || strX)
+							// 						? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+							// 						: (customSortY || strY)
+							// 							? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
+							// 							: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+							// 		}
+							// 	]
 						},
 						{
 							"name": "column_domain",
@@ -336,7 +335,9 @@
 									"scale": "x",
 									"orient": "bottom",
 									"grid": false,
-									"title": vlSpec.encoding.x.field,
+									"title": chartType == "bary" 
+											? "Count of Records"
+											: vlSpec.encoding.x.field,
 									"labelAlign": (chartType == "stripx" || chartType == "barx" || chartType == "heatmap") 
 										? "right"
 										: "center",
@@ -484,61 +485,62 @@
 						{
 							"name": "data_0",
 							"source": "table",
-							"transform": chartType == "heatmap"
-								? [
-									{
-										"type": "filter",
-										"expr": (customSortX || strX) && (customSortY || strY)
-											? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-											: (customSortX || strX)
-												? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-												: (customSortY || strY)
-													? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-													: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-									},
-									{
-										"type": "aggregate",
-										"groupby": ["modelcheck_group", vlSpec.encoding.column.field, vlSpec.encoding.row.field, vlSpec.encoding.x.field, vlSpec.encoding.y.field],
-										"ops": ["count"],
-										"fields": [null],
-										"as": ["__count1"]
-									},
-									{
-										"type": "formula", 
-										"as": "__count", 
-										"expr": "datum.__count1 - 1"
-									}
-								]
-								: chartType == "bary" 
-									? [
-										{
-											"type": "filter",
-											"expr": (customSortY || strY)
-												? `isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-												: `isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-										},
-										{
-											"type": "aggregate", 
-											"groupby": ["modelcheck_group", vlSpec.encoding.column.field, vlSpec.encoding.row.field, vlSpec.encoding.y.field],
-											"ops": ["count"],
-											"fields": [null],
-											"as": ["__count"]
-										}
-									]
-									: [
-										{
-											"type": "filter",
-											"expr": chartType == "stripx_uni" 
-												? `isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-												: (customSortX || strX) && (customSortY || strY)
-													? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-													: (customSortX || strX)
-														? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-														: (customSortY || strY)
-															? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-															: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-										}
-									]
+							"transform": getFilterSyntax(["modelcheck_group", vlSpec.encoding.column.field, vlSpec.encoding.row.field])
+							// chartType == "heatmap"
+							// 	? [
+							// 		{
+							// 			"type": "filter",
+							// 			"expr": (customSortX || strX) && (customSortY || strY)
+							// 				? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
+							// 				: (customSortX || strX)
+							// 					? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+							// 					: (customSortY || strY)
+							// 						? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
+							// 						: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+							// 		},
+							// 		{
+							// 			"type": "aggregate",
+							// 			"groupby": ["modelcheck_group", vlSpec.encoding.column.field, vlSpec.encoding.row.field, vlSpec.encoding.x.field, vlSpec.encoding.y.field],
+							// 			"ops": ["count"],
+							// 			"fields": [null],
+							// 			"as": ["__count1"]
+							// 		},
+							// 		{
+							// 			"type": "formula", 
+							// 			"as": "__count", 
+							// 			"expr": "datum.__count1 - 1"
+							// 		}
+							// 	]
+							// 	: chartType == "bary" 
+							// 		? [
+							// 			{
+							// 				"type": "filter",
+							// 				"expr": (customSortY || strY)
+							// 					? `isValid(datum[\"${vlSpec.encoding.y.field}\"])`
+							// 					: `isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+							// 			},
+							// 			{
+							// 				"type": "aggregate", 
+							// 				"groupby": ["modelcheck_group", vlSpec.encoding.column.field, vlSpec.encoding.row.field, vlSpec.encoding.y.field],
+							// 				"ops": ["count"],
+							// 				"fields": [null],
+							// 				"as": ["__count"]
+							// 			}
+							// 		]
+							// 		: [
+							// 			{
+							// 				"type": "filter",
+							// 				"expr": chartType == "stripx_uni" 
+							// 					? `isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+							// 					: (customSortX || strX) && (customSortY || strY)
+							// 						? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
+							// 						: (customSortX || strX)
+							// 							? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+							// 							: (customSortY || strY)
+							// 								? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
+							// 								: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+							// 			}
+							// 		]
 						},
 						{
 							"name": "column_domain",
@@ -936,7 +938,7 @@
 				});
 			}
 			// console.log("scales", originalScales);
-			if (vlSpec.encoding.x && vlSpec.encoding.x.field == outcomeName && !(chartType == "bary" || chartType == "heatmap")) {
+			if (facetTall()) {
 				// when outcome is on x, facet on y
 				// fill in standardized template based on vlSpec
 				vgSpec = {
@@ -957,36 +959,37 @@
 						{
 							"name": "data_0",
 							"source": "table",
-							"transform": chartType == "barx" 
-								? [
-									{
-										"type": "filter",
-										"expr": (customSortX || strX) 
-											? `isValid(datum[\"${vlSpec.encoding.x.field}\"])`
-											: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"])`
-									},
-									{
-										"type": "aggregate", 
-										"groupby": ["modelcheck_group", vlSpec.encoding.row.field, vlSpec.encoding.x.field],
-										"ops": ["count"],
-										"fields": [null],
-										"as": ["__count"]
-									}
-								]
-								: [
-									{
-										"type": "filter",
-										"expr": chartType == "stripy_uni"
-											? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"])`
-											: (customSortX || strX) && (customSortY || strY)
-												? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-												: (customSortX || strX)
-													? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-													: (customSortY || strY)
-														? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-														: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-									}
-								]
+							"transform": getFilterSyntax(["modelcheck_group", vlSpec.encoding.row.field])
+							// chartType == "barx" 
+							// 	? [
+							// 		{
+							// 			"type": "filter",
+							// 			"expr": (customSortX || strX) 
+							// 				? `isValid(datum[\"${vlSpec.encoding.x.field}\"])`
+							// 				: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"])`
+							// 		},
+							// 		{
+							// 			"type": "aggregate", 
+							// 			"groupby": ["modelcheck_group", vlSpec.encoding.row.field, vlSpec.encoding.x.field],
+							// 			"ops": ["count"],
+							// 			"fields": [null],
+							// 			"as": ["__count"]
+							// 		}
+							// 	]
+							// 	: [
+							// 		{
+							// 			"type": "filter",
+							// 			"expr": chartType == "stripy_uni"
+							// 				? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"])`
+							// 				: (customSortX || strX) && (customSortY || strY)
+							// 					? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
+							// 					: (customSortX || strX)
+							// 						? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+							// 						: (customSortY || strY)
+							// 							? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
+							// 							: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+							// 		}
+							// 	]
 						},
 						{
 							"name": "row_domain",
@@ -1103,7 +1106,9 @@
 									"scale": "x",
 									"orient": "bottom",
 									"grid": false,
-									"title": vlSpec.encoding.x.field,
+									"title": chartType == "bary" 
+											? "Count of Records"
+											: vlSpec.encoding.x.field,
 									"labelAlign": (chartType == "stripx" || chartType == "barx" || chartType == "heatmap") 
 										? "right"
 										: "center",
@@ -1257,61 +1262,62 @@
 						{
 							"name": "data_0",
 							"source": "table",
-							"transform": chartType == "heatmap"
-								? [
-									{
-										"type": "filter",
-										"expr": (customSortX || strX) && (customSortY || strY)
-											? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-											: (customSortX || strX)
-												? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-												: (customSortY || strY)
-													? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-													: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-									},
-									{
-										"type": "aggregate",
-										"groupby": ["modelcheck_group", vlSpec.encoding.row.field, vlSpec.encoding.x.field, vlSpec.encoding.y.field],
-										"ops": ["count"],
-										"fields": [null],
-										"as": ["__count1"]
-									},
-									{
-										"type": "formula", 
-										"as": "__count", 
-										"expr": "datum.__count1 - 1"
-									}
-								]
-								: chartType == "bary" 
-									? [
-										{
-											"type": "filter",
-											"expr": (customSortY || strY) 
-												? `isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-												: `isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-										},
-										{
-											"type": "aggregate", 
-											"groupby": ["modelcheck_group", vlSpec.encoding.row.field, vlSpec.encoding.y.field],
-											"ops": ["count"],
-											"fields": [null],
-											"as": ["__count"]
-										}
-									]
-									: [
-										{
-											"type": "filter",
-											"expr": chartType == "stripx_uni" 
-												? `isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-												: (customSortX || strX) && (customSortY || strY)
-													? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-													: (customSortX || strX)
-														? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-														: (customSortY || strY)
-															? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-															: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-										}
-									]
+							"transform": getFilterSyntax(["modelcheck_group", vlSpec.encoding.row.field])
+							// chartType == "heatmap"
+							// 	? [
+							// 		{
+							// 			"type": "filter",
+							// 			"expr": (customSortX || strX) && (customSortY || strY)
+							// 				? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
+							// 				: (customSortX || strX)
+							// 					? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+							// 					: (customSortY || strY)
+							// 						? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
+							// 						: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+							// 		},
+							// 		{
+							// 			"type": "aggregate",
+							// 			"groupby": ["modelcheck_group", vlSpec.encoding.row.field, vlSpec.encoding.x.field, vlSpec.encoding.y.field],
+							// 			"ops": ["count"],
+							// 			"fields": [null],
+							// 			"as": ["__count1"]
+							// 		},
+							// 		{
+							// 			"type": "formula", 
+							// 			"as": "__count", 
+							// 			"expr": "datum.__count1 - 1"
+							// 		}
+							// 	]
+							// 	: chartType == "bary" 
+							// 		? [
+							// 			{
+							// 				"type": "filter",
+							// 				"expr": (customSortY || strY) 
+							// 					? `isValid(datum[\"${vlSpec.encoding.y.field}\"])`
+							// 					: `isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+							// 			},
+							// 			{
+							// 				"type": "aggregate", 
+							// 				"groupby": ["modelcheck_group", vlSpec.encoding.row.field, vlSpec.encoding.y.field],
+							// 				"ops": ["count"],
+							// 				"fields": [null],
+							// 				"as": ["__count"]
+							// 			}
+							// 		]
+							// 		: [
+							// 			{
+							// 				"type": "filter",
+							// 				"expr": chartType == "stripx_uni" 
+							// 					? `isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+							// 					: (customSortX || strX) && (customSortY || strY)
+							// 						? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
+							// 						: (customSortX || strX)
+							// 							? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+							// 							: (customSortY || strY)
+							// 								? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
+							// 								: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+							// 			}
+							// 		]
 						},
 						{
 							"name": "row_domain",
@@ -1692,7 +1698,7 @@
 				});
 			}
 			// console.log("scales", originalScales);
-			if (vlSpec.encoding.x && vlSpec.encoding.x.field == outcomeName && !(chartType == "bary" || chartType == "heatmap")) {
+			if (facetTall()) {
 				// if outcome on x, facet on y
 				// fill in standardized template based on vlSpec
 				vgSpec = {
@@ -1713,36 +1719,37 @@
 						{
 							"name": "data_0",
 							"source": "table",
-							"transform": chartType == "barx" 
-								? [
-									{
-										"type": "filter",
-										"expr": (customSortX || strX)
-											? `isValid(datum[\"${vlSpec.encoding.x.field}\"])`
-											: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"])`
-									},
-									{
-										"type": "aggregate", 
-										"groupby": ["modelcheck_group", vlSpec.encoding.column.field, vlSpec.encoding.x.field],
-										"ops": ["count"],
-										"fields": [null],
-										"as": ["__count"]
-									}
-								]
-								: [
-									{
-										"type": "filter",
-										"expr": chartType == "stripy_uni"
-											? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"])`
-											: (customSortX || strX) && (customSortY || strY)
-												? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-												: (customSortX || strX)
-													? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-													: (customSortY || strY)
-														? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-														: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-									}
-								]
+							"transform": getFilterSyntax(["modelcheck_group", vlSpec.encoding.column.field])
+							// chartType == "barx" 
+							// 	? [
+							// 		{
+							// 			"type": "filter",
+							// 			"expr": (customSortX || strX)
+							// 				? `isValid(datum[\"${vlSpec.encoding.x.field}\"])`
+							// 				: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"])`
+							// 		},
+							// 		{
+							// 			"type": "aggregate", 
+							// 			"groupby": ["modelcheck_group", vlSpec.encoding.column.field, vlSpec.encoding.x.field],
+							// 			"ops": ["count"],
+							// 			"fields": [null],
+							// 			"as": ["__count"]
+							// 		}
+							// 	]
+							// 	: [
+							// 		{
+							// 			"type": "filter",
+							// 			"expr": chartType == "stripy_uni"
+							// 				? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"])`
+							// 				: (customSortX || strX) && (customSortY || strY)
+							// 					? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
+							// 					: (customSortX || strX)
+							// 						? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+							// 						: (customSortY || strY)
+							// 							? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
+							// 							: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+							// 		}
+							// 	]
 						},
 						{
 							"name": "column_domain",
@@ -1898,7 +1905,9 @@
 									"scale": "x",
 									"orient": "bottom",
 									"grid": false,
-									"title": vlSpec.encoding.x.field,
+									"title": chartType == "bary" 
+											? "Count of Records"
+											: vlSpec.encoding.x.field,
 									"labelAlign": (chartType == "stripx" || chartType == "barx" || chartType == "heatmap") 
 										? "right"
 										: "center",
@@ -2066,61 +2075,62 @@
 						{
 							"name": "data_0",
 							"source": "table",
-							"transform": chartType == "heatmap"
-								? [
-									{
-										"type": "filter",
-										"expr": (customSortX || strX) && (customSortY || strY)
-											? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-											: (customSortX || strX)
-												? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-												: (customSortY || strY)
-													? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-													: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-									},
-									{
-										"type": "aggregate",
-										"groupby": ["modelcheck_group", vlSpec.encoding.column.field, vlSpec.encoding.x.field, vlSpec.encoding.y.field],
-										"ops": ["count"],
-										"fields": [null],
-										"as": ["__count1"]
-									},
-									{
-										"type": "formula", 
-										"as": "__count", 
-										"expr": "datum.__count1 - 1"
-									}
-								]
-								: chartType == "bary" 
-									? [
-										{
-											"type": "filter",
-											"expr": (customSortY || strY)
-												? `isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-												: `isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-										},
-										{
-											"type": "aggregate", 
-											"groupby": ["modelcheck_group", vlSpec.encoding.column.field, vlSpec.encoding.y.field],
-											"ops": ["count"],
-											"fields": [null],
-											"as": ["__count"]
-										}
-									]
-									: [
-										{
-											"type": "filter",
-											"expr": chartType == "stripx_uni" 
-												? `isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-												: (customSortX || strX) && (customSortY || strY)
-													? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-													: (customSortX || strX)
-														? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-														: (customSortY || strY)
-															? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-															: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-										}
-									]
+							"transform": getFilterSyntax(["modelcheck_group", vlSpec.encoding.column.field])
+							// chartType == "heatmap"
+							// 	? [
+							// 		{
+							// 			"type": "filter",
+							// 			"expr": (customSortX || strX) && (customSortY || strY)
+							// 				? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
+							// 				: (customSortX || strX)
+							// 					? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+							// 					: (customSortY || strY)
+							// 						? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
+							// 						: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+							// 		},
+							// 		{
+							// 			"type": "aggregate",
+							// 			"groupby": ["modelcheck_group", vlSpec.encoding.column.field, vlSpec.encoding.x.field, vlSpec.encoding.y.field],
+							// 			"ops": ["count"],
+							// 			"fields": [null],
+							// 			"as": ["__count1"]
+							// 		},
+							// 		{
+							// 			"type": "formula", 
+							// 			"as": "__count", 
+							// 			"expr": "datum.__count1 - 1"
+							// 		}
+							// 	]
+							// 	: chartType == "bary" 
+							// 		? [
+							// 			{
+							// 				"type": "filter",
+							// 				"expr": (customSortY || strY)
+							// 					? `isValid(datum[\"${vlSpec.encoding.y.field}\"])`
+							// 					: `isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+							// 			},
+							// 			{
+							// 				"type": "aggregate", 
+							// 				"groupby": ["modelcheck_group", vlSpec.encoding.column.field, vlSpec.encoding.y.field],
+							// 				"ops": ["count"],
+							// 				"fields": [null],
+							// 				"as": ["__count"]
+							// 			}
+							// 		]
+							// 		: [
+							// 			{
+							// 				"type": "filter",
+							// 				"expr": chartType == "stripx_uni" 
+							// 					? `isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+							// 					: (customSortX || strX) && (customSortY || strY)
+							// 						? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
+							// 						: (customSortX || strX)
+							// 							? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+							// 							: (customSortY || strY)
+							// 								? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
+							// 								: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+							// 			}
+							// 		]
 						},
 						{
 							"name": "column_domain",
@@ -2494,6 +2504,7 @@
 				xIdx = originalScales.findIndex((elem) => elem.name == "x"),
 				yIdx = originalScales.findIndex((elem) => elem.name == "y"),
 				cIdx = originalScales.findIndex((elem) => elem.name == "color");
+			console.log("custom sorts", customSortX, customSortY);
 			if (xIdx != -1) {
 				originalScales[xIdx].range = [0, { signal: "child_width" }];
 				if (!customSortX) {
@@ -2520,7 +2531,7 @@
 				});
 			}
 			// console.log("scales", originalScales);
-			if (vlSpec.encoding.x && vlSpec.encoding.x.field == outcomeName && !(chartType == "bary" || chartType == "heatmap")) {
+			if (facetTall()) {
 				// if outcome on x, facet on y
 				// fill in standardized template based on vlSpec
 				vgSpec = {
@@ -2541,36 +2552,37 @@
 						{
 							"name": "data_0",
 							"source": "table",
-							"transform": chartType == "barx" 
-								? [
-									{
-										"type": "filter",
-										"expr": (customSortX || strX)
-											? `isValid(datum[\"${vlSpec.encoding.x.field}\"])`
-											: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"])`
-									},
-									{
-										"type": "aggregate", 
-										"groupby": ["modelcheck_group", vlSpec.encoding.x.field],
-										"ops": ["count"],
-										"fields": [null],
-										"as": ["__count"]
-									}
-								]
-								: [
-									{
-										"type": "filter",
-										"expr": chartType == "stripy_uni"
-											? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"])`
-											: (customSortX || strX) && (customSortY || strY)
-												? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-												: (customSortX || strX)
-													? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-													: (customSortY || strY)
-														? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-														: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-									}
-								]
+							"transform": getFilterSyntax(["modelcheck_group"])
+							// chartType == "barx" 
+							// 	? [
+							// 		{
+							// 			"type": "filter",
+							// 			"expr": (customSortX || strX)
+							// 				? `isValid(datum[\"${vlSpec.encoding.x.field}\"])`
+							// 				: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"])`
+							// 		},
+							// 		{
+							// 			"type": "aggregate", 
+							// 			"groupby": ["modelcheck_group", vlSpec.encoding.x.field],
+							// 			"ops": ["count"],
+							// 			"fields": [null],
+							// 			"as": ["__count"]
+							// 		}
+							// 	]
+							// 	: [
+							// 		{
+							// 			"type": "filter",
+							// 			"expr": chartType == "stripy_uni"
+							// 				? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"])`
+							// 				: (customSortX || strX) && (customSortY || strY)
+							// 					? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
+							// 					: (customSortX || strX)
+							// 						? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+							// 						: (customSortY || strY)
+							// 							? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
+							// 							: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+							// 		}
+							// 	]
 						},
 						{
 							"name": "row_domain",
@@ -2649,7 +2661,9 @@
 									"scale": "x",
 									"orient": "bottom",
 									"grid": false,
-									"title": vlSpec.encoding.x.field,
+									"title": chartType == "bary" 
+											? "Count of Records"
+											: vlSpec.encoding.x.field,
 									"labelAlign": (chartType == "stripx" || chartType == "barx" || chartType == "heatmap") 
 										? "right"
 										: "center",
@@ -2823,61 +2837,62 @@
 						{
 							"name": "data_0",
 							"source": "table",
-							"transform": chartType == "heatmap"
-								? [
-									{
-										"type": "filter",
-										"expr": (customSortX || strX) && (customSortY || strY)
-											? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-											: (customSortX || strX)
-												? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-												: (customSortY || strY)
-													? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-													: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-									},
-									{
-										"type": "aggregate",
-										"groupby": ["modelcheck_group", vlSpec.encoding.x.field, vlSpec.encoding.y.field],
-										"ops": ["count"],
-										"fields": [null],
-										"as": ["__count1"]
-									},
-									{
-										"type": "formula", 
-										"as": "__count", 
-										"expr": "datum.__count1 - 1"
-									}
-								]
-								: chartType == "bary" 
-									? [
-										{
-											"type": "filter",
-											"expr": (customSortY || strY) 
-												? `isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-												: `isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-										},
-										{
-											"type": "aggregate", 
-											"groupby": ["modelcheck_group", vlSpec.encoding.y.field],
-											"ops": ["count"],
-											"fields": [null],
-											"as": ["__count"]
-										}
-									]
-									: [
-										{
-											"type": "filter",
-											"expr": chartType == "stripx_uni" 
-												? `isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-												: (customSortX || strX) && (customSortY || strY)
-													? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-													: (customSortX || strX)
-														? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-														: (customSortY || strY)
-															? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-															: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-										}
-									]
+							"transform": getFilterSyntax(["modelcheck_group"])
+							// chartType == "heatmap"
+							// 	? [
+							// 		{
+							// 			"type": "filter",
+							// 			"expr": (customSortX || strX) && (customSortY || strY)
+							// 				? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
+							// 				: (customSortX || strX)
+							// 					? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+							// 					: (customSortY || strY)
+							// 						? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
+							// 						: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+							// 		},
+							// 		{
+							// 			"type": "aggregate",
+							// 			"groupby": ["modelcheck_group", vlSpec.encoding.x.field, vlSpec.encoding.y.field],
+							// 			"ops": ["count"],
+							// 			"fields": [null],
+							// 			"as": ["__count1"]
+							// 		},
+							// 		{
+							// 			"type": "formula", 
+							// 			"as": "__count", 
+							// 			"expr": "datum.__count1 - 1"
+							// 		}
+							// 	]
+							// 	: chartType == "bary" 
+							// 		? [
+							// 			{
+							// 				"type": "filter",
+							// 				"expr": (customSortY || strY) 
+							// 					? `isValid(datum[\"${vlSpec.encoding.y.field}\"])`
+							// 					: `isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+							// 			},
+							// 			{
+							// 				"type": "aggregate", 
+							// 				"groupby": ["modelcheck_group", vlSpec.encoding.y.field],
+							// 				"ops": ["count"],
+							// 				"fields": [null],
+							// 				"as": ["__count"]
+							// 			}
+							// 		]
+							// 		: [
+							// 			{
+							// 				"type": "filter",
+							// 				"expr": chartType == "stripx_uni" 
+							// 					? `isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+							// 					: (customSortX || strX) && (customSortY || strY)
+							// 						? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
+							// 						: (customSortX || strX)
+							// 							? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+							// 							: (customSortY || strY)
+							// 								? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
+							// 								: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+							// 			}
+							// 		]
 						},
 						{
 							"name": "column_domain",
@@ -3296,6 +3311,13 @@
 			updateDataDomain(); // needs to know chart type, and should be recomputed when chart type is determined
 			needDomainUpdate = false;
 		}
+
+		// are either the x or y encodings custom sorted?
+		customSortX = vlSpec.encoding.x ? Object.keys(ordinalSortIndex).includes(vlSpec.encoding.x.field) && !vlSpec.encoding.x.aggregate : false;
+		customSortY = vlSpec.encoding.y ? Object.keys(ordinalSortIndex).includes(vlSpec.encoding.y.field) && !vlSpec.encoding.y.aggregate : false;
+		// are any values of either X or Y strings?
+		strX = uniqueX.reduce((prev, curr) => (prev || (!Number.isNaN(curr) && isNaN(curr))), false);
+		strY = uniqueY.reduce((prev, curr) => (prev || (!Number.isNaN(curr) && isNaN(curr))), false);
 	}
 
 	function updateDataDomain() {
@@ -3561,6 +3583,107 @@
 
 		dataset.table = dataset.table.concat(dummyRecords);
 		console.log("after appending dummy", dataset.table);
+	}
+
+	function facetTall() {
+		return (vlSpec.encoding.x && vlSpec.encoding.x.field == outcomeName && !(chartType == "bary" || chartType == "heatmap")) || (vlSpec.encoding.y && vlSpec.encoding.y.field != outcomeName && chartType == "bary");
+	}
+
+	function getFilterSyntax(groupingFactors) {
+		let t; 
+		if (chartType == "barx") {
+			groupingFactors
+				.push(vlSpec.encoding.x.field);
+			t = [
+					{
+						"type": "filter",
+						"expr": (customSortX || strX)
+							? `isValid(datum[\"${vlSpec.encoding.x.field}\"])` 
+							: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"])`
+					},
+					{
+						"type": "aggregate", 
+						"groupby": groupingFactors,
+						"ops": ["count"],
+						"fields": [null],
+						"as": ["__count"]
+					}
+				];
+		} else if (chartType == "bary") {
+			groupingFactors
+				.push(vlSpec.encoding.y.field);
+			t = [
+					{
+						"type": "filter",
+						"expr": (customSortY || strY)
+							? `isValid(datum[\"${vlSpec.encoding.y.field}\"])`
+							: `isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+					},
+					{
+						"type": "aggregate", 
+						"groupby": groupingFactors,
+						"ops": ["count"],
+						"fields": [null],
+						"as": ["__count"]
+					}
+				];
+		} else if (chartType == "heatmap") {
+			groupingFactors.push(vlSpec.encoding.x.field)
+				.push(vlSpec.encoding.y.field);
+			t = [
+					{
+						"type": "filter",
+						"expr": (customSortX || strX) && (customSortY || strY)
+							? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
+							: (customSortX || strX)
+								? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+								: (customSortY || strY)
+									? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
+									: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+					},
+					{
+						"type": "aggregate",
+						"groupby": groupingFactors,
+						"ops": ["count"],
+						"fields": [null],
+						"as": ["__count1"]
+					},
+					{
+						"type": "formula", 
+						"as": "__count", 
+						"expr": "datum.__count1 - 1"
+					}
+				];
+		} else if (chartType == "stripx_uni") {
+			t = [
+					{
+						"type": "filter",
+						"expr": `isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+					}
+				];
+		} else if (chartType == "stripy_uni") {
+			t = [
+					{
+						"type": "filter",
+						"expr": `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"])`
+					}
+				];
+		} else {
+			t = [
+					{
+						"type": "filter",
+						"expr": (customSortX || strX) && (customSortY || strY)
+							? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
+							: (customSortX || strX)
+								? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+								: (customSortY || strY)
+									? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
+									: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
+					}
+				];
+		}
+
+		return t;
 	}
 </script>
 
