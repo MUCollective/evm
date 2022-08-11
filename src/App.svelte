@@ -91,7 +91,7 @@
     }
 
 	const datasetNameToPath = {
-		// 'Cars': 'cars.json',
+		'Cars': 'cars.json',
 		'Forest fires': 'eval_forestfires.csv',
 		'Students': 'eval_students.csv',
 		// TODO: Add housing dataset
