@@ -84,7 +84,7 @@
         }
 
         return {
-            name: modelFamily + "| " + muSpec + "| " + sigmaStr,
+            name: sigmaSpec ? (modelFamily + "| " + muSpec + "| " + sigmaStr) : (modelFamily + "| " + muSpec),
             family: modelFamily,
             mu_spec: muSpec,
             sigma_spec: sigmaSpec
