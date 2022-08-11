@@ -26,8 +26,8 @@
 	// console.log("canvas", horzSpace, vertSpace);
 
 	// set default chart appearance
-	let defaultSize = 200,
-		minSize = 20,
+	let defaultSize = 250,
+		minSize = 16,
 		interChartPad = 10,
 		stripSize = 15,
 		minX = Infinity,
@@ -207,15 +207,29 @@
 							"name": "row_domain",
 							"source": "data_0",
 							"transform": [{"type": "aggregate", "groupby": ["modelcheck_group", vlSpec.encoding.row.field]}]
+						},
+						{
+							"name": "strip_domain",
+							"source": "data_0",
+							"transform": [
+								{
+									"type": "aggregate", 
+									"groupby": chartType == "stripx"
+										? [vlSpec.encoding.x.field]
+										: chartType == "stripy"
+											? [vlSpec.encoding.y.field]
+											: []
+								}
+							]
 						}
 					],
 					"signals": [
-						{"name": "child_width", "update": `max(${minSize}, min((${horzSpace} - 40 - ${interChartPad} * length(data('column_domain'))) / length(data('column_domain')), ${defaultSize}))`},
+						{"name": "child_width", "update": `max(${minSize} * length(data('strip_domain')), min((${horzSpace} - 40 - ${interChartPad} * length(data('column_domain'))) / length(data('column_domain')), ${defaultSize}))`},
 						{
 							"name": "child_height", 
 							"update": chartType == "stripy_uni"
 								? `${minSize}`
-								: `max(${minSize}, min((${vertSpace} - 40 - ${interChartPad} * length(data('row_domain'))) / (length(data('row_domain')) + 2), ${defaultSize}))`
+								: `max(${minSize} * length(data('strip_domain')), min((${vertSpace} - 40 - ${interChartPad} * length(data('row_domain'))) / (length(data('row_domain')) + 2), ${defaultSize}))`
 						},
 						{
 							"name": "x_domain", 
@@ -551,6 +565,20 @@
 							"name": "row_domain",
 							"source": "data_0",
 							"transform": [{"type": "aggregate", "groupby": [vlSpec.encoding.row.field]}]
+						},
+						{
+							"name": "strip_domain",
+							"source": "data_0",
+							"transform": [
+								{
+									"type": "aggregate", 
+									"groupby": chartType == "stripx"
+										? [vlSpec.encoding.x.field]
+										: chartType == "stripy"
+											? [vlSpec.encoding.y.field]
+											: []
+								}
+							]
 						}
 					],
 					"signals": [
@@ -558,9 +586,9 @@
 							"name": "child_width", 
 							"update": chartType == "stripx_uni" 
 								? `${minSize}`
-								: `max(${minSize}, min((${horzSpace} - 40 - ${interChartPad} * length(data('column_domain'))) / (length(data('column_domain')) + 2), ${defaultSize}))`
+								: `max(${minSize} * length(data('strip_domain')), min((${horzSpace} - 40 - ${interChartPad} * length(data('column_domain'))) / (length(data('column_domain')) + 2), ${defaultSize}))`
 						},
-						{"name": "child_height", "update": `max(${minSize}, min((${vertSpace} - 40 - ${interChartPad} * length(data('row_domain'))) / length(data('row_domain')), ${defaultSize}))`},
+						{"name": "child_height", "update": `max(${minSize} * length(data('strip_domain')), min((${vertSpace} - 40 - ${interChartPad} * length(data('row_domain'))) / length(data('row_domain')), ${defaultSize}))`},
 						{
 							"name": "x_domain", 
 							"update": chartType == "stripx" || chartType == "barx" || chartType == "heatmap" 
@@ -995,6 +1023,20 @@
 							"name": "row_domain",
 							"source": "data_0",
 							"transform": [{"type": "aggregate", "groupby": ["modelcheck_group", vlSpec.encoding.row.field]}]
+						},
+						{
+							"name": "strip_domain",
+							"source": "data_0",
+							"transform": [
+								{
+									"type": "aggregate", 
+									"groupby": chartType == "stripx"
+										? [vlSpec.encoding.x.field]
+										: chartType == "stripy"
+											? [vlSpec.encoding.y.field]
+											: []
+								}
+							]
 						}
 					],
 					"signals": [
@@ -1003,7 +1045,7 @@
 							"name": "child_height", 
 							"update": chartType == "stripy_uni" 
 								? `${minSize}`
-								: `max(${minSize}, min((${vertSpace} - 40 - ${interChartPad} * length(data('row_domain'))) / (length(data('row_domain')) + 2), ${defaultSize}))`
+								: `max(${minSize} * length(data('strip_domain')), min((${vertSpace} - 40 - ${interChartPad} * length(data('row_domain'))) / (length(data('row_domain')) + 2), ${defaultSize}))`
 						},
 						{
 							"name": "x_domain", 
@@ -1328,6 +1370,20 @@
 							"name": "column_domain",
 							"source": "data_0",
 							"transform": [{"type": "aggregate", "groupby": ["modelcheck_group"]}]
+						},
+						{
+							"name": "strip_domain",
+							"source": "data_0",
+							"transform": [
+								{
+									"type": "aggregate", 
+									"groupby": chartType == "stripx"
+										? [vlSpec.encoding.x.field]
+										: chartType == "stripy"
+											? [vlSpec.encoding.y.field]
+											: []
+								}
+							]
 						}
 					],
 					"signals": [
@@ -1335,9 +1391,9 @@
 							"name": "child_width", 
 							"update": chartType == "stripx_uni"
 								? `${minSize}`
-								: `max(${minSize}, min((${horzSpace} - 40 - ${interChartPad} * length(data('column_domain'))) / (length(data('column_domain')) + 2), ${defaultSize}))`
+								: `max(${minSize} * length(data('strip_domain')), min((${horzSpace} - 40 - ${interChartPad} * length(data('column_domain'))) / (length(data('column_domain')) + 2), ${defaultSize}))`
 						},
-						{"name": "child_height", "update": `max(${minSize}, min((${vertSpace} - 40 - ${interChartPad} * length(data('row_domain'))) / length(data('row_domain')), ${defaultSize}))`},
+						{"name": "child_height", "update": `max(${minSize} * length(data('strip_domain')), min((${vertSpace} - 40 - ${interChartPad} * length(data('row_domain'))) / length(data('row_domain')), ${defaultSize}))`},
 						{
 							"name": "x_domain", 
 							"update": chartType == "stripx" || chartType == "barx" || chartType == "heatmap" 
@@ -1770,15 +1826,29 @@
 									"groupby": ["modelcheck_group"]
 								}
 							]
+						},
+						{
+							"name": "strip_domain",
+							"source": "data_0",
+							"transform": [
+								{
+									"type": "aggregate", 
+									"groupby": chartType == "stripx"
+										? [vlSpec.encoding.x.field]
+										: chartType == "stripy"
+											? [vlSpec.encoding.y.field]
+											: []
+								}
+							]
 						}
 					],
 					"signals": [
-						{"name": "child_width", "update": `max(${minSize}, min((${horzSpace} - 40 - ${interChartPad} * length(data('column_domain'))) / length(data('column_domain')), ${defaultSize}))`},
+						{"name": "child_width", "update": `max(${minSize} * length(data('strip_domain')), min((${horzSpace} - 40 - ${interChartPad} * length(data('column_domain'))) / length(data('column_domain')), ${defaultSize}))`},
 						{
 							"name": "child_height", 
 							"update": chartType == "stripy_uni"
 								? `${minSize}`
-								: `max(${minSize}, min((${vertSpace} - 40 - ${interChartPad} * length(data('row_domain'))) / (length(data('row_domain')) + 2), ${defaultSize}))`
+								: `max(${minSize} * length(data('strip_domain')), min((${vertSpace} - 40 - ${interChartPad} * length(data('row_domain'))) / (length(data('row_domain')) + 2), ${defaultSize}))`
 						},
 						{
 							"name": "x_domain", 
@@ -2137,6 +2207,20 @@
 							"source": "data_0",
 							"transform": [{"type": "aggregate", "groupby": ["modelcheck_group", vlSpec.encoding.column.field//, "column_season_sort_index" // season hack
 							]}]
+						},
+						{
+							"name": "strip_domain",
+							"source": "data_0",
+							"transform": [
+								{
+									"type": "aggregate", 
+									"groupby": chartType == "stripx"
+										? [vlSpec.encoding.x.field]
+										: chartType == "stripy"
+											? [vlSpec.encoding.y.field]
+											: []
+								}
+							]
 						}
 					],
 					"signals": [
@@ -2144,7 +2228,7 @@
 							"name": "child_width", 
 							"update": chartType == "stripx_uni"
 								? `${minSize}`
-								: `max(${minSize}, min((${horzSpace} - 40 - ${interChartPad} * length(data('column_domain'))) / (length(data('column_domain')) + 2), ${defaultSize}))`
+								: `max(${minSize} * length(data('strip_domain')), min((${horzSpace} - 40 - ${interChartPad} * length(data('column_domain'))) / (length(data('column_domain')) + 2), ${defaultSize}))`
 						},
 						{"name": "child_height", "value": defaultSize},
 						{
@@ -2595,6 +2679,20 @@
 									]
 								}
 							]
+						},
+						{
+							"name": "strip_domain",
+							"source": "data_0",
+							"transform": [
+								{
+									"type": "aggregate", 
+									"groupby": chartType == "stripx"
+										? [vlSpec.encoding.x.field]
+										: chartType == "stripy"
+											? [vlSpec.encoding.y.field]
+											: []
+								}
+							]
 						}
 					],
 					"signals": [
@@ -2603,7 +2701,7 @@
 							"name": "child_height", 
 							"update": chartType == "stripy_uni"
 								? `${minSize}`
-								: `max(${minSize}, min((${vertSpace} - 40 - ${interChartPad} * length(data('row_domain'))) / (length(data('row_domain')) + 2), ${defaultSize}))`
+								: `max(${minSize} * length(data('strip_domain')), min((${vertSpace} - 40 - ${interChartPad} * length(data('row_domain'))) / (length(data('row_domain')) + 2), ${defaultSize}))`
 						},
 						{
 							"name": "x_domain", 
@@ -2898,6 +2996,20 @@
 							"name": "column_domain",
 							"source": "data_0",
 							"transform": [{"type": "aggregate", "groupby": ["modelcheck_group"]}]
+						},
+						{
+							"name": "strip_domain",
+							"source": "data_0",
+							"transform": [
+								{
+									"type": "aggregate", 
+									"groupby": chartType == "stripx"
+										? [vlSpec.encoding.x.field]
+										: chartType == "stripy"
+											? [vlSpec.encoding.y.field]
+											: []
+								}
+							]
 						}
 					],
 					"signals": [
@@ -2905,7 +3017,7 @@
 							"name": "child_width", 
 							"update": chartType == "stripx_uni"
 								? `${minSize}`
-								: `max(${minSize}, min((${horzSpace} - 40 - ${interChartPad} * length(data('column_domain'))) / (length(data('column_domain')) + 2), ${defaultSize}))`
+								: `max(${minSize} * length(data('strip_domain')), min((${horzSpace} - 40 - ${interChartPad} * length(data('column_domain'))) / (length(data('column_domain')) + 2), ${defaultSize}))`
 						},
 						{"name": "child_height", "value": defaultSize},
 						{
@@ -3203,10 +3315,24 @@
 				areRows = vgSpec.data.filter((d) => d.name == "row_domain").length > 0,
 				childWidthIdx = vgSpec.signals.findIndex((d) => d.name == "child_width"),
 				childHeightIdx = vgSpec.signals.findIndex((d) => d.name == "child_height");
+			vgSpec.data.push({ // need this for signals
+				"name": "strip_domain",
+				"source": "data_0",
+				"transform": [
+					{
+						"type": "aggregate", 
+						"groupby": chartType == "stripx"
+							? [vlSpec.encoding.x.field]
+							: chartType == "stripy"
+								? [vlSpec.encoding.y.field]
+								: []
+					}
+				]
+			});
 			if (areColumns && (chartType == "stripx" || chartType == "barx")) {
 				vgSpec.signals[childWidthIdx] = {"name": "child_width", "update": "bandspace(domain('x').length, 1, 0.5) * x_step"};
 			} else if (areColumns) {
-				vgSpec.signals[childWidthIdx] = {"name": "child_width", "update": `max(${minSize}, min((${horzSpace} - 40 - ${interChartPad} * length(data('column_domain'))) / (length(data('column_domain')) + 2), ${defaultSize}))`};
+				vgSpec.signals[childWidthIdx] = {"name": "child_width", "update": `max(${minSize} * length(data('strip_domain')), min((${horzSpace} - 40 - ${interChartPad} * length(data('column_domain'))) / (length(data('column_domain')) + 2), ${defaultSize}))`};
 			}
 			if (areRows && (chartType == "stripy"|| chartType == "bary")) {
 				vgSpec.signals[childHeightIdx] = {"name": "child_height", "update": "bandspace(domain('y').length, 1, 0.5) * y_step"};
@@ -3215,7 +3341,7 @@
 			// } else if (areRows && chartType == "stripy_uni") {
 			// 	// TODO: probably need hardcode signals at inner level of nested marks; not sure if this depends on rows only
 			} else if (areRows) {
-				vgSpec.signals[childHeightIdx] = {"name": "child_height", "update": `max(${minSize}, min((${vertSpace} - 40 - ${interChartPad} * length(data('row_domain'))) / (length(data('row_domain')) + 2), ${defaultSize}))`};
+				vgSpec.signals[childHeightIdx] = {"name": "child_height", "update": `max(${minSize} * length(data('strip_domain')), min((${vertSpace} - 40 - ${interChartPad} * length(data('row_domain'))) / (length(data('row_domain')) + 2), ${defaultSize}))`};
 			}
 		}
 		// // x/y domains
@@ -3586,7 +3712,9 @@
 	}
 
 	function facetTall() {
-		return (vlSpec.encoding.x && vlSpec.encoding.x.field == outcomeName && !(chartType == "bary" || chartType == "heatmap")) || (vlSpec.encoding.y && vlSpec.encoding.y.field != outcomeName && chartType == "bary");
+		return (vlSpec.encoding.x && vlSpec.encoding.x.field == outcomeName && !(chartType == "bary" || chartType == "heatmap")) 
+			|| (vlSpec.encoding.y && vlSpec.encoding.y.field != outcomeName && chartType != "heatmap")
+			|| (!vlSpec.encoding.y);
 	}
 
 	function getFilterSyntax(groupingFactors) {
