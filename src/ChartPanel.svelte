@@ -3720,8 +3720,7 @@
 	function getFilterSyntax(groupingFactors) {
 		let t; 
 		if (chartType == "barx") {
-			groupingFactors
-				.push(vlSpec.encoding.x.field);
+			groupingFactors.push(vlSpec.encoding.x.field);
 			t = [
 					{
 						"type": "filter",
@@ -3738,8 +3737,7 @@
 					}
 				];
 		} else if (chartType == "bary") {
-			groupingFactors
-				.push(vlSpec.encoding.y.field);
+			groupingFactors.push(vlSpec.encoding.y.field);
 			t = [
 					{
 						"type": "filter",
@@ -3756,8 +3754,8 @@
 					}
 				];
 		} else if (chartType == "heatmap") {
-			groupingFactors.push(vlSpec.encoding.x.field)
-				.push(vlSpec.encoding.y.field);
+			groupingFactors.push(vlSpec.encoding.x.field);
+			groupingFactors.push(vlSpec.encoding.y.field);
 			t = [
 					{
 						"type": "filter",
