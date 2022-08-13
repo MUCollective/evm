@@ -167,36 +167,6 @@
 							"name": "data_0",
 							"source": "table",
 							"transform": getFilterSyntax(["modelcheck_group", vlSpec.encoding.column.field, vlSpec.encoding.row.field])
-							// chartType == "barx" 
-							// 	? [
-							// 		{
-							// 			"type": "filter",
-							// 			"expr": (customSortX || strX)
-							// 				? `isValid(datum[\"${vlSpec.encoding.x.field}\"])` 
-							// 				: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"])`
-							// 		},
-							// 		{
-							// 			"type": "aggregate", 
-							// 			"groupby": ["modelcheck_group", vlSpec.encoding.column.field, vlSpec.encoding.row.field, vlSpec.encoding.x.field],
-							// 			"ops": ["count"],
-							// 			"fields": [null],
-							// 			"as": ["__count"]
-							// 		}
-							// 	]
-							// 	: [
-							// 		{
-							// 			"type": "filter",
-							// 			"expr": chartType == "stripy_uni"
-							// 				? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"])`
-							// 				: (customSortX || strX) && (customSortY || strY)
-							// 					? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-							// 					: (customSortX || strX)
-							// 						? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-							// 						: (customSortY || strY)
-							// 							? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-							// 							: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-							// 		}
-							// 	]
 						},
 						{
 							"name": "column_domain",
@@ -500,61 +470,6 @@
 							"name": "data_0",
 							"source": "table",
 							"transform": getFilterSyntax(["modelcheck_group", vlSpec.encoding.column.field, vlSpec.encoding.row.field])
-							// chartType == "heatmap"
-							// 	? [
-							// 		{
-							// 			"type": "filter",
-							// 			"expr": (customSortX || strX) && (customSortY || strY)
-							// 				? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-							// 				: (customSortX || strX)
-							// 					? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-							// 					: (customSortY || strY)
-							// 						? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-							// 						: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-							// 		},
-							// 		{
-							// 			"type": "aggregate",
-							// 			"groupby": ["modelcheck_group", vlSpec.encoding.column.field, vlSpec.encoding.row.field, vlSpec.encoding.x.field, vlSpec.encoding.y.field],
-							// 			"ops": ["count"],
-							// 			"fields": [null],
-							// 			"as": ["__count1"]
-							// 		},
-							// 		{
-							// 			"type": "formula", 
-							// 			"as": "__count", 
-							// 			"expr": "datum.__count1 - 1"
-							// 		}
-							// 	]
-							// 	: chartType == "bary" 
-							// 		? [
-							// 			{
-							// 				"type": "filter",
-							// 				"expr": (customSortY || strY)
-							// 					? `isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-							// 					: `isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-							// 			},
-							// 			{
-							// 				"type": "aggregate", 
-							// 				"groupby": ["modelcheck_group", vlSpec.encoding.column.field, vlSpec.encoding.row.field, vlSpec.encoding.y.field],
-							// 				"ops": ["count"],
-							// 				"fields": [null],
-							// 				"as": ["__count"]
-							// 			}
-							// 		]
-							// 		: [
-							// 			{
-							// 				"type": "filter",
-							// 				"expr": chartType == "stripx_uni" 
-							// 					? `isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-							// 					: (customSortX || strX) && (customSortY || strY)
-							// 						? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-							// 						: (customSortX || strX)
-							// 							? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-							// 							: (customSortY || strY)
-							// 								? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-							// 								: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-							// 			}
-							// 		]
 						},
 						{
 							"name": "column_domain",
@@ -789,38 +704,38 @@
 										"encode": {
 											"update": originalEncoding // plug in compiled encoding for primary axes
 										}
-									},
-									// custom grid lines for heatmaps
-									{
-										"name": "xgrid",
-										"type": "rule",
-										"from": {"data": "facet"},
-										"encode": {
-											"update": {
-												"x": {"scale": "x", "field": vlSpec.encoding.x.field},
-												"x2": {"scale": "x", "field": vlSpec.encoding.x.field},
-												"y": {"value": 0},
-												"y2": {"signal": "child_height"},
-												"stroke": {"scale": "mc_color", "field": "modelcheck_group"},
-												"strokeWidth": {"value": 1}
-											}
-										}
-									},
-									{
-										"name": "ygrid",
-										"type": "rule",
-										"from": {"data": "facet"},
-										"encode": {
-											"update": {
-												"x": {"value": 0},
-												"x2": {"signal": "child_width"},
-												"y": {"scale": "y", "field": vlSpec.encoding.y.field},
-												"y2": {"scale": "y", "field": vlSpec.encoding.y.field},
-												"stroke": {"scale": "mc_color", "field": "modelcheck_group"},
-												"strokeWidth": {"value": 1}
-											}
-										}
-									}
+									}//,
+									// // custom grid lines for heatmaps
+									// {
+									// 	"name": "xgrid",
+									// 	"type": "rule",
+									// 	"from": {"data": "facet"},
+									// 	"encode": {
+									// 		"update": {
+									// 			"x": {"scale": "x", "field": vlSpec.encoding.x.field},
+									// 			"x2": {"scale": "x", "field": vlSpec.encoding.x.field},
+									// 			"y": {"value": 0},
+									// 			"y2": {"signal": "child_height"},
+									// 			"stroke": {"scale": "mc_color", "field": "modelcheck_group"},
+									// 			"strokeWidth": {"value": 1}
+									// 		}
+									// 	}
+									// },
+									// {
+									// 	"name": "ygrid",
+									// 	"type": "rule",
+									// 	"from": {"data": "facet"},
+									// 	"encode": {
+									// 		"update": {
+									// 			"x": {"value": 0},
+									// 			"x2": {"signal": "child_width"},
+									// 			"y": {"scale": "y", "field": vlSpec.encoding.y.field},
+									// 			"y2": {"scale": "y", "field": vlSpec.encoding.y.field},
+									// 			"stroke": {"scale": "mc_color", "field": "modelcheck_group"},
+									// 			"strokeWidth": {"value": 1}
+									// 		}
+									// 	}
+									// }
 								]
 								: [
 									{
@@ -837,54 +752,55 @@
 										}
 									}
 								],
-							"axes": chartType == "heatmap"
-								? []
-								: chartType == "stripx_uni"
-									? [
-										{
-											"scale": "y",
-											"orient": "left",
-											"grid": true,
-											"tickCount": {"signal": "ceil(child_height / 30)"},
-											"domain": false,
-											"labels": false,
-											"aria": false,
-											"maxExtent": 0,
-											"minExtent": 0,
-											"ticks": false,
-											"zindex": 0
-										}
-									]
-									: [
-										{
-											"scale": "x",
-											"orient": "bottom",
-											"gridScale": "y",
-											"grid": true,
-											"tickCount": {"signal": "ceil(child_width / 30)"},
-											"domain": false,
-											"labels": false,
-											"aria": false,
-											"maxExtent": 0,
-											"minExtent": 0,
-											"ticks": false,
-											"zindex": 0
-										},
-										{
-											"scale": "y",
-											"orient": "left",
-											"gridScale": "x",
-											"grid": true,
-											"tickCount": {"signal": "ceil(child_height / 30)"},
-											"domain": false,
-											"labels": false,
-											"aria": false,
-											"maxExtent": 0,
-											"minExtent": 0,
-											"ticks": false,
-											"zindex": 0
-										}
-									]
+							// "axes": chartType == "heatmap"
+							// 	? []
+							// 	: 
+							"axes":	chartType == "stripx_uni"
+								? [
+									{
+										"scale": "y",
+										"orient": "left",
+										"grid": true,
+										"tickCount": {"signal": "ceil(child_height / 30)"},
+										"domain": false,
+										"labels": false,
+										"aria": false,
+										"maxExtent": 0,
+										"minExtent": 0,
+										"ticks": false,
+										"zindex": 0
+									}
+								]
+								: [
+									{
+										"scale": "x",
+										"orient": "bottom",
+										"gridScale": "y",
+										"grid": true,
+										"tickCount": {"signal": "ceil(child_width / 30)"},
+										"domain": false,
+										"labels": false,
+										"aria": false,
+										"maxExtent": 0,
+										"minExtent": 0,
+										"ticks": false,
+										"zindex": 0
+									},
+									{
+										"scale": "y",
+										"orient": "left",
+										"gridScale": "x",
+										"grid": true,
+										"tickCount": {"signal": "ceil(child_height / 30)"},
+										"domain": false,
+										"labels": false,
+										"aria": false,
+										"maxExtent": 0,
+										"minExtent": 0,
+										"ticks": false,
+										"zindex": 0
+									}
+								]
 						}
 					],
 					"scales": originalScales, // plug in original scales to keep vegaLite settings
@@ -988,36 +904,6 @@
 							"name": "data_0",
 							"source": "table",
 							"transform": getFilterSyntax(["modelcheck_group", vlSpec.encoding.row.field])
-							// chartType == "barx" 
-							// 	? [
-							// 		{
-							// 			"type": "filter",
-							// 			"expr": (customSortX || strX) 
-							// 				? `isValid(datum[\"${vlSpec.encoding.x.field}\"])`
-							// 				: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"])`
-							// 		},
-							// 		{
-							// 			"type": "aggregate", 
-							// 			"groupby": ["modelcheck_group", vlSpec.encoding.row.field, vlSpec.encoding.x.field],
-							// 			"ops": ["count"],
-							// 			"fields": [null],
-							// 			"as": ["__count"]
-							// 		}
-							// 	]
-							// 	: [
-							// 		{
-							// 			"type": "filter",
-							// 			"expr": chartType == "stripy_uni"
-							// 				? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"])`
-							// 				: (customSortX || strX) && (customSortY || strY)
-							// 					? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-							// 					: (customSortX || strX)
-							// 						? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-							// 						: (customSortY || strY)
-							// 							? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-							// 							: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-							// 		}
-							// 	]
 						},
 						{
 							"name": "row_domain",
@@ -1305,61 +1191,6 @@
 							"name": "data_0",
 							"source": "table",
 							"transform": getFilterSyntax(["modelcheck_group", vlSpec.encoding.row.field])
-							// chartType == "heatmap"
-							// 	? [
-							// 		{
-							// 			"type": "filter",
-							// 			"expr": (customSortX || strX) && (customSortY || strY)
-							// 				? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-							// 				: (customSortX || strX)
-							// 					? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-							// 					: (customSortY || strY)
-							// 						? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-							// 						: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-							// 		},
-							// 		{
-							// 			"type": "aggregate",
-							// 			"groupby": ["modelcheck_group", vlSpec.encoding.row.field, vlSpec.encoding.x.field, vlSpec.encoding.y.field],
-							// 			"ops": ["count"],
-							// 			"fields": [null],
-							// 			"as": ["__count1"]
-							// 		},
-							// 		{
-							// 			"type": "formula", 
-							// 			"as": "__count", 
-							// 			"expr": "datum.__count1 - 1"
-							// 		}
-							// 	]
-							// 	: chartType == "bary" 
-							// 		? [
-							// 			{
-							// 				"type": "filter",
-							// 				"expr": (customSortY || strY) 
-							// 					? `isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-							// 					: `isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-							// 			},
-							// 			{
-							// 				"type": "aggregate", 
-							// 				"groupby": ["modelcheck_group", vlSpec.encoding.row.field, vlSpec.encoding.y.field],
-							// 				"ops": ["count"],
-							// 				"fields": [null],
-							// 				"as": ["__count"]
-							// 			}
-							// 		]
-							// 		: [
-							// 			{
-							// 				"type": "filter",
-							// 				"expr": chartType == "stripx_uni" 
-							// 					? `isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-							// 					: (customSortX || strX) && (customSortY || strY)
-							// 						? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-							// 						: (customSortX || strX)
-							// 							? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-							// 							: (customSortY || strY)
-							// 								? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-							// 								: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-							// 			}
-							// 		]
 						},
 						{
 							"name": "row_domain",
@@ -1569,38 +1400,38 @@
 										"encode": {
 											"update": originalEncoding // plug in compiled encoding for primary axes
 										}
-									},
-									// custom grid lines for heatmaps
-									{
-										"name": "xgrid",
-										"type": "rule",
-										"from": {"data": "facet"},
-										"encode": {
-											"update": {
-												"x": {"scale": "x", "field": vlSpec.encoding.x.field},
-												"x2": {"scale": "x", "field": vlSpec.encoding.x.field},
-												"y": {"value": 0},
-												"y2": {"signal": "child_height"},
-												"stroke": {"scale": "mc_color", "field": "modelcheck_group"},
-												"strokeWidth": {"value": 1}
-											}
-										}
-									},
-									{
-										"name": "ygrid",
-										"type": "rule",
-										"from": {"data": "facet"},
-										"encode": {
-											"update": {
-												"x": {"value": 0},
-												"x2": {"signal": "child_width"},
-												"y": {"scale": "y", "field": vlSpec.encoding.y.field},
-												"y2": {"scale": "y", "field": vlSpec.encoding.y.field},
-												"stroke": {"scale": "mc_color", "field": "modelcheck_group"},
-												"strokeWidth": {"value": 1}
-											}
-										}
-									}
+									}//,
+									// // custom grid lines for heatmaps
+									// {
+									// 	"name": "xgrid",
+									// 	"type": "rule",
+									// 	"from": {"data": "facet"},
+									// 	"encode": {
+									// 		"update": {
+									// 			"x": {"scale": "x", "field": vlSpec.encoding.x.field},
+									// 			"x2": {"scale": "x", "field": vlSpec.encoding.x.field},
+									// 			"y": {"value": 0},
+									// 			"y2": {"signal": "child_height"},
+									// 			"stroke": {"scale": "mc_color", "field": "modelcheck_group"},
+									// 			"strokeWidth": {"value": 1}
+									// 		}
+									// 	}
+									// },
+									// {
+									// 	"name": "ygrid",
+									// 	"type": "rule",
+									// 	"from": {"data": "facet"},
+									// 	"encode": {
+									// 		"update": {
+									// 			"x": {"value": 0},
+									// 			"x2": {"signal": "child_width"},
+									// 			"y": {"scale": "y", "field": vlSpec.encoding.y.field},
+									// 			"y2": {"scale": "y", "field": vlSpec.encoding.y.field},
+									// 			"stroke": {"scale": "mc_color", "field": "modelcheck_group"},
+									// 			"strokeWidth": {"value": 1}
+									// 		}
+									// 	}
+									// }
 								]
 								: [
 									{
@@ -1619,60 +1450,61 @@
 										}
 									}
 								],
-							"axes": chartType == "heatmap"
-								? []
-								: chartType == "stripx_uni"
-									? [
-										{
-											"scale": "y",
-											"orient": "left",
-											"grid": true,
-											"tickCount": {
-												"signal": "ceil(child_height / 30)"
-											},
-											"domain": false,
-											"labels": false,
-											"aria": false,
-											"maxExtent": 0,
-											"minExtent": 0,
-											"ticks": false,
-											"zindex": 0
-										}
-									]
-									: [
-										{
-											"scale": "x",
-											"orient": "bottom",
-											"gridScale": "y",
-											"grid": true,
-											"tickCount": {
-												"signal": "ceil(child_width / 30)"
-											},
-											"domain": false,
-											"labels": false,
-											"aria": false,
-											"maxExtent": 0,
-											"minExtent": 0,
-											"ticks": false,
-											"zindex": 0
+							// "axes": chartType == "heatmap"
+							// 	? []
+							// 	: 
+							"axes":	chartType == "stripx_uni"
+								? [
+									{
+										"scale": "y",
+										"orient": "left",
+										"grid": true,
+										"tickCount": {
+											"signal": "ceil(child_height / 30)"
 										},
-										{
-											"scale": "y",
-											"orient": "left",
-											"gridScale": "x",
-											"grid": true,
-											"tickCount": {
-												"signal": "ceil(child_height / 30)"
-											},
-											"domain": false,
-											"labels": false,
-											"aria": false,
-											"maxExtent": 0,
-											"minExtent": 0,
-											"ticks": false,
-											"zindex": 0
-										}
-									]
+										"domain": false,
+										"labels": false,
+										"aria": false,
+										"maxExtent": 0,
+										"minExtent": 0,
+										"ticks": false,
+										"zindex": 0
+									}
+								]
+								: [
+									{
+										"scale": "x",
+										"orient": "bottom",
+										"gridScale": "y",
+										"grid": true,
+										"tickCount": {
+											"signal": "ceil(child_width / 30)"
+										},
+										"domain": false,
+										"labels": false,
+										"aria": false,
+										"maxExtent": 0,
+										"minExtent": 0,
+										"ticks": false,
+										"zindex": 0
+									},
+									{
+										"scale": "y",
+										"orient": "left",
+										"gridScale": "x",
+										"grid": true,
+										"tickCount": {
+											"signal": "ceil(child_height / 30)"
+										},
+										"domain": false,
+										"labels": false,
+										"aria": false,
+										"maxExtent": 0,
+										"minExtent": 0,
+										"ticks": false,
+										"zindex": 0
+									}
+								]
 						}
 					],
 					"scales": originalScales, // plug in original scales to keep vegaLite settings
@@ -1776,36 +1608,6 @@
 							"name": "data_0",
 							"source": "table",
 							"transform": getFilterSyntax(["modelcheck_group", vlSpec.encoding.column.field])
-							// chartType == "barx" 
-							// 	? [
-							// 		{
-							// 			"type": "filter",
-							// 			"expr": (customSortX || strX)
-							// 				? `isValid(datum[\"${vlSpec.encoding.x.field}\"])`
-							// 				: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"])`
-							// 		},
-							// 		{
-							// 			"type": "aggregate", 
-							// 			"groupby": ["modelcheck_group", vlSpec.encoding.column.field, vlSpec.encoding.x.field],
-							// 			"ops": ["count"],
-							// 			"fields": [null],
-							// 			"as": ["__count"]
-							// 		}
-							// 	]
-							// 	: [
-							// 		{
-							// 			"type": "filter",
-							// 			"expr": chartType == "stripy_uni"
-							// 				? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"])`
-							// 				: (customSortX || strX) && (customSortY || strY)
-							// 					? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-							// 					: (customSortX || strX)
-							// 						? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-							// 						: (customSortY || strY)
-							// 							? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-							// 							: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-							// 		}
-							// 	]
 						},
 						{
 							"name": "column_domain",
@@ -2146,61 +1948,6 @@
 							"name": "data_0",
 							"source": "table",
 							"transform": getFilterSyntax(["modelcheck_group", vlSpec.encoding.column.field])
-							// chartType == "heatmap"
-							// 	? [
-							// 		{
-							// 			"type": "filter",
-							// 			"expr": (customSortX || strX) && (customSortY || strY)
-							// 				? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-							// 				: (customSortX || strX)
-							// 					? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-							// 					: (customSortY || strY)
-							// 						? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-							// 						: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-							// 		},
-							// 		{
-							// 			"type": "aggregate",
-							// 			"groupby": ["modelcheck_group", vlSpec.encoding.column.field, vlSpec.encoding.x.field, vlSpec.encoding.y.field],
-							// 			"ops": ["count"],
-							// 			"fields": [null],
-							// 			"as": ["__count1"]
-							// 		},
-							// 		{
-							// 			"type": "formula", 
-							// 			"as": "__count", 
-							// 			"expr": "datum.__count1 - 1"
-							// 		}
-							// 	]
-							// 	: chartType == "bary" 
-							// 		? [
-							// 			{
-							// 				"type": "filter",
-							// 				"expr": (customSortY || strY)
-							// 					? `isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-							// 					: `isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-							// 			},
-							// 			{
-							// 				"type": "aggregate", 
-							// 				"groupby": ["modelcheck_group", vlSpec.encoding.column.field, vlSpec.encoding.y.field],
-							// 				"ops": ["count"],
-							// 				"fields": [null],
-							// 				"as": ["__count"]
-							// 			}
-							// 		]
-							// 		: [
-							// 			{
-							// 				"type": "filter",
-							// 				"expr": chartType == "stripx_uni" 
-							// 					? `isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-							// 					: (customSortX || strX) && (customSortY || strY)
-							// 						? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-							// 						: (customSortX || strX)
-							// 							? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-							// 							: (customSortY || strY)
-							// 								? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-							// 								: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-							// 			}
-							// 		]
 						},
 						{
 							"name": "column_domain",
@@ -2430,38 +2177,38 @@
 										"encode": {
 											"update": originalEncoding // plug in compiled encoding for primary axes
 										}
-									},
-									// custom grid lines for heatmaps
-									{
-										"name": "xgrid",
-										"type": "rule",
-										"from": {"data": "facet"},
-										"encode": {
-											"update": {
-												"x": {"scale": "x", "field": vlSpec.encoding.x.field},
-												"x2": {"scale": "x", "field": vlSpec.encoding.x.field},
-												"y": {"value": 0},
-												"y2": {"signal": "child_height"},
-												"stroke": {"scale": "mc_color", "field": "modelcheck_group"},
-												"strokeWidth": {"value": 1}
-											}
-										}
-									},
-									{
-										"name": "ygrid",
-										"type": "rule",
-										"from": {"data": "facet"},
-										"encode": {
-											"update": {
-												"x": {"value": 0},
-												"x2": {"signal": "child_width"},
-												"y": {"scale": "y", "field": vlSpec.encoding.y.field},
-												"y2": {"scale": "y", "field": vlSpec.encoding.y.field},
-												"stroke": {"scale": "mc_color", "field": "modelcheck_group"},
-												"strokeWidth": {"value": 1}
-											}
-										}
-									}
+									}//,
+									// // custom grid lines for heatmaps
+									// {
+									// 	"name": "xgrid",
+									// 	"type": "rule",
+									// 	"from": {"data": "facet"},
+									// 	"encode": {
+									// 		"update": {
+									// 			"x": {"scale": "x", "field": vlSpec.encoding.x.field},
+									// 			"x2": {"scale": "x", "field": vlSpec.encoding.x.field},
+									// 			"y": {"value": 0},
+									// 			"y2": {"signal": "child_height"},
+									// 			"stroke": {"scale": "mc_color", "field": "modelcheck_group"},
+									// 			"strokeWidth": {"value": 1}
+									// 		}
+									// 	}
+									// },
+									// {
+									// 	"name": "ygrid",
+									// 	"type": "rule",
+									// 	"from": {"data": "facet"},
+									// 	"encode": {
+									// 		"update": {
+									// 			"x": {"value": 0},
+									// 			"x2": {"signal": "child_width"},
+									// 			"y": {"scale": "y", "field": vlSpec.encoding.y.field},
+									// 			"y2": {"scale": "y", "field": vlSpec.encoding.y.field},
+									// 			"stroke": {"scale": "mc_color", "field": "modelcheck_group"},
+									// 			"strokeWidth": {"value": 1}
+									// 		}
+									// 	}
+									// }
 								]
 								: [
 									{
@@ -2480,60 +2227,61 @@
 										}
 									}
 								],
-							"axes": chartType == "heatmap"
-								? []
-								: chartType == "stripx_uni" 
-									? [
-										{
-											"scale": "y",
-											"orient": "left",
-											"grid": true,
-											"tickCount": {
-												"signal": "ceil(child_height / 30)"
-											},
-											"domain": false,
-											"labels": false,
-											"aria": false,
-											"maxExtent": 0,
-											"minExtent": 0,
-											"ticks": false,
-											"zindex": 0
-										}
-									]
-									: [
-										{
-											"scale": "x",
-											"orient": "bottom",
-											"gridScale": "y",
-											"grid": true,
-											"tickCount": {
-												"signal": "ceil(child_width / 30)"
-											},
-											"domain": false,
-											"labels": false,
-											"aria": false,
-											"maxExtent": 0,
-											"minExtent": 0,
-											"ticks": false,
-											"zindex": 0
+							// "axes": chartType == "heatmap"
+							// 	? []
+							// 	: 
+							"axes":	chartType == "stripx_uni" 
+								? [
+									{
+										"scale": "y",
+										"orient": "left",
+										"grid": true,
+										"tickCount": {
+											"signal": "ceil(child_height / 30)"
 										},
-										{
-											"scale": "y",
-											"orient": "left",
-											"gridScale": "x",
-											"grid": true,
-											"tickCount": {
-												"signal": "ceil(child_height / 30)"
-											},
-											"domain": false,
-											"labels": false,
-											"aria": false,
-											"maxExtent": 0,
-											"minExtent": 0,
-											"ticks": false,
-											"zindex": 0
-										}
-									]
+										"domain": false,
+										"labels": false,
+										"aria": false,
+										"maxExtent": 0,
+										"minExtent": 0,
+										"ticks": false,
+										"zindex": 0
+									}
+								]
+								: [
+									{
+										"scale": "x",
+										"orient": "bottom",
+										"gridScale": "y",
+										"grid": true,
+										"tickCount": {
+											"signal": "ceil(child_width / 30)"
+										},
+										"domain": false,
+										"labels": false,
+										"aria": false,
+										"maxExtent": 0,
+										"minExtent": 0,
+										"ticks": false,
+										"zindex": 0
+									},
+									{
+										"scale": "y",
+										"orient": "left",
+										"gridScale": "x",
+										"grid": true,
+										"tickCount": {
+											"signal": "ceil(child_height / 30)"
+										},
+										"domain": false,
+										"labels": false,
+										"aria": false,
+										"maxExtent": 0,
+										"minExtent": 0,
+										"ticks": false,
+										"zindex": 0
+									}
+								]
 						}
 					],
 					"scales": originalScales, // plug in original scales to keep vegaLite settings
@@ -2637,36 +2385,6 @@
 							"name": "data_0",
 							"source": "table",
 							"transform": getFilterSyntax(["modelcheck_group"])
-							// chartType == "barx" 
-							// 	? [
-							// 		{
-							// 			"type": "filter",
-							// 			"expr": (customSortX || strX)
-							// 				? `isValid(datum[\"${vlSpec.encoding.x.field}\"])`
-							// 				: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"])`
-							// 		},
-							// 		{
-							// 			"type": "aggregate", 
-							// 			"groupby": ["modelcheck_group", vlSpec.encoding.x.field],
-							// 			"ops": ["count"],
-							// 			"fields": [null],
-							// 			"as": ["__count"]
-							// 		}
-							// 	]
-							// 	: [
-							// 		{
-							// 			"type": "filter",
-							// 			"expr": chartType == "stripy_uni"
-							// 				? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"])`
-							// 				: (customSortX || strX) && (customSortY || strY)
-							// 					? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-							// 					: (customSortX || strX)
-							// 						? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-							// 						: (customSortY || strY)
-							// 							? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-							// 							: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-							// 		}
-							// 	]
 						},
 						{
 							"name": "row_domain",
@@ -2936,61 +2654,6 @@
 							"name": "data_0",
 							"source": "table",
 							"transform": getFilterSyntax(["modelcheck_group"])
-							// chartType == "heatmap"
-							// 	? [
-							// 		{
-							// 			"type": "filter",
-							// 			"expr": (customSortX || strX) && (customSortY || strY)
-							// 				? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-							// 				: (customSortX || strX)
-							// 					? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-							// 					: (customSortY || strY)
-							// 						? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-							// 						: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-							// 		},
-							// 		{
-							// 			"type": "aggregate",
-							// 			"groupby": ["modelcheck_group", vlSpec.encoding.x.field, vlSpec.encoding.y.field],
-							// 			"ops": ["count"],
-							// 			"fields": [null],
-							// 			"as": ["__count1"]
-							// 		},
-							// 		{
-							// 			"type": "formula", 
-							// 			"as": "__count", 
-							// 			"expr": "datum.__count1 - 1"
-							// 		}
-							// 	]
-							// 	: chartType == "bary" 
-							// 		? [
-							// 			{
-							// 				"type": "filter",
-							// 				"expr": (customSortY || strY) 
-							// 					? `isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-							// 					: `isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-							// 			},
-							// 			{
-							// 				"type": "aggregate", 
-							// 				"groupby": ["modelcheck_group", vlSpec.encoding.y.field],
-							// 				"ops": ["count"],
-							// 				"fields": [null],
-							// 				"as": ["__count"]
-							// 			}
-							// 		]
-							// 		: [
-							// 			{
-							// 				"type": "filter",
-							// 				"expr": chartType == "stripx_uni" 
-							// 					? `isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-							// 					: (customSortX || strX) && (customSortY || strY)
-							// 						? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-							// 						: (customSortX || strX)
-							// 							? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-							// 							: (customSortY || strY)
-							// 								? `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"])`
-							// 								: `isValid(datum[\"${vlSpec.encoding.x.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.x.field}\"]) && isValid(datum[\"${vlSpec.encoding.y.field}\"]) && isFinite(+datum[\"${vlSpec.encoding.y.field}\"])`
-							// 			}
-							// 		]
 						},
 						{
 							"name": "column_domain",
@@ -3168,38 +2831,38 @@
 										"encode": {
 											"update": originalEncoding // plug in compiled encoding for primary axes
 										}
-									},
-									// custom grid lines for heatmaps
-									{
-										"name": "xgrid",
-										"type": "rule",
-										"from": {"data": "facet"},
-										"encode": {
-											"update": {
-												"x": {"scale": "x", "field": vlSpec.encoding.x.field},
-												"x2": {"scale": "x", "field": vlSpec.encoding.x.field},
-												"y": {"value": 0},
-												"y2": {"signal": "child_height"},
-												"stroke": {"scale": "mc_color", "field": "modelcheck_group"},
-												"strokeWidth": {"value": 1}
-											}
-										}
-									},
-									{
-										"name": "ygrid",
-										"type": "rule",
-										"from": {"data": "facet"},
-										"encode": {
-											"update": {
-												"x": {"value": 0},
-												"x2": {"signal": "child_width"},
-												"y": {"scale": "y", "field": vlSpec.encoding.y.field},
-												"y2": {"scale": "y", "field": vlSpec.encoding.y.field},
-												"stroke": {"scale": "mc_color", "field": "modelcheck_group"},
-												"strokeWidth": {"value": 1}
-											}
-										}
-									}
+									}//,
+									// // custom grid lines for heatmaps
+									// {
+									// 	"name": "xgrid",
+									// 	"type": "rule",
+									// 	"from": {"data": "facet"},
+									// 	"encode": {
+									// 		"update": {
+									// 			"x": {"scale": "x", "field": vlSpec.encoding.x.field},
+									// 			"x2": {"scale": "x", "field": vlSpec.encoding.x.field},
+									// 			"y": {"value": 0},
+									// 			"y2": {"signal": "child_height"},
+									// 			"stroke": {"scale": "mc_color", "field": "modelcheck_group"},
+									// 			"strokeWidth": {"value": 1}
+									// 		}
+									// 	}
+									// },
+									// {
+									// 	"name": "ygrid",
+									// 	"type": "rule",
+									// 	"from": {"data": "facet"},
+									// 	"encode": {
+									// 		"update": {
+									// 			"x": {"value": 0},
+									// 			"x2": {"signal": "child_width"},
+									// 			"y": {"scale": "y", "field": vlSpec.encoding.y.field},
+									// 			"y2": {"scale": "y", "field": vlSpec.encoding.y.field},
+									// 			"stroke": {"scale": "mc_color", "field": "modelcheck_group"},
+									// 			"strokeWidth": {"value": 1}
+									// 		}
+									// 	}
+									// }
 								]
 								: [
 									{
@@ -3218,60 +2881,61 @@
 										}
 									}
 								],
-							"axes": chartType == "heatmap"
-								? []
-								: chartType == "stripx_uni" 
-									? [
-										{
-											"scale": "y",
-											"orient": "left",
-											"grid": true,
-											"tickCount": {
-												"signal": "ceil(child_height / 30)"
-											},
-											"domain": false,
-											"labels": false,
-											"aria": false,
-											"maxExtent": 0,
-											"minExtent": 0,
-											"ticks": false,
-											"zindex": 0
-										}
-									]
-									: [
-										{
-											"scale": "x",
-											"orient": "bottom",
-											"gridScale": "y",
-											"grid": true,
-											"tickCount": {
-												"signal": "ceil(child_width / 30)"
-											},
-											"domain": false,
-											"labels": false,
-											"aria": false,
-											"maxExtent": 0,
-											"minExtent": 0,
-											"ticks": false,
-											"zindex": 0
+							// "axes": chartType == "heatmap"
+							// 	? []
+							// 	: 
+							"axes": chartType == "stripx_uni" 
+								? [
+									{
+										"scale": "y",
+										"orient": "left",
+										"grid": true,
+										"tickCount": {
+											"signal": "ceil(child_height / 30)"
 										},
-										{
-											"scale": "y",
-											"orient": "left",
-											"gridScale": "x",
-											"grid": true,
-											"tickCount": {
-												"signal": "ceil(child_height / 30)"
-											},
-											"domain": false,
-											"labels": false,
-											"aria": false,
-											"maxExtent": 0,
-											"minExtent": 0,
-											"ticks": false,
-											"zindex": 0
-										}
-									]
+										"domain": false,
+										"labels": false,
+										"aria": false,
+										"maxExtent": 0,
+										"minExtent": 0,
+										"ticks": false,
+										"zindex": 0
+									}
+								]
+								: [
+									{
+										"scale": "x",
+										"orient": "bottom",
+										"gridScale": "y",
+										"grid": true,
+										"tickCount": {
+											"signal": "ceil(child_width / 30)"
+										},
+										"domain": false,
+										"labels": false,
+										"aria": false,
+										"maxExtent": 0,
+										"minExtent": 0,
+										"ticks": false,
+										"zindex": 0
+									},
+									{
+										"scale": "y",
+										"orient": "left",
+										"gridScale": "x",
+										"grid": true,
+										"tickCount": {
+											"signal": "ceil(child_height / 30)"
+										},
+										"domain": false,
+										"labels": false,
+										"aria": false,
+										"maxExtent": 0,
+										"minExtent": 0,
+										"ticks": false,
+										"zindex": 0
+									}
+								]
 						}
 					],
 					"scales": originalScales, // plug in original scales to keep vegaLite settings
