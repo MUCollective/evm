@@ -751,10 +751,12 @@
 	*/
 
 	// call main event handler for modeling
-	async function callModelcheck(data, outcomeName, calcResiduals = true) {
-		// console.log("calling server");
-		// console.log("models", models);
-		// console.log("data", data);
+	async function callModelcheck(data, outcomeName, calcResiduals) {
+		console.log("calling server");
+		console.log("models", models);
+		console.log("data", data);
+		console.log("outcome", outcomeName);
+		console.log("resid", calcResiduals);
 
 		showLoadingIcon = true; // do this for individual operations? NO, TOO MUCH LAG IN FEEDBACK
 
