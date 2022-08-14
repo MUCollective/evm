@@ -34,7 +34,7 @@ const sortOrdinalOnAxe = (sortVgSpec, {axe, sortIndex, vlSpec, isModeling}) => {
         "field": sortIndexField,
         "op": "max"
     };
-    if (axe === 'y' && !isModeling) {
+    if (axe === 'y' && !isModeling) { // y axe sorting hack 
         sortVgSpec.scales[axe === 'x' ? 0 : 1].domain.sort.order = 'descending';
     }
     //endregion
@@ -80,7 +80,48 @@ const sortOrdinalOnColumnRow = (sortVgSpec, {cell, sortIndex, vlSpec, isModeling
     return sortVgSpec;
 }
 
-const sortOrdinal = (vgSpec, {vlSpec, ordinalSortIndex, isModeling}) => {
+const sortModels = (sortVgSpec, {sortIndex, vlSpec, modelVar}) => {
+    const transformSortIndexExpr = getTransformExpr(sortIndex, modelVar);
+    const sortIndexField = `${modelVar}_sort_index`;
+    //region gen sort index field
+    if (sortVgSpec.data && !sortVgSpec.data[0].transform) {
+        sortVgSpec.data[0].transform = [];
+    }
+    sortVgSpec.data[0].transform.push({
+        "type": "formula",
+        "expr": transformSortIndexExpr,
+        "as": sortIndexField
+    });
+    //endregion
+
+    //region groupby sort index
+    if (vlSpec.mark.type === "bar" || vlSpec.mark.type === "rect") {
+        sortVgSpec.data[1].transform[0].groupby.push(sortIndexField);
+    }
+    sortVgSpec.data.find(v => v.name === `row_domain`).transform[0].groupby.push(sortIndexField);
+    //endregion
+
+    //region sort in mark
+    sortVgSpec.marks.find(v => v.name === `row_header`).sort = {
+        "field": `datum[\"${sortIndexField}\"]`,
+        "order": "ascending"
+    };
+
+    sortVgSpec.marks.find(v => v.style === `cell`).from.facet.groupby.push(sortIndexField);
+    delete sortVgSpec.marks.find(v => v.style === `cell`).from.facet.aggregate;
+    sortVgSpec.marks.find(v => v.style === `cell`).sort = {
+        "field": `datum[\"${sortIndexField}\"]`,
+        "order": "ascending"
+    };
+    //endregion
+
+    //region sort in scale
+    sortVgSpec.scales.find(s => s.name === 'color').domain = sortIndex[modelVar];
+    //endregion
+    return sortVgSpec;
+}
+
+const sortOrdinal = (vgSpec, {vlSpec, ordinalSortIndex, isModeling, models}) => {
     const sortVgSpec = JSON.parse(JSON.stringify(vgSpec));
 
 	const sortIndex = ordinalSortIndex;
@@ -96,6 +137,12 @@ const sortOrdinal = (vgSpec, {vlSpec, ordinalSortIndex, isModeling}) => {
     }
     if (vlSpec.encoding.row && Object.keys(sortIndex).includes(vlSpec.encoding.row.field)) {
         sortOrdinalOnColumnRow(sortVgSpec, {cell: 'row', sortIndex, vlSpec, isModeling});
+    }
+
+    if (isModeling) {
+        const modelVar = "modelcheck_group";
+        const sortIndex = {[modelVar]: ["data"].concat(models.map(m => m.name))};
+        sortModels(sortVgSpec, {sortIndex, vlSpec, modelVar});
     }
 
     return sortVgSpec;

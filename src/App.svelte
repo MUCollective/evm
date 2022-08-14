@@ -809,7 +809,6 @@
 			})
 			.then(function (modelData) {
 				console.log("this should be a the data with model predictions");
-				console.log(modelData);
 				// modelData = modelData.filter((row) => row.draw === 1);
 				dataModelOutput = [...modelData];
 				// update dataChanged
@@ -817,6 +816,7 @@
 					(row) => !row.modelcheck_group.startsWith("res") //&& row.draw === 1
 				);
 				dataChanged = [...dataChanged];
+				console.log(dataChanged);
 				// update vlSpec
 				showLoadingIcon = false;
 				specChanged++;
