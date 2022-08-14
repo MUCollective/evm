@@ -3035,7 +3035,7 @@
 	}
 	console.log("use vgSpec", vgSpec);
 	// console.log(ordinalSortIndex);
-	vgSpec = sortOrdinal(vgSpec, {vlSpec, ordinalSortIndex});
+	vgSpec = sortOrdinal(vgSpec, {vlSpec, ordinalSortIndex, 'isModeling': modeling && haveModelToShow});
 	console.log("vgSpec (after sorting ordinal)", vgSpec);
 
 	function distinctValues(dataObj, key) {

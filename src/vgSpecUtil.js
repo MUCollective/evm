@@ -7,7 +7,7 @@ const getTransformExpr = (sortIndex, key) => {
 }
 
 
-const sortOrdinalOnAxe = (sortVgSpec, {axe, sortIndex, vlSpec}) => {
+const sortOrdinalOnAxe = (sortVgSpec, {axe, sortIndex, vlSpec, isModeling}) => {
     const ordinalVar = vlSpec.encoding[axe].field;
     const transformSortIndexExpr = getTransformExpr(sortIndex, ordinalVar);
     const sortIndexField = `${ordinalVar}_sort_index`;
@@ -30,15 +30,18 @@ const sortOrdinalOnAxe = (sortVgSpec, {axe, sortIndex, vlSpec}) => {
     //endregion
 
     //region sort in scale
-    sortVgSpec.scales[axe == 'x' ? 0 : 1].domain.sort = {
+    sortVgSpec.scales[axe === 'x' ? 0 : 1].domain.sort = {
         "field": sortIndexField,
         "op": "max"
     };
+    if (axe === 'y' && !isModeling) {
+        sortVgSpec.scales[axe === 'x' ? 0 : 1].domain.sort.order = 'descending';
+    }
     //endregion
     return sortVgSpec;
 }
 
-const sortOrdinalOnColumnRow = (sortVgSpec, {cell, sortIndex, vlSpec}) => {
+const sortOrdinalOnColumnRow = (sortVgSpec, {cell, sortIndex, vlSpec, isModeling}) => {
     const ordinalVar = vlSpec.encoding[cell].field;
     const transformSortIndexExpr = getTransformExpr(sortIndex, ordinalVar);
     const sortIndexField = `${ordinalVar}_sort_index`;
@@ -77,22 +80,22 @@ const sortOrdinalOnColumnRow = (sortVgSpec, {cell, sortIndex, vlSpec}) => {
     return sortVgSpec;
 }
 
-const sortOrdinal = (vgSpec, {vlSpec, ordinalSortIndex}) => {
+const sortOrdinal = (vgSpec, {vlSpec, ordinalSortIndex, isModeling}) => {
     const sortVgSpec = JSON.parse(JSON.stringify(vgSpec));
 
 	const sortIndex = ordinalSortIndex;
 
     if (vlSpec.encoding.x && Object.keys(sortIndex).includes(vlSpec.encoding.x.field) && !vlSpec.encoding.x.aggregate) {
-        sortOrdinalOnAxe(sortVgSpec, {axe: 'x', sortIndex, vlSpec});
+        sortOrdinalOnAxe(sortVgSpec, {axe: 'x', sortIndex, vlSpec, isModeling});
     }
     if (vlSpec.encoding.y && Object.keys(sortIndex).includes(vlSpec.encoding.y.field) && !vlSpec.encoding.y.aggregate) {
-        sortOrdinalOnAxe(sortVgSpec, {axe: 'y', sortIndex, vlSpec});
+        sortOrdinalOnAxe(sortVgSpec, {axe: 'y', sortIndex, vlSpec, isModeling});
     }
     if (vlSpec.encoding.column && Object.keys(sortIndex).includes(vlSpec.encoding.column.field)) {
-        sortOrdinalOnColumnRow(sortVgSpec, {cell: 'column', sortIndex, vlSpec});
+        sortOrdinalOnColumnRow(sortVgSpec, {cell: 'column', sortIndex, vlSpec, isModeling});
     }
     if (vlSpec.encoding.row && Object.keys(sortIndex).includes(vlSpec.encoding.row.field)) {
-        sortOrdinalOnColumnRow(sortVgSpec, {cell: 'row', sortIndex, vlSpec});
+        sortOrdinalOnColumnRow(sortVgSpec, {cell: 'row', sortIndex, vlSpec, isModeling});
     }
 
     return sortVgSpec;
