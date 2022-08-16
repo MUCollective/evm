@@ -48,8 +48,10 @@
 
     let ordinalSortIndex = {};
 
-    const logSave = false;
-    // const logSave = true;
+    let disableUserIdInput = false;
+
+    // const logSave = false;
+    const logSave = true;
 
     const logSaveUrl = uri => `http://127.0.0.1:8000${uri}`;
 
@@ -195,6 +197,12 @@
 		await mountData();
 	});
 
+    function confirmUserId(newUserId) {
+        userId = newUserId;
+        disableUserIdInput = true;
+        updateLogs(`start, userId: ${userId}`);
+    }
+
 	function changeDataset(datasetName) {
 		dndState[0].name = datasetName;
 		mountData();
@@ -304,9 +312,9 @@
 			determineChartType(vlSpec, varName);
 			vlSpec = { ...vlSpec };
 			specChanged++;
+            updateLogs(`dnd finalize, shelf: [${e.srcElement.id}], variable: [${varName}]`)
 			// console.log("vlspec:", vlSpec);
 		}
-        updateLogs(`dnd finalize, shelf: [${e.srcElement.id}], variable: [${varName}]`)
 	}
 
 	function determineChartType(vlSpec: VisualizationSpec, varName: string) {
@@ -463,11 +471,11 @@
 			.then(() => {
 				// reconcile state changes
 				filterTransModel();
+                updateLogs(`add filter, variable: [${varToFilter}] condition: [${includeOrExclude}] [${condition}] value: [${conditionValue1}] [${conditionValue2}]`)
 			})
 			.catch(function (err) {
 				console.log(err);
 			});
-        updateLogs(`add filter, variable: [${varToFilter}] condition: [${includeOrExclude}] [${condition}] value: [${conditionValue1}] [${conditionValue2}]`)
 	}
 
 	function removeFilter(index, clearAll = false) {
@@ -494,11 +502,11 @@
 			.then(() => {
 				// reconcile state changes
 				filterTransModel();
+                updateLogs(`remove filter, index: [${clearAll ? 'all' : index}]`)
 			})
 			.catch(function (err) {
 				console.log(err);
 			});
-        updateLogs(`remove filter, index: [${clearAll ? 'all' : index}]`)
 	}
 
 	/**
@@ -571,11 +579,11 @@
 			.then(() => {
 				// reconcile state changes
 				filterTransModel();
+                updateLogs(`add transformation, variable: [${transVar}] transform: [${transform}]`)
 			})
 			.catch(function (err) {
 				console.log(err);
 			});
-        updateLogs(`add transformation, variable: [${transVar}] transform: [${transform}]`)
 	}
 
 	function removeTrans(index, clearAll = false) {
@@ -602,11 +610,11 @@
 			.then(() => {
 				// reconcile state changes
 				filterTransModel();
+                updateLogs(`remove transformation, index: [${clearAll ? 'all' : index}]`)
 			})
 			.catch(function (err) {
 				console.log(err);
 			});
-        updateLogs(`remove transformation, index: [${clearAll ? 'all' : index}]`)
 	}
 
 	function formatVariable(varName, transform) {
@@ -820,6 +828,7 @@
 				// update vlSpec
 				showLoadingIcon = false;
 				specChanged++;
+                updateLogs(`add model, family: [${newModel.family}] mu_spec: [${newModel.mu_spec}] sigma_spec: [${newModel.sigma_spec}]`)
 			})
 			.catch(function (err) {
                 modeling = models.length > 1;
@@ -830,7 +839,6 @@
 				console.log(err);
 			});
 		// specChanged++; // not sure if this is necessary
-        updateLogs(`add model, family: [${newModel.family}] mu_spec: [${newModel.mu_spec}] sigma_spec: [${newModel.sigma_spec}]`)
 	}
 
 	// revert to data only
@@ -902,11 +910,11 @@
 				// console.log("after remove model data", dataChanged);
 
 				specChanged++;
+                updateLogs(`remove model, index: [${removeAll ? 'all' : index}]`)
 			})
 			.catch(function (err) {
 				console.log(err);
 			});
-        updateLogs(`remove model, index: [${removeAll ? 'all' : index}]`)
 	}
 
 	function showResiduals() {
@@ -927,12 +935,12 @@
 				// update chart
 				showLoadingIcon = false;
 				specChanged++;
+                updateLogs('show residuals')
 			})
 			.catch(function (err) {
 				console.log(err);
 			});
 		// specChanged++;
-        updateLogs('show residuals')
 	}
 
 	function hideResiduals() {
@@ -953,12 +961,12 @@
 				// update chart
 				showLoadingIcon = false;
 				specChanged++;
+                updateLogs('hide residuals')
 			})
 			.catch(function (err) {
 				console.log(err);
 			});
 		// specChanged++;
-        updateLogs('hide residuals')
 	}
 
 	/**
@@ -1034,6 +1042,7 @@
 		}
 		vlSpec = { ...vlSpec };
 		specChanged++;
+        updateLogs(`remove variable, shelf: [${shelfId}]`)
 	}
 
 	function deepCopy(inObject) {
@@ -1077,7 +1086,7 @@
 </svelte:head>
 
 <main>
-	<Header {name} {datasetNameToPath} {dndState} {changeDataset} {modelChecking} {changeModelChecking} bind:userId/>
+	<Header {name} {datasetNameToPath} {dndState} {changeDataset} {modelChecking} {changeModelChecking} {confirmUserId} {disableUserIdInput}/>
 	{#if mounted}
 		<Grid fullWidth>
 			<Row style="display: flex; flex-wrap: nowrap;">

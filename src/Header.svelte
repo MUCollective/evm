@@ -9,7 +9,10 @@
 	let src = "./logo.png";
 
 	let datasetName = dndState[0].name;
-	export let userId = "";
+	// export let userId = "";
+	let userId = "";
+	export let confirmUserId;
+	export let disableUserIdInput;
 </script>
 
 
@@ -87,8 +90,18 @@
 				user id
 			</h4>
 		</div>
-		<div class="box">
-			<input bind:value={userId} style="padding: initial;" />
+		<div class="row-box">
+			<div class="box">
+				<input bind:value={userId} style="padding: initial;" size="15" disabled={disableUserIdInput}/>
+			</div>
+			<div class="box">
+				<button
+					on:click={confirmUserId(userId)}
+				>
+					<!-- &#10003; -->
+					Confirm
+				</button>
+			</div>
 		</div>
 	</div>
 
