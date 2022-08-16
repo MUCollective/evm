@@ -48,8 +48,10 @@
 
     let ordinalSortIndex = {};
 
-    const logSave = false;
-    // const logSave = true;
+    let disableUserIdInput = false;
+
+    // const logSave = false;
+    const logSave = true;
 
     const logSaveUrl = uri => `http://127.0.0.1:8000${uri}`;
 
@@ -194,6 +196,12 @@
 	onMount(async () => {
 		await mountData();
 	});
+
+    function confirmUserId(newUserId) {
+        userId = newUserId;
+        disableUserIdInput = true;
+        updateLogs(`start, userId: ${userId}`);
+    }
 
 	function changeDataset(datasetName) {
 		dndState[0].name = datasetName;
@@ -1077,7 +1085,7 @@
 </svelte:head>
 
 <main>
-	<Header {name} {datasetNameToPath} {dndState} {changeDataset} {modelChecking} {changeModelChecking} bind:userId/>
+	<Header {name} {datasetNameToPath} {dndState} {changeDataset} {modelChecking} {changeModelChecking} {confirmUserId} {disableUserIdInput}/>
 	{#if mounted}
 		<Grid fullWidth>
 			<Row style="display: flex; flex-wrap: nowrap;">
