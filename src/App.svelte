@@ -53,7 +53,7 @@
     // const logSave = false;
     const logSave = true;
 
-    const logSaveUrl = uri => `http://158.247.215.182:5000${uri}` //`http://127.0.0.1:8000${uri}`;
+    const logSaveUrl = uri => `https://qr.app.ncj.wiki${uri}` //`https://158.247.215.182:5000${uri}` //`http://127.0.0.1:8000${uri}`;
 
     const updateLogs = async (info) => {
         if (!logSave) {
