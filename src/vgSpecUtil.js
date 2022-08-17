@@ -226,11 +226,11 @@ const sortOrdinal = (vgSpec, {vlSpec, ordinalSortIndex, isModeling, models}) => 
         sortOrdinalOnColumnRow(sortVgSpec, {cell: 'row', sortIndex, vlSpec, isModeling});
     }
 
-    if (isModeling) {
-        const modelVar = "modelcheck_group";
-        const sortIndex = {[modelVar]: ["data"].concat(models.map(m => m.name))};
-        sortModels(sortVgSpec, {sortIndex, vlSpec, modelVar});
-    }
+    // if (isModeling) {
+    //     const modelVar = "modelcheck_group";
+    //     const sortIndex = {[modelVar]: ["data"].concat(models.map(m => m.name))};
+    //     sortModels(sortVgSpec, {sortIndex, vlSpec, modelVar});
+    // }
 
     return sortVgSpec;
 };

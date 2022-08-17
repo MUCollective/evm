@@ -3035,8 +3035,8 @@
 	}
 	console.log("use vgSpec", vgSpec);
 	// console.log(ordinalSortIndex);
-	// vgSpec = sortOrdinal(vgSpec, {vlSpec, ordinalSortIndex, 'isModeling': modeling && haveModelToShow, models});
-	// console.log("vgSpec (after sorting ordinal)", vgSpec);
+	vgSpec = sortOrdinal(vgSpec, {vlSpec, ordinalSortIndex, 'isModeling': modeling && haveModelToShow, models});
+	console.log("vgSpec (after sorting ordinal)", vgSpec);
 
 	function distinctValues(dataObj, key) {
 		var lookup = {};
