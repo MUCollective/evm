@@ -2,6 +2,9 @@ from node import Node
 from tree import Tree
 
 
+test_user_ids = ["UserIdTest", "ZGtest", "ZGtest1", "ZGtest11"]
+
+
 def gen_tree(logs_dataframe):
 
     if 'userId' not in logs_dataframe:
@@ -11,6 +14,8 @@ def gen_tree(logs_dataframe):
 
     trees = []
     for k, df in split_logs_dataframe:
+        if k in test_user_ids:
+            continue
         if k == '':
             continue
         tree = Tree()
