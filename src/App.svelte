@@ -191,7 +191,7 @@
 			transform :[]
 		}
         ordinalSortIndex = await d3.json(ordinalSortIndexPath);
-        updateLogs('load dataset ' + dndState[0].name)
+        updateLogs('load dataset, ' + dndState[0].name)
 	}
 
 	onMount(async () => {
@@ -213,7 +213,7 @@
 		modelChecking = !modelChecking;
 		models = [];
 		modeling = false;
-        updateLogs(modelChecking ? 'turn on model checking ' : 'turn off model checking')
+        updateLogs(modelChecking ? 'turn on model checking' : 'turn off model checking')
 	}
 
 	function updateStateTransforms() {

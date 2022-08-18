@@ -54,7 +54,7 @@ def add_log():
         '"' + body['showPredictionOrResidual'] + '"',
         '"' + body['info'] + '"')
     query_results = BigQuery_client.client.query(query)
-    print(body['info'])
+    print(body['info'], query_results)
     return {'success': True, 'info': ''}
 
 

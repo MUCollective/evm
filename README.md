@@ -135,6 +135,53 @@ const updateLogs = async (info) => {
 ...
 ```
 
+## Data Analysis
+
+### Build tree structure
+
+This template also provides python scripts to fetch data from Google cloud database and construct the logs into tree structure. You need to get a Google Cloud database first (Follow instructions in previous part to build a database and connect to it). 
+
+Install the dependencies...
+
+```shell
+cd data_analysis
+pip install -r requirements.txt
+```
+
+...run the script
+```shell
+python main.py <PATH_TO_CLIENT_SECRET> <PROJECT_NAME>
+```
+
+The client secret and project name can use the ones used in previous part.
+
+This script will save the raw **csv** files fetched from database into `out/raw` and save the tree structure **json** into `out/tree`. The files will be named as the date and time when being generated.
+
+### Visualize the tree
+
+Use the path of tree's version you want to visualize.
+
+```javascript
+
+fetch("test.json") // replace test.json with your json's path
+    .then(response => response.json())
+    .then(json => {
+        console.log('load test.js')
+        const treeData = json;
+
+        let nodes = d3.hierarchy(treeData, d => d.children);
+
+```
+
+Build a simple http server using `Python`.
+
+```shell
+cd visualization
+python -m http.server
+```
+
+Access the visualization in `localhost` (default port is `8000`).
+
 # FIX: Vega-Lite & Semver
 Whenever you clone this repo, access `./node_modules/semver/ranges` directory and open `outside.js` and `subset.js`.
 Comment out line 3 of each file (which is `const { ANY } = Comparator`).
