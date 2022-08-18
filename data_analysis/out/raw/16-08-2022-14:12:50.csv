@@ -1,0 +1,1268 @@
+,userId,time,datasetName,modelChecking,modeling,vlSpec,dndState,filters,transforms,models,showPredictionOrResidual,info
+0,,2022-08-01 22:32:49,Cars,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': 'tick', 'encoding': {}, 'transform': []}","[{'id': 'variables', 'name': 'Cars', 'items': array([{'id': 0, 'idx': 0, 'name': 'name', 'trans': 'none', 'outcome': False},
+        {'id': 1, 'idx': 1, 'name': 'mpg', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'cyl', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dsp', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'hp', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'lbs', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'acc', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'year', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'origin', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([], dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([], dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,load dataset Cars
+1,aaaaa,2022-08-01 22:32:58,Cars,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'vertical'}, 'encoding': {'x': {'field': 'mpg', 'type': 'quantitative'}}, 'transform': []}","[{'id': 'variables', 'name': 'Cars', 'items': array([{'id': 0, 'idx': 0, 'name': 'name', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'cyl', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dsp', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'hp', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'lbs', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'acc', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'year', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'origin', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 1, 'idx': 1, 'name': 'mpg', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([], dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [variables], variable: [undefined]"
+2,aaaaa,2022-08-01 22:32:58,Cars,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'vertical'}, 'encoding': {'x': {'field': 'mpg', 'type': 'quantitative'}}, 'transform': []}","[{'id': 'variables', 'name': 'Cars', 'items': array([{'id': 0, 'idx': 0, 'name': 'name', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'cyl', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dsp', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'hp', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'lbs', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'acc', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'year', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'origin', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 1, 'idx': 1, 'name': 'mpg', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([], dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [x-drop], variable: [mpg]"
+3,aaaaa,2022-08-01 22:54:07,Cars,True,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'vertical'}, 'encoding': {'x': {'field': 'mpg', 'type': 'quantitative'}, 'y': {'field': 'cyl', 'type': 'ordinal'}}, 'transform': []}","[{'id': 'variables', 'name': 'Cars', 'items': array([{'id': 0, 'idx': 0, 'name': 'name', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dsp', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'hp', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'lbs', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'acc', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'year', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'origin', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 1, 'idx': 1, 'name': 'mpg', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 2, 'idx': 2, 'name': 'cyl', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,turn on model checking 
+4,aaaaa,2022-08-01 22:54:05,Cars,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'vertical'}, 'encoding': {'x': {'field': 'mpg', 'type': 'quantitative'}, 'y': {'field': 'cyl', 'type': 'ordinal'}}, 'transform': []}","[{'id': 'variables', 'name': 'Cars', 'items': array([{'id': 0, 'idx': 0, 'name': 'name', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dsp', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'hp', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'lbs', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'acc', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'year', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'origin', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 1, 'idx': 1, 'name': 'mpg', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 2, 'idx': 2, 'name': 'cyl', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [y-drop], variable: [cyl]"
+5,aaaaa,2022-08-01 22:54:05,Cars,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'vertical'}, 'encoding': {'x': {'field': 'mpg', 'type': 'quantitative'}, 'y': {'field': 'cyl', 'type': 'ordinal'}}, 'transform': []}","[{'id': 'variables', 'name': 'Cars', 'items': array([{'id': 0, 'idx': 0, 'name': 'name', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dsp', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'hp', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'lbs', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'acc', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'year', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'origin', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 1, 'idx': 1, 'name': 'mpg', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 2, 'idx': 2, 'name': 'cyl', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [variables], variable: [undefined]"
+6,aaaa,2022-08-01 14:04:31,Cars,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'horizontal'}, 'encoding': {'x': {'field': 'cyl', 'type': 'ordinal'}, 'y': {'field': 'mpg', 'type': 'quantitative'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Cars', 'items': array([{'id': 0, 'idx': 0, 'name': 'name', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dsp', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'hp', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'lbs', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'acc', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'year', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'origin', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 2, 'idx': 2, 'name': 'cyl', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 1, 'idx': 1, 'name': 'mpg', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [variables], variable: [undefined]"
+7,aaaa,2022-08-01 14:04:31,Cars,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'horizontal'}, 'encoding': {'x': {'field': 'cyl', 'type': 'ordinal'}, 'y': {'field': 'mpg', 'type': 'quantitative'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Cars', 'items': array([{'id': 0, 'idx': 0, 'name': 'name', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dsp', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'hp', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'lbs', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'acc', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'year', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'origin', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 2, 'idx': 2, 'name': 'cyl', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 1, 'idx': 1, 'name': 'mpg', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [y-drop], variable: [mpg]"
+8,,2022-08-02 12:18:00,Students,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': 'tick', 'encoding': {}, 'transform': []}","[{'id': 'variables', 'name': 'Students', 'items': array([{'id': 0, 'idx': 0, 'name': 'age', 'trans': 'none', 'outcome': False},
+        {'id': 1, 'idx': 1, 'name': 'urban_address', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'travel_time', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'study_time', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'classes_failed', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'absences', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'guardian_education', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'guardian_job', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([], dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([], dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,load dataset Students
+9,,2022-08-02 12:01:01,Students,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': 'tick', 'encoding': {}, 'transform': []}","[{'id': 'variables', 'name': 'Students', 'items': array([{'id': 0, 'idx': 0, 'name': 'age', 'trans': 'none', 'outcome': False},
+        {'id': 1, 'idx': 1, 'name': 'urban_address', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'travel_time', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'study_time', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'classes_failed', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'absences', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'guardian_education', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'guardian_job', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([], dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([], dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,load dataset Students
+10,,2022-08-02 12:18:03,Students,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'bar', 'orient': 'vertical'}, 'encoding': {'x': {'field': 'age', 'type': 'ordinal'}, 'y': {'field': 'age', 'aggregate': 'count'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Students', 'items': array([{'id': 1, 'idx': 1, 'name': 'urban_address', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'travel_time', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'study_time', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'classes_failed', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'absences', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'guardian_education', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'guardian_job', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 0, 'idx': 0, 'name': 'age', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([], dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [x-drop], variable: [age]"
+11,,2022-08-02 12:18:03,Students,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'bar', 'orient': 'vertical'}, 'encoding': {'x': {'field': 'age', 'type': 'ordinal'}, 'y': {'field': 'age', 'aggregate': 'count'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Students', 'items': array([{'id': 1, 'idx': 1, 'name': 'urban_address', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'travel_time', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'study_time', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'classes_failed', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'absences', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'guardian_education', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'guardian_job', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 0, 'idx': 0, 'name': 'age', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([], dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [variables], variable: [undefined]"
+12,,2022-08-02 12:18:06,Students,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'bar', 'orient': 'vertical'}, 'encoding': {'x': {'field': 'age', 'type': 'ordinal'}, 'y': {'field': 'age', 'aggregate': 'count'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Students', 'items': array([{'id': 1, 'idx': 1, 'name': 'urban_address', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'travel_time', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'study_time', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'classes_failed', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'absences', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'guardian_education', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'guardian_job', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 0, 'idx': 0, 'name': 'age', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([], dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [variables], variable: [undefined]"
+13,,2022-08-02 12:18:36,Students,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'horizontal'}, 'encoding': {'x': {'field': 'age', 'type': 'ordinal'}, 'y': {'field': 'study_time', 'type': 'quantitative'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Students', 'items': array([{'id': 1, 'idx': 1, 'name': 'urban_address', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'travel_time', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'classes_failed', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'absences', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'guardian_education', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'guardian_job', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 0, 'idx': 0, 'name': 'age', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 3, 'idx': 3, 'name': 'study_time', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [variables], variable: [undefined]"
+14,,2022-08-02 12:18:36,Students,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'horizontal'}, 'encoding': {'x': {'field': 'age', 'type': 'ordinal'}, 'y': {'field': 'study_time', 'type': 'quantitative'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Students', 'items': array([{'id': 1, 'idx': 1, 'name': 'urban_address', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'travel_time', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'classes_failed', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'absences', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'guardian_education', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'guardian_job', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 0, 'idx': 0, 'name': 'age', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 3, 'idx': 3, 'name': 'study_time', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [y-drop], variable: [study_time]"
+15,,2022-08-02 12:18:46,Students,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'horizontal'}, 'encoding': {'x': {'field': 'age', 'type': 'ordinal'}, 'y': {'field': 'travel_time', 'type': 'quantitative'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Students', 'items': array([{'id': 1, 'idx': 1, 'name': 'urban_address', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'classes_failed', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'absences', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'guardian_education', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'guardian_job', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'study_time', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 0, 'idx': 0, 'name': 'age', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 2, 'idx': 2, 'name': 'travel_time', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [y-drop], variable: [travel_time]"
+16,,2022-08-02 12:18:46,Students,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'horizontal'}, 'encoding': {'x': {'field': 'age', 'type': 'ordinal'}, 'y': {'field': 'travel_time', 'type': 'quantitative'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Students', 'items': array([{'id': 1, 'idx': 1, 'name': 'urban_address', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'classes_failed', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'absences', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'guardian_education', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'guardian_job', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'study_time', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 0, 'idx': 0, 'name': 'age', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 2, 'idx': 2, 'name': 'travel_time', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [variables], variable: [undefined]"
+17,,2022-08-02 12:21:29,Students,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'rect'}, 'encoding': {'x': {'field': 'age', 'type': 'ordinal'}, 'y': {'field': 'classes_failed', 'type': 'ordinal'}, 'color': {'field': 'classes_failed', 'aggregate': 'count', 'scale': {'scheme': 'greys'}}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Students', 'items': array([{'id': 3, 'idx': 3, 'name': 'study_time', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'travel_time', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'guardian_job', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'guardian_education', 'trans': 'none', 'outcome': False},
+        {'id': 1, 'idx': 1, 'name': 'urban_address', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'absences', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 0, 'idx': 0, 'name': 'age', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 4, 'idx': 4, 'name': 'classes_failed', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [y-drop], variable: [classes_failed]"
+18,,2022-08-02 12:21:29,Students,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'rect'}, 'encoding': {'x': {'field': 'age', 'type': 'ordinal'}, 'y': {'field': 'classes_failed', 'type': 'ordinal'}, 'color': {'field': 'classes_failed', 'aggregate': 'count', 'scale': {'scheme': 'greys'}}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Students', 'items': array([{'id': 3, 'idx': 3, 'name': 'study_time', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'travel_time', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'guardian_job', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'guardian_education', 'trans': 'none', 'outcome': False},
+        {'id': 1, 'idx': 1, 'name': 'urban_address', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'absences', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 0, 'idx': 0, 'name': 'age', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 4, 'idx': 4, 'name': 'classes_failed', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [variables], variable: [undefined]"
+19,,2022-08-02 12:21:21,Students,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'horizontal'}, 'encoding': {'x': {'field': 'age', 'type': 'ordinal'}, 'y': {'field': 'absences', 'type': 'quantitative'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Students', 'items': array([{'id': 4, 'idx': 4, 'name': 'classes_failed', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'study_time', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'travel_time', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'guardian_job', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'guardian_education', 'trans': 'none', 'outcome': False},
+        {'id': 1, 'idx': 1, 'name': 'urban_address', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 0, 'idx': 0, 'name': 'age', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 5, 'idx': 5, 'name': 'absences', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [y-drop], variable: [absences]"
+20,,2022-08-02 12:21:21,Students,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'horizontal'}, 'encoding': {'x': {'field': 'age', 'type': 'ordinal'}, 'y': {'field': 'absences', 'type': 'quantitative'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Students', 'items': array([{'id': 4, 'idx': 4, 'name': 'classes_failed', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'study_time', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'travel_time', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'guardian_job', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'guardian_education', 'trans': 'none', 'outcome': False},
+        {'id': 1, 'idx': 1, 'name': 'urban_address', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 0, 'idx': 0, 'name': 'age', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 5, 'idx': 5, 'name': 'absences', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [variables], variable: [undefined]"
+21,,2022-08-02 12:20:11,Students,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'rect'}, 'encoding': {'x': {'field': 'age', 'type': 'ordinal'}, 'y': {'field': 'urban_address', 'type': 'nominal'}, 'color': {'field': 'guardian_education', 'aggregate': 'count', 'scale': {'scheme': 'greys'}}, 'row': {'field': 'guardian_job'}, 'column': {'field': 'guardian_education'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Students', 'items': array([{'id': 4, 'idx': 4, 'name': 'classes_failed', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'absences', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'study_time', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'travel_time', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 0, 'idx': 0, 'name': 'age', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 1, 'idx': 1, 'name': 'urban_address', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([{'id': 7, 'idx': 7, 'name': 'guardian_job', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([{'id': 6, 'idx': 6, 'name': 'guardian_education', 'trans': 'none', 'outcome': False}],
+       dtype=object)}                                                                                                                    ]",[],[],[],prediction,"dnd finalize, shelf: [variables], variable: [undefined]"
+22,,2022-08-02 12:20:11,Students,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'rect'}, 'encoding': {'x': {'field': 'age', 'type': 'ordinal'}, 'y': {'field': 'urban_address', 'type': 'nominal'}, 'color': {'field': 'guardian_education', 'aggregate': 'count', 'scale': {'scheme': 'greys'}}, 'row': {'field': 'guardian_job'}, 'column': {'field': 'guardian_education'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Students', 'items': array([{'id': 4, 'idx': 4, 'name': 'classes_failed', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'absences', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'study_time', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'travel_time', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 0, 'idx': 0, 'name': 'age', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 1, 'idx': 1, 'name': 'urban_address', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([{'id': 7, 'idx': 7, 'name': 'guardian_job', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([{'id': 6, 'idx': 6, 'name': 'guardian_education', 'trans': 'none', 'outcome': False}],
+       dtype=object)}                                                                                                                    ]",[],[],[],prediction,"dnd finalize, shelf: [col-drop], variable: [guardian_education]"
+23,,2022-08-02 12:20:08,Students,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'rect'}, 'encoding': {'x': {'field': 'age', 'type': 'ordinal'}, 'y': {'field': 'urban_address', 'type': 'nominal'}, 'color': {'field': 'guardian_job', 'aggregate': 'count', 'scale': {'scheme': 'greys'}}, 'row': {'field': 'guardian_job'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Students', 'items': array([{'id': 4, 'idx': 4, 'name': 'classes_failed', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'absences', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'guardian_education', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'study_time', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'travel_time', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 0, 'idx': 0, 'name': 'age', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 1, 'idx': 1, 'name': 'urban_address', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([{'id': 7, 'idx': 7, 'name': 'guardian_job', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [variables], variable: [undefined]"
+24,,2022-08-02 12:20:08,Students,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'rect'}, 'encoding': {'x': {'field': 'age', 'type': 'ordinal'}, 'y': {'field': 'urban_address', 'type': 'nominal'}, 'color': {'field': 'guardian_job', 'aggregate': 'count', 'scale': {'scheme': 'greys'}}, 'row': {'field': 'guardian_job'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Students', 'items': array([{'id': 4, 'idx': 4, 'name': 'classes_failed', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'absences', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'guardian_education', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'study_time', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'travel_time', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 0, 'idx': 0, 'name': 'age', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 1, 'idx': 1, 'name': 'urban_address', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([{'id': 7, 'idx': 7, 'name': 'guardian_job', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [row-drop], variable: [guardian_job]"
+25,,2022-08-02 12:20:04,Students,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'rect'}, 'encoding': {'x': {'field': 'age', 'type': 'ordinal'}, 'y': {'field': 'urban_address', 'type': 'nominal'}, 'color': {'field': 'urban_address', 'aggregate': 'count', 'scale': {'scheme': 'greys'}}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Students', 'items': array([{'id': 4, 'idx': 4, 'name': 'classes_failed', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'absences', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'guardian_education', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'guardian_job', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'study_time', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'travel_time', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 0, 'idx': 0, 'name': 'age', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 1, 'idx': 1, 'name': 'urban_address', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [variables], variable: [undefined]"
+26,,2022-08-02 12:18:52,Students,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'rect'}, 'encoding': {'x': {'field': 'age', 'type': 'ordinal'}, 'y': {'field': 'urban_address', 'type': 'nominal'}, 'color': {'field': 'urban_address', 'aggregate': 'count', 'scale': {'scheme': 'greys'}}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Students', 'items': array([{'id': 4, 'idx': 4, 'name': 'classes_failed', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'absences', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'guardian_education', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'guardian_job', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'study_time', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'travel_time', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 0, 'idx': 0, 'name': 'age', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 1, 'idx': 1, 'name': 'urban_address', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [y-drop], variable: [urban_address]"
+27,,2022-08-02 12:00:58,Forest Fires,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': 'tick', 'encoding': {}, 'transform': []}","[{'id': 'variables', 'name': 'Forest Fires', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False},
+        {'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'drought_index', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'temperature', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'relative_humidity', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'wind_speed', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'area_burned', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([], dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([], dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,load dataset Forest Fires
+28,,2022-08-02 12:02:14,Forest fires,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': 'tick', 'encoding': {}, 'transform': []}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False},
+        {'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'drought_index', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'temperature', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'relative_humidity', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'wind_speed', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'area_burned', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([], dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([], dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,load dataset Forest fires
+29,,2022-08-02 12:34:00,Forest fires,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': 'tick', 'encoding': {}, 'transform': []}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False},
+        {'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'drought_index', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'temperature', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'relative_humidity', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'wind_speed', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'area_burned', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([], dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([], dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,load dataset Forest fires
+30,,2022-08-02 12:17:46,Forest fires,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'bar', 'orient': 'vertical'}, 'encoding': {'x': {'field': 'month', 'type': 'nominal'}, 'y': {'field': 'month', 'aggregate': 'count'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'drought_index', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'temperature', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'relative_humidity', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'wind_speed', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'area_burned', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([], dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [variables], variable: [undefined]"
+31,,2022-08-02 12:17:48,Forest fires,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'horizontal'}, 'encoding': {'x': {'field': 'month', 'type': 'nominal'}, 'y': {'field': 'drought_index', 'type': 'quantitative'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'temperature', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'relative_humidity', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'wind_speed', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'area_burned', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 2, 'idx': 2, 'name': 'drought_index', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [variables], variable: [undefined]"
+32,,2022-08-02 12:17:53,Forest fires,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'circle', 'size': 30}, 'encoding': {'y': {'field': 'drought_index', 'type': 'quantitative'}, 'x': {'field': 'temperature', 'type': 'quantitative'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'relative_humidity', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'wind_speed', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'area_burned', 'trans': 'none', 'outcome': False},
+        {'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 3, 'idx': 3, 'name': 'temperature', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 2, 'idx': 2, 'name': 'drought_index', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [x-drop], variable: [temperature]"
+33,ZGtest,2022-08-16 14:10:50,Forest fires,True,True,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'horizontal'}, 'encoding': {'y': {'field': 'temp', 'type': 'quantitative'}, 'color': {'field': 'modelcheck_group', 'type': 'nominal', 'scale': {'domain': ['data', 'normal| temp ~ 1| ~1', 'normal| temp ~ month| ~1']}}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False},
+        {'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([], dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],"[{'name': 'normal| temp ~ month| ~1', 'family': 'normal', 'mu_spec': 'temp ~ month', 'sigma_spec': '~1'}
+ {'name': 'normal| temp ~ 1| ~1', 'family': 'normal', 'mu_spec': 'temp ~ 1', 'sigma_spec': '~1'}]",prediction,"remove model, index: [0]"
+34,ZGtest,2022-08-16 14:11:15,Forest fires,True,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'circle', 'size': 30}, 'encoding': {'x': {'field': 'wind', 'type': 'quantitative'}, 'y': {'field': 'temp', 'type': 'quantitative'}, 'row': {'field': 'month'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False},
+        {'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [row-drop], variable: [month]"
+35,,2022-08-16 14:06:59,Forest fires,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': 'tick', 'encoding': {}, 'transform': []}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False},
+        {'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([], dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([], dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,load dataset Forest fires
+36,ZGtest,2022-08-16 14:11:08,Forest fires,True,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'circle', 'size': 30}, 'encoding': {'x': {'field': 'wind', 'type': 'quantitative'}, 'y': {'field': 'temp', 'type': 'quantitative'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False},
+        {'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [variables], variable: [undefined]"
+37,ZGtest,2022-08-16 14:10:56,Forest fires,True,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'vertical'}, 'encoding': {'x': {'field': 'wind', 'type': 'quantitative'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False},
+        {'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([], dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [variables], variable: [undefined]"
+38,ZGtest,2022-08-16 14:08:09,Forest fires,True,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'horizontal'}, 'encoding': {'x': {'field': 'month', 'type': 'nominal'}, 'y': {'field': 'temp', 'type': 'quantitative'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,turn on model checking 
+39,ZGtest,2022-08-16 14:08:20,Forest fires,True,True,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'horizontal'}, 'encoding': {'x': {'field': 'month', 'type': 'nominal'}, 'y': {'field': 'temp', 'type': 'quantitative'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],"[{'name': 'normal| temp ~ month| ~1', 'family': 'normal', 'mu_spec': 'temp ~ month', 'sigma_spec': '~1'}
+ {'name': 'normal| temp ~ 1| ~1', 'family': 'normal', 'mu_spec': 'temp ~ 1', 'sigma_spec': '~1'}]",prediction,"add model, family: [normal] mu_spec: [temp ~ 1] sigma_spec: [~1]"
+40,ZGtest,2022-08-16 14:08:56,Forest fires,True,True,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'horizontal'}, 'encoding': {'x': {'field': 'month', 'type': 'nominal'}, 'y': {'field': 'temp', 'type': 'quantitative'}, 'color': {'field': 'modelcheck_group', 'type': 'nominal', 'scale': {'domain': ['data', 'normal| temp ~ 1| ~1', 'normal| temp ~ month| ~1']}}, 'row': {'field': 'day'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([{'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],"[{'name': 'normal| temp ~ month| ~1', 'family': 'normal', 'mu_spec': 'temp ~ month', 'sigma_spec': '~1'}
+ {'name': 'normal| temp ~ 1| ~1', 'family': 'normal', 'mu_spec': 'temp ~ 1', 'sigma_spec': '~1'}]",prediction,"dnd finalize, shelf: [variables], variable: [undefined]"
+41,ZGtest,2022-08-16 14:08:56,Forest fires,True,True,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'horizontal'}, 'encoding': {'x': {'field': 'month', 'type': 'nominal'}, 'y': {'field': 'temp', 'type': 'quantitative'}, 'color': {'field': 'modelcheck_group', 'type': 'nominal', 'scale': {'domain': ['data', 'normal| temp ~ 1| ~1', 'normal| temp ~ month| ~1']}}, 'row': {'field': 'day'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([{'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],"[{'name': 'normal| temp ~ month| ~1', 'family': 'normal', 'mu_spec': 'temp ~ month', 'sigma_spec': '~1'}
+ {'name': 'normal| temp ~ 1| ~1', 'family': 'normal', 'mu_spec': 'temp ~ 1', 'sigma_spec': '~1'}]",prediction,"dnd finalize, shelf: [row-drop], variable: [day]"
+42,ZGtest,2022-08-16 14:10:30,Forest fires,True,True,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'horizontal'}, 'encoding': {'x': {'field': 'month', 'type': 'nominal'}, 'y': {'field': 'temp', 'type': 'quantitative'}, 'color': {'field': 'modelcheck_group', 'type': 'nominal', 'scale': {'domain': ['data', 'normal| temp ~ 1| ~1', 'normal| temp ~ month| ~1']}}, 'column': {'field': 'rain'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False},
+        {'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([{'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False}],
+       dtype=object)}                                                                                                      ]",[],[],"[{'name': 'normal| temp ~ month| ~1', 'family': 'normal', 'mu_spec': 'temp ~ month', 'sigma_spec': '~1'}
+ {'name': 'normal| temp ~ 1| ~1', 'family': 'normal', 'mu_spec': 'temp ~ 1', 'sigma_spec': '~1'}]",prediction,"dnd finalize, shelf: [col-drop], variable: [rain]"
+43,ZGtest,2022-08-16 14:11:08,Forest fires,True,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'circle', 'size': 30}, 'encoding': {'x': {'field': 'wind', 'type': 'quantitative'}, 'y': {'field': 'temp', 'type': 'quantitative'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False},
+        {'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [y-drop], variable: [temp]"
+44,,2022-08-16 13:37:48,Forest fires,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'bar', 'orient': 'vertical'}, 'encoding': {'x': {'field': 'day', 'type': 'nominal'}, 'y': {'field': 'day', 'aggregate': 'count'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([], dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [x-drop], variable: [day]"
+45,,2022-08-16 13:37:48,Forest fires,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'bar', 'orient': 'vertical'}, 'encoding': {'x': {'field': 'day', 'type': 'nominal'}, 'y': {'field': 'day', 'aggregate': 'count'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([], dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [variables], variable: [undefined]"
+46,ZGtest,2022-08-16 13:48:21,Forest fires,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'bar', 'orient': 'vertical'}, 'encoding': {'x': {'field': 'month', 'type': 'nominal'}, 'y': {'field': 'month', 'aggregate': 'count'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([], dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [x-drop], variable: [month]"
+47,ZGtest,2022-08-16 13:48:21,Forest fires,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'bar', 'orient': 'vertical'}, 'encoding': {'x': {'field': 'month', 'type': 'nominal'}, 'y': {'field': 'month', 'aggregate': 'count'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([], dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [variables], variable: [undefined]"
+48,,2022-08-16 13:37:56,Forest fires,True,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'horizontal'}, 'encoding': {'x': {'field': 'day', 'type': 'nominal'}, 'y': {'field': 'ffmc', 'type': 'quantitative'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,turn on model checking 
+49,,2022-08-16 13:37:50,Forest fires,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'horizontal'}, 'encoding': {'x': {'field': 'day', 'type': 'nominal'}, 'y': {'field': 'ffmc', 'type': 'quantitative'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [variables], variable: [undefined]"
+50,,2022-08-16 13:37:50,Forest fires,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'horizontal'}, 'encoding': {'x': {'field': 'day', 'type': 'nominal'}, 'y': {'field': 'ffmc', 'type': 'quantitative'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [y-drop], variable: [ffmc]"
+51,ZGtest,2022-08-16 13:48:23,Forest fires,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'horizontal'}, 'encoding': {'x': {'field': 'month', 'type': 'nominal'}, 'y': {'field': 'temp', 'type': 'quantitative'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [variables], variable: [undefined]"
+52,ZGtest,2022-08-16 13:48:23,Forest fires,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'horizontal'}, 'encoding': {'x': {'field': 'month', 'type': 'nominal'}, 'y': {'field': 'temp', 'type': 'quantitative'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [y-drop], variable: [temp]"
+53,ZGtest,2022-08-16 13:48:25,Forest fires,True,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'horizontal'}, 'encoding': {'x': {'field': 'month', 'type': 'nominal'}, 'y': {'field': 'temp', 'type': 'quantitative'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,turn on model checking 
+54,,2022-08-16 13:45:21,Forest fires,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': 'tick', 'encoding': {}, 'transform': []}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False},
+        {'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([], dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([], dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,load dataset Forest fires
+55,,2022-08-16 13:34:47,Forest fires,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': 'tick', 'encoding': {}, 'transform': []}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False},
+        {'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([], dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([], dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,load dataset Forest fires
+56,,2022-08-16 13:38:02,Forest fires,True,True,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'horizontal'}, 'encoding': {'x': {'field': 'day', 'type': 'nominal'}, 'y': {'field': 'ffmc', 'type': 'quantitative'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],"[{'name': 'normal| ffmc ~ 1| ~1', 'family': 'normal', 'mu_spec': 'ffmc ~ 1', 'sigma_spec': '~1'}]",prediction,"add model, family: [normal] mu_spec: [ffmc ~ 1] sigma_spec: [~1]"
+57,,2022-08-16 13:39:38,Forest fires,True,True,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'horizontal'}, 'encoding': {'x': {'field': 'day', 'type': 'nominal'}, 'y': {'field': 'temp', 'type': 'quantitative'}, 'color': {'field': 'modelcheck_group', 'type': 'nominal', 'scale': {'domain': ['data', 'normal| ffmc ~ 1| ~1']}}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],"[{'name': 'normal| ffmc ~ 1| ~1', 'family': 'normal', 'mu_spec': 'ffmc ~ 1', 'sigma_spec': '~1'}]",prediction,"dnd finalize, shelf: [variables], variable: [undefined]"
+58,,2022-08-16 13:39:38,Forest fires,True,True,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'horizontal'}, 'encoding': {'x': {'field': 'day', 'type': 'nominal'}, 'y': {'field': 'temp', 'type': 'quantitative'}, 'color': {'field': 'modelcheck_group', 'type': 'nominal', 'scale': {'domain': ['data', 'normal| ffmc ~ 1| ~1']}}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],"[{'name': 'normal| ffmc ~ 1| ~1', 'family': 'normal', 'mu_spec': 'ffmc ~ 1', 'sigma_spec': '~1'}]",prediction,"dnd finalize, shelf: [y-drop], variable: [temp]"
+59,,2022-08-16 13:39:57,Forest fires,True,True,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'horizontal'}, 'encoding': {'x': {'field': 'day', 'type': 'nominal'}, 'y': {'field': 'temp', 'type': 'quantitative'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],"[{'name': 'normal| temp ~ month| ~1', 'family': 'normal', 'mu_spec': 'temp ~ month', 'sigma_spec': '~1'}]",prediction,"add model, family: [normal] mu_spec: [temp ~ month] sigma_spec: [~1]"
+60,ZGtest,2022-08-16 13:48:31,Forest fires,True,True,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'horizontal'}, 'encoding': {'x': {'field': 'month', 'type': 'nominal'}, 'y': {'field': 'temp', 'type': 'quantitative'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],"[{'name': 'normal| temp ~ month| ~1', 'family': 'normal', 'mu_spec': 'temp ~ month', 'sigma_spec': '~1'}]",prediction,"add model, family: [normal] mu_spec: [temp ~ month] sigma_spec: [~1]"
+61,ZGtest,2022-08-16 13:49:24,Forest fires,True,True,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'circle', 'size': 30}, 'encoding': {'y': {'field': 'temp', 'type': 'quantitative'}, 'color': {'field': 'modelcheck_group', 'type': 'nominal', 'scale': {'domain': ['data', 'normal| temp ~ 1| ~1', 'normal| temp ~ month| ~1']}}, 'x': {'field': 'wind', 'type': 'quantitative'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False},
+        {'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False},
+        {'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],"[{'name': 'normal| temp ~ month| ~1', 'family': 'normal', 'mu_spec': 'temp ~ month', 'sigma_spec': '~1'}
+ {'name': 'normal| temp ~ 1| ~1', 'family': 'normal', 'mu_spec': 'temp ~ 1', 'sigma_spec': '~1'}]",prediction,"dnd finalize, shelf: [variables], variable: [undefined]"
+62,ZGtest,2022-08-16 13:49:24,Forest fires,True,True,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'circle', 'size': 30}, 'encoding': {'y': {'field': 'temp', 'type': 'quantitative'}, 'color': {'field': 'modelcheck_group', 'type': 'nominal', 'scale': {'domain': ['data', 'normal| temp ~ 1| ~1', 'normal| temp ~ month| ~1']}}, 'x': {'field': 'wind', 'type': 'quantitative'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False},
+        {'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False},
+        {'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],"[{'name': 'normal| temp ~ month| ~1', 'family': 'normal', 'mu_spec': 'temp ~ month', 'sigma_spec': '~1'}
+ {'name': 'normal| temp ~ 1| ~1', 'family': 'normal', 'mu_spec': 'temp ~ 1', 'sigma_spec': '~1'}]",prediction,"dnd finalize, shelf: [x-drop], variable: [wind]"
+63,ZGtest,2022-08-16 13:49:17,Forest fires,True,True,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'horizontal'}, 'encoding': {'y': {'field': 'temp', 'type': 'quantitative'}, 'color': {'field': 'modelcheck_group', 'type': 'nominal', 'scale': {'domain': ['data', 'normal| temp ~ 1| ~1', 'normal| temp ~ month| ~1']}}, 'x': {'field': 'day', 'type': 'nominal'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False},
+        {'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],"[{'name': 'normal| temp ~ month| ~1', 'family': 'normal', 'mu_spec': 'temp ~ month', 'sigma_spec': '~1'}
+ {'name': 'normal| temp ~ 1| ~1', 'family': 'normal', 'mu_spec': 'temp ~ 1', 'sigma_spec': '~1'}]",prediction,"dnd finalize, shelf: [x-drop], variable: [day]"
+64,ZGtest,2022-08-16 13:49:17,Forest fires,True,True,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'horizontal'}, 'encoding': {'y': {'field': 'temp', 'type': 'quantitative'}, 'color': {'field': 'modelcheck_group', 'type': 'nominal', 'scale': {'domain': ['data', 'normal| temp ~ 1| ~1', 'normal| temp ~ month| ~1']}}, 'x': {'field': 'day', 'type': 'nominal'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False},
+        {'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],"[{'name': 'normal| temp ~ month| ~1', 'family': 'normal', 'mu_spec': 'temp ~ month', 'sigma_spec': '~1'}
+ {'name': 'normal| temp ~ 1| ~1', 'family': 'normal', 'mu_spec': 'temp ~ 1', 'sigma_spec': '~1'}]",prediction,"dnd finalize, shelf: [variables], variable: [undefined]"
+65,ZGtest,2022-08-16 13:49:39,Forest fires,True,True,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'circle', 'size': 30}, 'encoding': {'y': {'field': 'temp', 'type': 'quantitative'}, 'color': {'field': 'modelcheck_group', 'type': 'nominal', 'scale': {'domain': ['data', 'normal| temp ~ 1| ~1', 'normal| temp ~ month| ~1']}}, 'x': {'field': 'wind', 'type': 'quantitative'}, 'row': {'field': 'month'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False},
+        {'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],"[{'name': 'normal| temp ~ month| ~1', 'family': 'normal', 'mu_spec': 'temp ~ month', 'sigma_spec': '~1'}
+ {'name': 'normal| temp ~ 1| ~1', 'family': 'normal', 'mu_spec': 'temp ~ 1', 'sigma_spec': '~1'}]",prediction,"dnd finalize, shelf: [variables], variable: [undefined]"
+66,ZGtest,2022-08-16 13:49:39,Forest fires,True,True,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'circle', 'size': 30}, 'encoding': {'y': {'field': 'temp', 'type': 'quantitative'}, 'color': {'field': 'modelcheck_group', 'type': 'nominal', 'scale': {'domain': ['data', 'normal| temp ~ 1| ~1', 'normal| temp ~ month| ~1']}}, 'x': {'field': 'wind', 'type': 'quantitative'}, 'row': {'field': 'month'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False},
+        {'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],"[{'name': 'normal| temp ~ month| ~1', 'family': 'normal', 'mu_spec': 'temp ~ month', 'sigma_spec': '~1'}
+ {'name': 'normal| temp ~ 1| ~1', 'family': 'normal', 'mu_spec': 'temp ~ 1', 'sigma_spec': '~1'}]",prediction,"dnd finalize, shelf: [row-drop], variable: [month]"
+67,,2022-08-16 13:40:31,Forest fires,True,True,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'horizontal'}, 'encoding': {'x': {'field': 'day', 'type': 'nominal'}, 'y': {'field': 'temp', 'type': 'quantitative'}, 'color': {'field': 'modelcheck_group', 'type': 'nominal', 'scale': {'domain': ['data', 'normal| temp ~ 1| ~1', 'normal| temp ~ month| ~1']}}, 'row': {'field': 'month'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],"[{'name': 'normal| temp ~ month| ~1', 'family': 'normal', 'mu_spec': 'temp ~ month', 'sigma_spec': '~1'}
+ {'name': 'normal| temp ~ 1| ~1', 'family': 'normal', 'mu_spec': 'temp ~ 1', 'sigma_spec': '~1'}]",prediction,"dnd finalize, shelf: [row-drop], variable: [month]"
+68,,2022-08-16 13:40:31,Forest fires,True,True,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'horizontal'}, 'encoding': {'x': {'field': 'day', 'type': 'nominal'}, 'y': {'field': 'temp', 'type': 'quantitative'}, 'color': {'field': 'modelcheck_group', 'type': 'nominal', 'scale': {'domain': ['data', 'normal| temp ~ 1| ~1', 'normal| temp ~ month| ~1']}}, 'row': {'field': 'month'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],"[{'name': 'normal| temp ~ month| ~1', 'family': 'normal', 'mu_spec': 'temp ~ month', 'sigma_spec': '~1'}
+ {'name': 'normal| temp ~ 1| ~1', 'family': 'normal', 'mu_spec': 'temp ~ 1', 'sigma_spec': '~1'}]",prediction,"dnd finalize, shelf: [variables], variable: [undefined]"
+69,ZGtest,2022-08-16 13:50:23,Forest fires,True,True,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'horizontal'}, 'encoding': {'y': {'field': 'temp', 'type': 'quantitative'}, 'row': {'field': 'month'}, 'color': {'field': 'modelcheck_group', 'type': 'nominal', 'scale': {'domain': ['data', 'normal| temp ~ 1| ~1', 'normal| temp ~ month| ~1']}}, 'x': {'field': 'rain', 'type': 'nominal'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False},
+        {'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],"[{'name': 'normal| temp ~ month| ~1', 'family': 'normal', 'mu_spec': 'temp ~ month', 'sigma_spec': '~1'}
+ {'name': 'normal| temp ~ 1| ~1', 'family': 'normal', 'mu_spec': 'temp ~ 1', 'sigma_spec': '~1'}]",prediction,"dnd finalize, shelf: [x-drop], variable: [rain]"
+70,ZGtest,2022-08-16 13:50:23,Forest fires,True,True,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'horizontal'}, 'encoding': {'y': {'field': 'temp', 'type': 'quantitative'}, 'row': {'field': 'month'}, 'color': {'field': 'modelcheck_group', 'type': 'nominal', 'scale': {'domain': ['data', 'normal| temp ~ 1| ~1', 'normal| temp ~ month| ~1']}}, 'x': {'field': 'rain', 'type': 'nominal'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False},
+        {'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],"[{'name': 'normal| temp ~ month| ~1', 'family': 'normal', 'mu_spec': 'temp ~ month', 'sigma_spec': '~1'}
+ {'name': 'normal| temp ~ 1| ~1', 'family': 'normal', 'mu_spec': 'temp ~ 1', 'sigma_spec': '~1'}]",prediction,"dnd finalize, shelf: [variables], variable: [undefined]"
+71,,2022-08-16 13:40:00,Forest fires,True,True,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'horizontal'}, 'encoding': {'x': {'field': 'day', 'type': 'nominal'}, 'y': {'field': 'temp', 'type': 'quantitative'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],"[{'name': 'normal| temp ~ month| ~1', 'family': 'normal', 'mu_spec': 'temp ~ month', 'sigma_spec': '~1'}
+ {'name': 'normal| temp ~ 1| ~1', 'family': 'normal', 'mu_spec': 'temp ~ 1', 'sigma_spec': '~1'}]",prediction,"add model, family: [normal] mu_spec: [temp ~ 1] sigma_spec: [~1]"
+72,ZGtest,2022-08-16 13:48:35,Forest fires,True,True,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'horizontal'}, 'encoding': {'x': {'field': 'month', 'type': 'nominal'}, 'y': {'field': 'temp', 'type': 'quantitative'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],"[{'name': 'normal| temp ~ month| ~1', 'family': 'normal', 'mu_spec': 'temp ~ month', 'sigma_spec': '~1'}
+ {'name': 'normal| temp ~ 1| ~1', 'family': 'normal', 'mu_spec': 'temp ~ 1', 'sigma_spec': '~1'}]",prediction,"add model, family: [normal] mu_spec: [temp ~ 1] sigma_spec: [~1]"
+73,ZGtest,2022-08-16 14:11:00,Forest fires,True,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'circle', 'size': 30}, 'encoding': {'x': {'field': 'wind', 'type': 'quantitative'}, 'y': {'field': 'dmc', 'type': 'quantitative'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False},
+        {'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [y-drop], variable: [dmc]"
+74,ZGtest,2022-08-16 14:08:16,Forest fires,True,True,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'horizontal'}, 'encoding': {'x': {'field': 'month', 'type': 'nominal'}, 'y': {'field': 'temp', 'type': 'quantitative'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],"[{'name': 'normal| temp ~ month| ~1', 'family': 'normal', 'mu_spec': 'temp ~ month', 'sigma_spec': '~1'}]",prediction,"add model, family: [normal] mu_spec: [temp ~ month] sigma_spec: [~1]"
+75,ZGtest,2022-08-16 14:08:06,Forest fires,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'horizontal'}, 'encoding': {'x': {'field': 'month', 'type': 'nominal'}, 'y': {'field': 'temp', 'type': 'quantitative'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [y-drop], variable: [temp]"
+76,ZGtest,2022-08-16 14:09:09,Forest fires,True,True,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'horizontal'}, 'encoding': {'x': {'field': 'month', 'type': 'nominal'}, 'y': {'field': 'temp', 'type': 'quantitative'}, 'color': {'field': 'modelcheck_group', 'type': 'nominal', 'scale': {'domain': ['data', 'normal| temp ~ 1| ~1', 'normal| temp ~ month| ~1']}}, 'row': {'field': 'rain'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False},
+        {'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([{'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],"[{'name': 'normal| temp ~ month| ~1', 'family': 'normal', 'mu_spec': 'temp ~ month', 'sigma_spec': '~1'}
+ {'name': 'normal| temp ~ 1| ~1', 'family': 'normal', 'mu_spec': 'temp ~ 1', 'sigma_spec': '~1'}]",prediction,"dnd finalize, shelf: [row-drop], variable: [rain]"
+77,ZGtest,2022-08-16 14:09:09,Forest fires,True,True,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'horizontal'}, 'encoding': {'x': {'field': 'month', 'type': 'nominal'}, 'y': {'field': 'temp', 'type': 'quantitative'}, 'color': {'field': 'modelcheck_group', 'type': 'nominal', 'scale': {'domain': ['data', 'normal| temp ~ 1| ~1', 'normal| temp ~ month| ~1']}}, 'row': {'field': 'rain'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False},
+        {'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([{'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],"[{'name': 'normal| temp ~ month| ~1', 'family': 'normal', 'mu_spec': 'temp ~ month', 'sigma_spec': '~1'}
+ {'name': 'normal| temp ~ 1| ~1', 'family': 'normal', 'mu_spec': 'temp ~ 1', 'sigma_spec': '~1'}]",prediction,"dnd finalize, shelf: [variables], variable: [undefined]"
+78,ZGtest,2022-08-16 14:11:00,Forest fires,True,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'circle', 'size': 30}, 'encoding': {'x': {'field': 'wind', 'type': 'quantitative'}, 'y': {'field': 'dmc', 'type': 'quantitative'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False},
+        {'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [variables], variable: [undefined]"
+79,ZGtest,2022-08-16 14:08:04,Forest fires,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'bar', 'orient': 'vertical'}, 'encoding': {'x': {'field': 'month', 'type': 'nominal'}, 'y': {'field': 'month', 'aggregate': 'count'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([], dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [variables], variable: [undefined]"
+80,ZGtest,2022-08-16 14:11:24,Forest fires,True,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'circle', 'size': 30}, 'encoding': {'x': {'field': 'wind', 'type': 'quantitative'}, 'y': {'field': 'temp', 'type': 'quantitative'}, 'column': {'field': 'month'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False},
+        {'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False}],
+       dtype=object)}                                                                                                       ]",[],[],[],prediction,"dnd finalize, shelf: [variables], variable: [undefined]"
+81,ZGtest,2022-08-16 14:11:24,Forest fires,True,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'circle', 'size': 30}, 'encoding': {'x': {'field': 'wind', 'type': 'quantitative'}, 'y': {'field': 'temp', 'type': 'quantitative'}, 'column': {'field': 'month'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False},
+        {'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False}],
+       dtype=object)}                                                                                                       ]",[],[],[],prediction,"dnd finalize, shelf: [col-drop], variable: [month]"
+82,ZGtest,2022-08-16 14:08:04,Forest fires,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'bar', 'orient': 'vertical'}, 'encoding': {'x': {'field': 'month', 'type': 'nominal'}, 'y': {'field': 'month', 'aggregate': 'count'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([], dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [x-drop], variable: [month]"
+83,ZGtest,2022-08-16 14:10:56,Forest fires,True,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'vertical'}, 'encoding': {'x': {'field': 'wind', 'type': 'quantitative'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False},
+        {'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False},
+        {'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([], dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [x-drop], variable: [wind]"
+84,ZGtest,2022-08-16 14:11:15,Forest fires,True,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'circle', 'size': 30}, 'encoding': {'x': {'field': 'wind', 'type': 'quantitative'}, 'y': {'field': 'temp', 'type': 'quantitative'}, 'row': {'field': 'month'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False},
+        {'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [variables], variable: [undefined]"
+85,ZGtest,2022-08-16 14:08:06,Forest fires,False,False,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'horizontal'}, 'encoding': {'x': {'field': 'month', 'type': 'nominal'}, 'y': {'field': 'temp', 'type': 'quantitative'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False},
+        {'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False},
+        {'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([], dtype=object)}]",[],[],[],prediction,"dnd finalize, shelf: [variables], variable: [undefined]"
+86,ZGtest,2022-08-16 14:10:30,Forest fires,True,True,"{'$schema': 'https://vega.github.io/schema/vega-lite/v5.json', 'description': 'A simple bar chart with embedded data.', 'data': {'name': 'table'}, 'mark': {'type': 'tick', 'orient': 'horizontal'}, 'encoding': {'x': {'field': 'month', 'type': 'nominal'}, 'y': {'field': 'temp', 'type': 'quantitative'}, 'color': {'field': 'modelcheck_group', 'type': 'nominal', 'scale': {'domain': ['data', 'normal| temp ~ 1| ~1', 'normal| temp ~ month| ~1']}}, 'column': {'field': 'rain'}}, 'transform': [], 'config': {'axis': {'grid': True, 'tickBand': 'extent'}}}","[{'id': 'variables', 'name': 'Forest fires', 'items': array([{'id': 2, 'idx': 2, 'name': 'ffmc', 'trans': 'none', 'outcome': False},
+        {'id': 3, 'idx': 3, 'name': 'dmc', 'trans': 'none', 'outcome': False},
+        {'id': 4, 'idx': 4, 'name': 'dc', 'trans': 'none', 'outcome': False},
+        {'id': 6, 'idx': 6, 'name': 'rh', 'trans': 'none', 'outcome': False},
+        {'id': 7, 'idx': 7, 'name': 'wind', 'trans': 'none', 'outcome': False},
+        {'id': 9, 'idx': 9, 'name': 'area', 'trans': 'none', 'outcome': False},
+        {'id': 1, 'idx': 1, 'name': 'day', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'x-drop', 'name': 'x', 'items': array([{'id': 0, 'idx': 0, 'name': 'month', 'trans': 'none', 'outcome': False}],
+       dtype=object)}
+ {'id': 'y-drop', 'name': 'y', 'items': array([{'id': 5, 'idx': 5, 'name': 'temp', 'trans': 'none', 'outcome': True}],
+       dtype=object)}
+ {'id': 'row-drop', 'name': 'row', 'items': array([], dtype=object)}
+ {'id': 'col-drop', 'name': 'col', 'items': array([{'id': 8, 'idx': 8, 'name': 'rain', 'trans': 'none', 'outcome': False}],
+       dtype=object)}                                                                                                      ]",[],[],"[{'name': 'normal| temp ~ month| ~1', 'family': 'normal', 'mu_spec': 'temp ~ month', 'sigma_spec': '~1'}
+ {'name': 'normal| temp ~ 1| ~1', 'family': 'normal', 'mu_spec': 'temp ~ 1', 'sigma_spec': '~1'}]",prediction,"dnd finalize, shelf: [variables], variable: [undefined]"
