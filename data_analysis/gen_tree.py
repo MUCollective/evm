@@ -2,7 +2,7 @@ from node import Node
 from tree import Tree
 
 
-test_user_ids = ["UserIdTest", "ZGtest", "ZGtest1", "ZGtest11"]
+test_user_ids = ["UserIdTest", "ZGtest", "ZGtest1", "ZGtest11", "test"]
 
 
 def gen_tree(logs_dataframe):
