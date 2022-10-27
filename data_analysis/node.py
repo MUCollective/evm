@@ -22,7 +22,7 @@ class Node:
         self.transforms = None
         self.models = None
         self.showPredictionOrResidual = None
-        self.info = None
+        self.info = ''
         self.children = []
 
     def bind_rec(self, rec):

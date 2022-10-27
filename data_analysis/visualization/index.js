@@ -40,6 +40,8 @@ const margin = {top: 20, right: 90, bottom: 30, left: 90},
     width  = 1500 - margin.left - margin.right,
     height = 800 - margin.top - margin.bottom;
 
+const legandMargin = {top: 50, right: 80}
+
 const nodeR = 10;
 
 const treemap = d3.tree().size([height, width]);
@@ -55,8 +57,8 @@ svg.selectAll("legend-dots")
     .data(keys)
     .enter()
     .append("circle")
-    .attr("cx", width - 300)
-    .attr("cy", function(d,i){ return 100 + i*25})
+    .attr("cx", width - legandMargin.right)
+    .attr("cy", function(d,i){ return legandMargin.top + i*25})
     .attr("r", 7)
     .style("fill", function(d){ return color(d)})
 
@@ -64,9 +66,9 @@ svg.selectAll("legend-labels")
     .data(keys)
     .enter()
     .append("text")
-    .attr("x", width - 280)
-    .attr("y", function(d,i){ return 100 + i*25})
-    .style("fill", function(d){ return color(d)})
+    .attr("x", width - legandMargin.right + 20)
+    .attr("y", function(d,i){ return legandMargin.top + i*25})
+    // .style("fill", function(d){ return color(d)})
     .text(function(d){ return d})
     .attr("text-anchor", "left")
     .style("alignment-baseline", "middle")
@@ -135,6 +137,7 @@ fetch("test.json") // replace test.json with your json's path
                     .style("stroke-width", d => 3)
             })
             .on("mousemove", function(mouseEvent, d){
+                console.log(d)
                 tooltip
                     .html(d.data.name !== 'meta' ?
                         `type: ${nameToKeys[d.data.name]}<br/>
@@ -148,8 +151,8 @@ modelCheck: ${d.data.modelChecking}<br/>
 modeling: ${d.data.modeling}<br/>
 models: ${d.data.models.map(m => m.name)}<br/>
 showPredOrRes: ${d.data.showPredictionOrResidual}<br/>
-filters: ${d.data.filters.map(f => `variable: [${f.varToFilter}] condition: [${f.includeOrExclude}] [${f.condition}] value: [${f.conditionValue1}] [${f.conditionValue2}]`)}<br/>
-transforms: ${d.data.transforms.map(t => `variable: [${t.transVar}] transform: [${t.transform}]`)}` : 'meta root')
+filters: ${d.data.filters.map(f => `variable: ${f.varToFilter} condition: ${f.includeOrExclude} ${f.condition} value: ${f.conditionValue1} ${f.conditionValue2}`)}<br/>
+transforms: ${d.data.transforms.map(t => `variable: ${t.variable} transform: ${t.transformation}`)}` : 'meta root' + d.data.info)
                     .style("left", mouseEvent.pageX + "px")
                     .style("top", mouseEvent.pageY + "px")
             })
