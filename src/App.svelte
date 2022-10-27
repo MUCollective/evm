@@ -858,8 +858,16 @@
 		return dataOnly;
 	}
 
+	function removeOneModel(data, removedModel) {
+		let  newData = data.filter(
+			(row) => !(row.modelcheck_group == removedModel.name || row.modelcheck_group == ("res| " + removedModel.name))
+		);
+		return newData;
+	}
+
 	function removeModel(index, removeAll = false) {
-		var modelTemp;
+		var modelTemp, 
+			removedModel;
 		// determine whether the model we are dropping is the only model to drop
 		removeAll = models.length == 1
 		if (removeAll) {
@@ -883,7 +891,7 @@
 		} else {
 			// remove selected model
 			// console.log("models object", models);
-			var removedModel = models[index];
+			removedModel = models[index];
 			if (index != 0) {
 				modelTemp = models
 					.slice(0, index)
@@ -904,10 +912,11 @@
 			})
 			.then(function (removedModel) {
 				// console.log("deleting models");
-				dataChanged = dataChanged.filter(
-					(row) => !(row.modelcheck_group == removedModel.name || row.modelcheck_group == ("res| " + removedModel.name))
-				);
+				dataChanged = removeOneModel(dataChanged, removedModel);
 				dataChanged = [...dataChanged];
+
+				dataModelOutput = removeOneModel(dataModelOutput, removedModel);
+				dataModelOutput = [...dataModelOutput];				
 				// console.log("after remove model data", dataChanged);
 
 				specChanged++;
