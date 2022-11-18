@@ -919,6 +919,7 @@
 	}
 
 	function showResiduals() {
+		showPredictionOrResidual = "residual"
 		showLoadingIcon = true;
 		needDomainUpdate = true;
 
@@ -932,7 +933,7 @@
 				// update data
 				let temp = values[0];
 				dataChanged = [...temp];
-				// console.log("data after show residuals filter", dataChanged);
+				console.log("data after show residuals filter", dataChanged);
 				// update chart
 				showLoadingIcon = false;
 				specChanged++;
@@ -945,6 +946,7 @@
 	}
 
 	function hideResiduals() {
+		showPredictionOrResidual = "prediction"
 		showLoadingIcon = true;
 		needDomainUpdate = true;
 
@@ -1123,7 +1125,6 @@
 							<input
 								checked={showPredictionOrResidual ===
 									"prediction"}
-								on:change={onChange}
 								on:click={hideResiduals}
 								type="radio"
 								name="showPredictionOrResidual"
@@ -1134,7 +1135,6 @@
 							<input
 								checked={showPredictionOrResidual ===
 									"residual"}
-								on:change={onChange}
 								on:click={showResiduals}
 								type="radio"
 								name="showPredictionOrResidual"
@@ -1158,6 +1158,7 @@
 								bind:needDomainUpdate
 								bind:modeling
 								bind:models
+								bind:showPredictionOrResidual
 								{outcomeName}
                                 {ordinalSortIndex}
 							/>
