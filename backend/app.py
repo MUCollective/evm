@@ -69,5 +69,9 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     BigQuery_client.connect(args.secret, args.gcp_project)
+
+    import logging
+    logging.basicConfig(filename='running.log',level=logging.DEBUG)
+
     # app.run(host="0.0.0.0")
     app.run(port=8000)

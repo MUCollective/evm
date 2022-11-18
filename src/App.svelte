@@ -50,10 +50,14 @@
 
     let disableUserIdInput = false;
 
-    // const logSave = false;
-    const logSave = true;
+    const logSave = false;
+    // const logSave = true;
 
     const logSaveUrl = uri => `https://evm-userstudy.ziyangguo.men${uri}` //`https://158.247.215.182:5000${uri}` //`http://127.0.0.1:8000${uri}`;
+
+	const colorScheme = d3.schemeCategory10;
+	const modelColors = models.reduce((colors, m, i) => colors[m] = colorScheme[i % colorScheme.length], {"data": colorScheme[0]});
+	let colorIndex = models.length + 1;
 
     const updateLogs = async (info) => {
         if (!logSave) {
@@ -801,6 +805,10 @@
 		models = [...models];
 		modeling = true;
 
+		if (!modelColors[newModel.name]) {
+			modelColors[newModel.name] = colorScheme[(colorIndex++) % colorScheme.length];
+		}
+
         const cachedOutcomeName = deepCopy(outcomeName);
 		// get outcome name
 		outcomeName = newModel.name.substring(newModel.name.indexOf("|") + 1, newModel.name.indexOf("~")).trim();
@@ -834,6 +842,8 @@
 			.catch(function (err) {
                 modeling = models.length > 1;
                 models = models.slice(0, -1);
+				delete modelColors[newModel.name];
+				colorIndex -= 1;
                 outcomeName = cachedOutcomeName;
                 showLoadingIcon = false;
                 notifications.danger('Adding a model failed, please check the parameters!', 2000)
@@ -1159,6 +1169,7 @@
 								bind:modeling
 								bind:models
 								bind:showPredictionOrResidual
+								{modelColors}
 								{outcomeName}
                                 {ordinalSortIndex}
 							/>

@@ -38,7 +38,7 @@ const color = d3.scaleOrdinal()
 
 const margin = {top: 20, right: 90, bottom: 30, left: 90},
     width  = 1500 - margin.left - margin.right,
-    height = 800 - margin.top - margin.bottom;
+    height = 1500 - margin.top - margin.bottom;
 
 const legandMargin = {top: 50, right: 80}
 
