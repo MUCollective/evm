@@ -42,7 +42,7 @@
 	let displayHeight;
 	let needDomainUpdate = false;
 
-	let modelChecking = false;
+	let modelChecking = true; // AMK: for demo
 
     let userId = '';
 
@@ -50,8 +50,8 @@
 
     let disableUserIdInput = false;
 
-    // const logSave = false;
-    const logSave = true;
+    const logSave = false; // AMK: for demo
+    // const logSave = true;
 
     const logSaveUrl = uri => `https://evm-userstudy.ziyangguo.men${uri}` //`https://158.247.215.182:5000${uri}` //`http://127.0.0.1:8000${uri}`;
 
@@ -169,7 +169,7 @@
 
 		modeling = false;
 
-		modelChecking = false;
+		// modelChecking = false; // AMK: for demo
 
 		specChanged = 0;
 		showLoadingIcon = false;
