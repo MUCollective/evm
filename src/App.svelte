@@ -509,9 +509,11 @@
 				}
 			} else if (condition == "equal") {
 				if (includeOrExclude == "include") {
-					return entry[varToFilter] == conditionValue1;
+					// return entry[varToFilter] == conditionValue1;
+					return conditionValue1.replace(/\s+/g, "").split(",").some((d) => d == entry[varToFilter]);
 				} else {
-					return entry[varToFilter] != conditionValue1;
+					// return entry[varToFilter] != conditionValue1;
+					return !conditionValue1.replace(/\s+/g, "").split(",").some((d) => d == entry[varToFilter]);
 				}
 			} else if (condition == "between") {
 				if (includeOrExclude == "include") {
