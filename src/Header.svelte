@@ -103,7 +103,7 @@
 				</button>
 			</div>
 		</div>
-	</div>
+	</div> -->
 
 	<div class="column-box">
 		<div class="row-box">
@@ -157,6 +157,6 @@
 				</label>
 			</div>
 		</div>
-	</div> -->
+	</div>
 
 </div>

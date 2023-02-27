@@ -36,6 +36,7 @@
 	export let transformations: any;
 	export let models: any;
 	export let showPredictionOrResidual = "prediction";
+	export let showModelDescriptions = {};
 	export let outcomeName: string;
 
 	let prevSpec: VisualizationSpec = vlSpec;
@@ -877,6 +878,7 @@
 	async function addModel(newModel) {
 		// console.log("adding model");
 		showPredictionOrResidual = "prediction";
+		showModelDescriptions[newModel.name] = true;
 		
 		// add the model to our queue
 		models.push(newModel);
@@ -955,6 +957,7 @@
 		if (removeAll) {
 			// drop all models
 			models = [];
+			showModelDescriptions = {};
 			modeling = false;
 			// revert to data only
 			dataChanged = removeModelOutputs();
@@ -981,6 +984,7 @@
 			} else {
 				modelTemp = models.slice(1);
 			}
+			delete showModelDescriptions[removedModel.name]
 		}
 		// if removing one model but keeping others
 		Promise.all([modelTemp, removedModel])
@@ -1213,6 +1217,7 @@
 						{formatVariable}
 						{getVariableTransform}
 						bind:showPredictionOrResidual
+						bind:showModelDescriptions
 						bind:outcomeName
 					/>					
 				</Column>
