@@ -16,7 +16,7 @@
     export let flipDurationMs: number;
     export let handleDndConsider;
     export let handleDndFinalize;
-    export let encodingToData;
+    export let removeEncoding;
     // export let changeMark;
     // export let changeAggregation;
     export let addFilter;
@@ -84,11 +84,7 @@
                                 {@html formatVariable(item.name, item.trans)}
                                 <button
                                     class="single-char"
-                                    on:click={encodingToData(
-                                        item.name,
-                                        shelf.id,
-                                        shelf.items
-                                    )}
+                                    on:click={removeEncoding(shelf.id, shelf.items)}
                                     >&times;
                                 </button>
                             </div>

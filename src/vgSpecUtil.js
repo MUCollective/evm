@@ -179,7 +179,7 @@ const sortModels = (sortVgSpec, {sortIndex, vlSpec, modelVar, modelColors}) => {
             sortVgSpec = replaceSortOnColumnRow(sortVgSpec, "column", modelVar, sortIndexField);
             //endsubregion
         }
-    }
+    }2
     //endregion
 
     //region sort in mark

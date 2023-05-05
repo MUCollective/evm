@@ -84,7 +84,8 @@
 		<img src="./logo.png" alt="header"/>
 	</div>
 
-	<div class="column-box">
+	<!-- AMK: for demo -->
+	<!-- <div class="column-box">
 		<div class="box">
 			<h4 style="margin-bottom: 6px;">
 				user id
@@ -98,12 +99,11 @@
 				<button
 					on:click={confirmUserId(userId)}
 				>
-					<!-- &#10003; -->
 					Confirm
 				</button>
 			</div>
 		</div>
-	</div>
+	</div> -->
 
 	<div class="column-box">
 		<div class="row-box">
@@ -122,7 +122,6 @@
 				<button
 					on:click={changeDataset(datasetName)}
 				>
-					<!-- &#10003; -->
 					Apply
 				</button>
 			{/if}</div>

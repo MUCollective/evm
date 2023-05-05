@@ -36,13 +36,14 @@
 	export let transformations: any;
 	export let models: any;
 	export let showPredictionOrResidual = "prediction";
+	export let showModelDescriptions = {};
 	export let outcomeName: string;
 
 	let prevSpec: VisualizationSpec = vlSpec;
 	let displayHeight;
 	let needDomainUpdate = false;
 
-	let modelChecking = false;
+	let modelChecking = true; // AMK: for demo
 
     let userId = '';
 
@@ -50,7 +51,7 @@
 
     let disableUserIdInput = false;
 
-    const logSave = false;
+    const logSave = false; // AMK: for demo
     // const logSave = true;
 
     const logSaveUrl = uri => `https://evm-userstudy.ziyangguo.men${uri}` //`https://158.247.215.182:5000${uri}` //`http://127.0.0.1:8000${uri}`;
@@ -173,7 +174,7 @@
 
 		modeling = false;
 
-		modelChecking = false;
+		// modelChecking = false; // AMK: for demo
 
 		specChanged = 0;
 		showLoadingIcon = false;
@@ -243,6 +244,11 @@
 		}	
 	}
 
+	/**
+	* Shelf construction
+	* start
+	*/
+
 	function handleDndConsider(shelfId: any, e: any) {
 		const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
 		dndState[shelfIdx].items = e.detail.items;
@@ -252,43 +258,40 @@
 	}
 
 	function handleDndFinalize(shelfId: any, e: any) {
-		// console.log("finalize");
-		// console.log("shelfId", shelfId);
-		// console.log("e", e);
+		console.log("finalize");
+		console.log("dnd state", dndState);
+		console.log("shelfId", shelfId);
+		console.log("e", e);
+		const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
+		// when dropping variable on dataset shelf...
 		if (e.srcElement.id == "variables") {
-			dndState[0].items.forEach((d) => {
+			// prevent "pills" from being treated as placeholder "shaddow items"
+			dndState[shelfIdx].items.forEach((d) => {
 				if (typeof d.isDndShadowItem != "undefined") {
-					// console.log("shadow item");
 					delete d.isDndShadowItem;
 				}
 			});
-		}
-		// console.log(dndState, "after change");
-		if (e.srcElement.id != "variables") {
-			const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
-			// console.log("handle dnd finalize");
-			// console.log("dndState[shelfIdx].items");
-			// console.log(dndState[shelfIdx].items);
+		} else { // when handling a variable on an encoding shelf...
 			var varName = e.detail.items[0].name;
+			// are we overwriting an encoding?
 			if (dndState[shelfIdx].items[dndState[shelfIdx].items.length - 1].name != varName) {
-				encodingToData(
-					dndState[shelfIdx].name,
-					shelfId,
-					dndState[shelfIdx].items
-				);
+				console.log("DO WE EVER GET HERE?", shelfId);
+				// Delay the logic of replacing an encoding until after other drag events have finished
+				// to avoid conflicting changes to dndState and vlSpec.
+				setTimeout(() => {
+					removeEncoding(shelfId, dndState[shelfIdx].items);
+				}, 100);
 			}
-			dndState[shelfIdx].items = e.detail.items;
-			dndState = [...dndState];
+			// are we adding a new variable encoding?
 			prevSpec = deepCopy(vlSpec);
 			if (e.detail.items.length != 0) {
 				var varType,
 					varValues = data.map((row) => row[varName]),
-					varUnique = [...new Set(varValues)];
-				// console.log(varName);
-				// console.log("varUnique", varUnique);
-				if (typeof varUnique[0] == "number" && varUnique.length > 9) {
+					varUnique = [...new Set(varValues)],
+					isVarNum = (typeof varUnique[0] == "number");
+				if (isVarNum && varUnique.length > 9) {
 					varType = "quantitative";
-				} else if (typeof varUnique[0] == "number") {
+				} else if (isVarNum) {
 					varType = "ordinal";
 				} else {
 					varType = "nominal";
@@ -318,8 +321,9 @@
 			vlSpec = { ...vlSpec };
 			specChanged++;
             updateLogs(`dnd finalize, shelf: [${e.srcElement.id}], variable: [${varName}]`)
-			// console.log("vlspec:", vlSpec);
 		}
+		// regardless of what else we do, we need to update dndState items
+		dndState[shelfIdx].items = e.detail.items;
 	}
 
 	function determineChartType(vlSpec: VisualizationSpec, varName: string) {
@@ -394,11 +398,88 @@
 			delete vlSpec.encoding.x;
 			delete vlSpec.encoding.y;
 			delete vlSpec.encoding.color;
-			delete vlSpec.encoding.row;
-			delete vlSpec.encoding.column;
+			// delete vlSpec.encoding.row;    // need to leave row and col encodings
+			// delete vlSpec.encoding.column;
 			delete vlSpec.config;
 		}
 	}
+
+	function removeEncoding(shelfId: any, items: any) {
+		const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
+		let removedItem = dndState[shelfIdx].items.pop();
+		dndState[0].items.push(removedItem);
+		dndState = [...dndState];
+		// console.log("after remove encoding", dndState);
+		let remainingVarName; // argument for determiningChartType
+		delete vlSpec.encoding.color; // clear colorscale (we'll add it back if needed)
+		if (items.length > 0) {
+			// replacing encoding on shelf
+			if (shelfId == "x-drop") {
+				if (vlSpec.encoding.y && vlSpec.encoding.y.aggregate) {
+					vlSpec.encoding.y.field = items[0].name; // update aggregation for bar chart
+				} 
+			} else if (shelfId == "y-drop") {
+				if (vlSpec.encoding.x && vlSpec.encoding.x.aggregate) {
+					vlSpec.encoding.x.field = items[0].name; // update aggregation for bar chart
+				}
+			} else if (shelfId == "row-drop") {
+				needDomainUpdate = true;
+			} else if (shelfId == "col-drop") {
+				needDomainUpdate = true;
+			}
+		} else {
+			// removing encoding
+			if (shelfId == "x-drop") {
+				delete vlSpec.encoding.x;
+				if (vlSpec.encoding.y && vlSpec.encoding.y.aggregate) {
+					delete vlSpec.encoding.y; // clear aggregation for bar chart
+				} 
+				// remainingVarName = vlSpec.encoding.y
+				// 	? vlSpec.encoding.y.field
+				// 	: undefined;
+			} else if (shelfId == "y-drop") {
+				delete vlSpec.encoding.y;
+				if (vlSpec.encoding.x && vlSpec.encoding.x.aggregate) {
+					delete vlSpec.encoding.x; // clear aggregation for bar chart
+				}
+				// remainingVarName = vlSpec.encoding.x
+				// 	? vlSpec.encoding.x.field
+				// 	: undefined;
+			} else if (shelfId == "row-drop") {
+				delete vlSpec.encoding.row;
+				needDomainUpdate = true;
+			} else if (shelfId == "col-drop") {
+				delete vlSpec.encoding.column;
+				needDomainUpdate = true;
+			}
+		}
+		if (!remainingVarName) {
+			remainingVarName = vlSpec.encoding.y
+				? vlSpec.encoding.y.field
+				: vlSpec.encoding.x
+					? vlSpec.encoding.x.field
+					: undefined;
+		}
+		if (remainingVarName) {
+			determineChartType(vlSpec, remainingVarName);
+		} else {
+			// reset
+			vlSpec.mark = "tick";
+			delete vlSpec.encoding.x;
+			delete vlSpec.encoding.y;
+			// delete vlSpec.encoding.color;
+			// delete vlSpec.encoding.row;
+			// delete vlSpec.encoding.column;
+		}
+		vlSpec = { ...vlSpec };
+		specChanged++;
+        updateLogs(`remove variable, shelf: [${shelfId}]`)
+	}
+
+	/**
+	* Shelf construction
+	* end
+	*/
 
 	/**
 	* Filtering
@@ -433,9 +514,11 @@
 				}
 			} else if (condition == "equal") {
 				if (includeOrExclude == "include") {
-					return entry[varToFilter] == conditionValue1;
+					// return entry[varToFilter] == conditionValue1;
+					return conditionValue1.replace(/\s+/g, "").split(",").some((d) => d == entry[varToFilter]);
 				} else {
-					return entry[varToFilter] != conditionValue1;
+					// return entry[varToFilter] != conditionValue1;
+					return !conditionValue1.replace(/\s+/g, "").split(",").some((d) => d == entry[varToFilter]);
 				}
 			} else if (condition == "between") {
 				if (includeOrExclude == "include") {
@@ -799,6 +882,7 @@
 	async function addModel(newModel) {
 		// console.log("adding model");
 		showPredictionOrResidual = "prediction";
+		showModelDescriptions[newModel.name] = true;
 		
 		// add the model to our queue
 		models.push(newModel);
@@ -868,13 +952,22 @@
 		return dataOnly;
 	}
 
+	function removeOneModel(data, removedModel) {
+		let  newData = data.filter(
+			(row) => !(row.modelcheck_group == removedModel.name || row.modelcheck_group == ("res| " + removedModel.name))
+		);
+		return newData;
+	}
+
 	function removeModel(index, removeAll = false) {
-		var modelTemp;
+		var modelTemp, 
+			removedModel;
 		// determine whether the model we are dropping is the only model to drop
 		removeAll = models.length == 1
 		if (removeAll) {
 			// drop all models
 			models = [];
+			showModelDescriptions = {};
 			modeling = false;
 			// revert to data only
 			dataChanged = removeModelOutputs();
@@ -893,7 +986,7 @@
 		} else {
 			// remove selected model
 			// console.log("models object", models);
-			var removedModel = models[index];
+			removedModel = models[index];
 			if (index != 0) {
 				modelTemp = models
 					.slice(0, index)
@@ -901,6 +994,7 @@
 			} else {
 				modelTemp = models.slice(1);
 			}
+			delete showModelDescriptions[removedModel.name]
 		}
 		// if removing one model but keeping others
 		Promise.all([modelTemp, removedModel])
@@ -914,10 +1008,11 @@
 			})
 			.then(function (removedModel) {
 				// console.log("deleting models");
-				dataChanged = dataChanged.filter(
-					(row) => !(row.modelcheck_group == removedModel.name || row.modelcheck_group == ("res| " + removedModel.name))
-				);
+				dataChanged = removeOneModel(dataChanged, removedModel);
 				dataChanged = [...dataChanged];
+
+				dataModelOutput = removeOneModel(dataModelOutput, removedModel);
+				dataModelOutput = [...dataModelOutput];				
 				// console.log("after remove model data", dataChanged);
 
 				specChanged++;
@@ -1004,60 +1099,6 @@
 		return newData;
 	}
 
-	function encodingToData(variable: any, shelfId: any, item: any) {
-		// console.log("variable", variable, "shelfId", shelfId, "item", item);
-		const shelfIdx = dndState.findIndex((d) => d.id === shelfId);
-		dndState[shelfIdx].items = [];
-		dndState[0].items.push(item[item.length - 1]);
-		dndState = [...dndState];
-		let remainingVarName; // argument for determiningChartType
-		delete vlSpec.encoding.color; // clear colorscale (we'll add it back if needed)
-		if (shelfId == "x-drop") {
-			delete vlSpec.encoding.x;
-			if (vlSpec.encoding.y && vlSpec.encoding.y.aggregate) {
-				delete vlSpec.encoding.y; // clear aggregation for bar chart
-			} 
-			remainingVarName = vlSpec.encoding.y
-				? vlSpec.encoding.y.field
-				: undefined;
-		} else if (shelfId == "y-drop") {
-			delete vlSpec.encoding.y;
-			if (vlSpec.encoding.x && vlSpec.encoding.x.aggregate) {
-				delete vlSpec.encoding.x; // clear aggregation for bar chart
-			}
-			remainingVarName = vlSpec.encoding.x
-				? vlSpec.encoding.x.field
-				: undefined;
-		} else if (shelfId == "row-drop") {
-			delete vlSpec.encoding.row;
-			needDomainUpdate = true;
-		} else if (shelfId == "col-drop") {
-			delete vlSpec.encoding.column;
-			needDomainUpdate = true;
-		}
-		if (!remainingVarName) {
-			remainingVarName = vlSpec.encoding.y
-				? vlSpec.encoding.y.field
-				: vlSpec.encoding.x
-					? vlSpec.encoding.x.field
-					: undefined;
-		}
-		if (remainingVarName) {
-			determineChartType(vlSpec, remainingVarName);
-		} else {
-			// reset
-			vlSpec.mark = "tick";
-			delete vlSpec.encoding.x;
-			delete vlSpec.encoding.y;
-			delete vlSpec.encoding.color;
-			// delete vlSpec.encoding.row;
-			// delete vlSpec.encoding.column;
-		}
-		vlSpec = { ...vlSpec };
-		specChanged++;
-        updateLogs(`remove variable, shelf: [${shelfId}]`)
-	}
-
 	function deepCopy(inObject) {
 		let outObject, value, key;
 		if (typeof inObject !== "object" || inObject === null) {
@@ -1121,7 +1162,7 @@
 						{transformations}
 						{handleDndConsider}
 						{handleDndFinalize}
-						{encodingToData}
+						{removeEncoding}
 						{addFilter}
 						{removeFilter}
 						{addTransform}
@@ -1188,6 +1229,7 @@
 						{formatVariable}
 						{getVariableTransform}
 						bind:showPredictionOrResidual
+						bind:showModelDescriptions
 						bind:outcomeName
 					/>					
 				</Column>
