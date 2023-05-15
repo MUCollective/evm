@@ -26,7 +26,7 @@
 	// console.log("canvas", horzSpace, vertSpace);
 
 	// set default chart appearance
-	let defaultSize = 250,
+	let defaultSize = 180, //250 for deplot, 180 for figures
 		minSize = 16,
 		interChartPad = 10,
 		stripSize = 15,

@@ -96,7 +96,7 @@
 	const datasetNameToPath = {
 		'Cars': 'cars.json',
 		'Forest fires': 'eval_forestfires.csv',
-		'Students': 'eval_students.csv',
+		'Students': 'all_students.csv', //'eval_students.csv'
 		// TODO: Add housing dataset
 	}
 
@@ -1122,6 +1122,7 @@
 </script>
 
 <svelte:head>
+	<title>EVM</title>
 	<!-- OpenCPU client library -->
 	<script src="./script/jquery-3.6.0.js"></script>
 	<script src="./script/opencpu-0.5.js"></script>
