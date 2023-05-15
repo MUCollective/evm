@@ -4,7 +4,7 @@
 	import { Vega } from "svelte-vega";
 	import { onMount, prevent_default } from "svelte/internal";
 	import { id } from "vega";
-	import { sortOrdinal } from "./vgSpecUtil"
+	import { sortOrdinal } from "./vgSpecUtil";
 
 	// from App.svelte
 	export let dataChanged: any;
@@ -17,7 +17,8 @@
 	export let models: any;
 	export let outcomeName: string;
 	export let ordinalSortIndex: any;
-	// export let showPredictionOrResidual;
+	export let showPredictionOrResidual;
+	export let modelColors: any;
 
 	// get width and height of chart canvas
 	let chartCanvas = document.getElementById("chart-canvas"),
@@ -45,7 +46,7 @@
 		strY = false;
 
 	// process input data, looking for signs that we have a model to show
-	let dataset = { table: dataChanged };
+	let dataset = { table: JSON.parse(JSON.stringify(dataChanged)) };
 	let distinctDraws = [1, 2, 3, 4, 5]; // hardcoded assuming 5 draws as in Vega 'sample' signal definition
 	let distinctModelGroups = distinctValues(dataset.table, "modelcheck_group");
 	if (distinctModelGroups.includes("undefined")) {
@@ -3035,8 +3036,15 @@
 	}
 	console.log("use vgSpec", vgSpec);
 	// console.log(ordinalSortIndex);
-	vgSpec = sortOrdinal(vgSpec, {vlSpec, ordinalSortIndex, 'isModeling': modeling && haveModelToShow, models});
+	vgSpec = sortOrdinal(vgSpec, {vlSpec, 
+						ordinalSortIndex, 
+						'isModeling': modeling && haveModelToShow, 
+						models, 
+						showPredictionOrResidual, 
+						'modelColors': [modelColors["data"]].concat(models.map(m => modelColors[m.name]))});
 	console.log("vgSpec (after sorting ordinal)", vgSpec);
+
+	console.log("data before rendering", dataset)
 
 	function distinctValues(dataObj, key) {
 		var lookup = {};

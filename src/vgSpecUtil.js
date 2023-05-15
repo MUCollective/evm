@@ -138,7 +138,7 @@ const replaceSort = (sortVgSpec, ref, ordinalVar, sortIndexField) => {
     return sortVgSpec;
 }
 
-const sortModels = (sortVgSpec, {sortIndex, vlSpec, modelVar}) => {
+const sortModels = (sortVgSpec, {sortIndex, vlSpec, modelVar, modelColors}) => {
     const transformSortIndexExpr = getTransformExpr(sortIndex, modelVar);
     const sortIndexField = `${modelVar}_sort_index`;
     //region gen sort index field
@@ -179,7 +179,7 @@ const sortModels = (sortVgSpec, {sortIndex, vlSpec, modelVar}) => {
             sortVgSpec = replaceSortOnColumnRow(sortVgSpec, "column", modelVar, sortIndexField);
             //endsubregion
         }
-    }
+    }2
     //endregion
 
     //region sort in mark
@@ -192,8 +192,11 @@ const sortModels = (sortVgSpec, {sortIndex, vlSpec, modelVar}) => {
 
     let cellRef = sortVgSpec.marks.find(v => (v.type === `group` && v.from && v.from.facet)),
         varIdx = cellRef.from.facet.groupby.findIndex((elem) => elem == modelVar);
-    cellRef.from.facet.groupby.splice(varIdx, 1, sortIndexField); // at the cell level, replace ordinal variable with its sort index
-    // delete cellRef.from.facet.aggregate; // (Alex: not sure why we're getting rid of cross?)
+    cellRef.from.facet.groupby.splice(varIdx, 0, sortIndexField); // at the cell level, insert sort index before ordinal variable
+    if (cellRef.from.facet.aggregate && cellRef.from.facet.aggregate.cross) {
+        cellRef.from.facet.aggregate.cross = false;
+    }
+    // cellRef.from.facet.aggregate.?cross = false; // (Alex: not sure why we're getting rid of cross?)
     sortVgSpec = replaceSort(sortVgSpec, cellRef, modelVar, sortIndexField); 
     // (Alex: overwriting this sort fails in most edge cases)
     // cellRef.sort = {
@@ -203,12 +206,20 @@ const sortModels = (sortVgSpec, {sortIndex, vlSpec, modelVar}) => {
     //endregion
 
     //region sort in scale
-    sortVgSpec.scales.find(s => s.name === 'color').domain = sortIndex[modelVar];
+    if (vlSpec.mark.type === "rect") {
+        const colorScaleRef = sortVgSpec.scales.find(s => s.name === 'mc_color');
+        colorScaleRef.domain = sortIndex[modelVar];
+        colorScaleRef.range = modelColors;
+    } else {
+        const colorScaleRef = sortVgSpec.scales.find(s => s.name === 'color');
+        colorScaleRef.domain = sortIndex[modelVar];
+        colorScaleRef.range = modelColors;
+    }
     //endregion
     return sortVgSpec;
 }
 
-const sortOrdinal = (vgSpec, {vlSpec, ordinalSortIndex, isModeling, models}) => {
+const sortOrdinal = (vgSpec, {vlSpec, ordinalSortIndex, isModeling, models, showPredictionOrResidual, modelColors}) => {
     const sortVgSpec = JSON.parse(JSON.stringify(vgSpec));
 
 	const sortIndex = ordinalSortIndex;
@@ -226,11 +237,13 @@ const sortOrdinal = (vgSpec, {vlSpec, ordinalSortIndex, isModeling, models}) => 
         sortOrdinalOnColumnRow(sortVgSpec, {cell: 'row', sortIndex, vlSpec, isModeling});
     }
 
-    // if (isModeling) {
-    //     const modelVar = "modelcheck_group";
-    //     const sortIndex = {[modelVar]: ["data"].concat(models.map(m => m.name))};
-    //     sortModels(sortVgSpec, {sortIndex, vlSpec, modelVar});
-    // }
+    if (isModeling) {
+        const modelVar = "modelcheck_group";
+        const sortIndex = showPredictionOrResidual === "prediction" ? 
+                {[modelVar]: ["data"].concat(models.map(m => m.name))} : 
+                {[modelVar]: models.map(m => "res| " + m.name)};
+        sortModels(sortVgSpec, {sortIndex, vlSpec, modelVar, modelColors});
+    }
 
     return sortVgSpec;
 };
