@@ -3041,7 +3041,7 @@
 						'isModeling': modeling && haveModelToShow, 
 						models, 
 						showPredictionOrResidual, 
-						'modelColors': [modelColors["data"]].concat(models.map(m => modelColors[m.name]))});
+						'modelColors': modelColors});
 	console.log("vgSpec (after sorting ordinal)", vgSpec);
 
 	console.log("data before rendering", dataset)

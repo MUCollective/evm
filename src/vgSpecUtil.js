@@ -209,11 +209,11 @@ const sortModels = (sortVgSpec, {sortIndex, vlSpec, modelVar, modelColors}) => {
     if (vlSpec.mark.type === "rect") {
         const colorScaleRef = sortVgSpec.scales.find(s => s.name === 'mc_color');
         colorScaleRef.domain = sortIndex[modelVar];
-        colorScaleRef.range = modelColors;
+        colorScaleRef.range = sortIndex[modelVar].map(m => modelColors[m]);
     } else {
         const colorScaleRef = sortVgSpec.scales.find(s => s.name === 'color');
         colorScaleRef.domain = sortIndex[modelVar];
-        colorScaleRef.range = modelColors;
+        colorScaleRef.range = sortIndex[modelVar].map(m => modelColors[m]);
     }
     //endregion
     return sortVgSpec;
