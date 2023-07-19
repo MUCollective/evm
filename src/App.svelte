@@ -57,7 +57,11 @@
     const logSaveUrl = uri => `https://evm-userstudy.ziyangguo.men${uri}` //`https://158.247.215.182:5000${uri}` //`http://127.0.0.1:8000${uri}`;
 
 	const colorScheme = d3.schemeCategory10;
-	const modelColors = models.reduce((colors, m, i) => colors[m] = colorScheme[i % colorScheme.length], {"data": colorScheme[0]});
+	const modelColors = models.reduce((colors, m, i) => {
+		colors[m] = colorScheme[i % colorScheme.length]
+		colors["res| "]
+		return colors
+	}, {"data": colorScheme[0]});
 	let colorIndex = models.length + 1;
 
     const updateLogs = async (info) => {
@@ -890,7 +894,9 @@
 		modeling = true;
 
 		if (!modelColors[newModel.name]) {
-			modelColors[newModel.name] = colorScheme[(colorIndex++) % colorScheme.length];
+			modelColors[newModel.name] = colorScheme[colorIndex % colorScheme.length];
+			modelColors["res| " + newModel.name] = colorScheme[colorIndex % colorScheme.length];
+			colorIndex++;
 		}
 
         const cachedOutcomeName = deepCopy(outcomeName);
@@ -927,6 +933,7 @@
                 modeling = models.length > 1;
                 models = models.slice(0, -1);
 				delete modelColors[newModel.name];
+				delete modelColors["res| " + newModel.name];
 				colorIndex -= 1;
                 outcomeName = cachedOutcomeName;
                 showLoadingIcon = false;
