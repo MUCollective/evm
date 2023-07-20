@@ -6,6 +6,8 @@ You can find a live version of the interface at [https://github.com/MUCollective
 
 EVM relies on an R backend hosted by OpenCPU. You can find the backend code at [https://github.com/kalealex/modelcheck](https://github.com/kalealex/modelcheck)
 
+Study planning materials are at [https://github.com/kalealex/exploratory-modeling-eval](https://github.com/kalealex/exploratory-modeling-eval) 
+
 ## Get started
 
 Install the dependencies...
