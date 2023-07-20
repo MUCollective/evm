@@ -1,7 +1,10 @@
 # Exploratory Visual Modeling (EVM)
 
-This is the codebase for the interface presented in Chapter 6 of my disseration. 
-You can find the corresponding github repo at https://github.com/MUCollective/exploratory_modeling
+This is the codebase for the IEEE VIS 2023 publication "EVM: Incorporating Model Checking into Exploratory Visual Analysis".
+A preliminary version of work is also presented in Chapter 6 of Alex Kale's dissertation. 
+You can find a live version of the interface at [https://github.com/MUCollective/evm/](https://github.com/MUCollective/evm/).
+
+EVM relies on an R backend hosted by OpenCPU. You can find the backend code at [https://github.com/kalealex/modelcheck](https://github.com/kalealex/modelcheck)
 
 ## Get started
 
