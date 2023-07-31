@@ -572,8 +572,8 @@
 
 	function removeFilter(index, clearAll = false) {
 		var filterTemp;
-		clearAll = filters.length == 1;
-		if (clearAll) {
+		if (clearAll || filters.length == 1) {
+			// console.log("Clear all filters!");
 			filterTemp = [];
 		} else {
 			// index of filter
@@ -680,8 +680,8 @@
 
 	function removeTrans(index, clearAll = false) {
 		var transTemp;
-		clearAll = transformations.length == 1;
-		if (clearAll) {
+		if (clearAll || transformations.length == 1) {
+			// console.log("Clear all trans!");
 			transTemp = [];
 		} else {
 			// index of transformation
@@ -970,8 +970,8 @@
 		var modelTemp, 
 			removedModel;
 		// determine whether the model we are dropping is the only model to drop
-		removeAll = models.length == 1
-		if (removeAll) {
+		if (removeAll || models.length == 1) {
+			// console.log("Clear all models!");
 			// drop all models
 			models = [];
 			showModelDescriptions = {};
@@ -1003,7 +1003,7 @@
 			}
 			delete showModelDescriptions[removedModel.name]
 		}
-		// if removing one model but keeping others
+		// if removing one model but keeping others (should hit return above otherwise)
 		Promise.all([modelTemp, removedModel])
 			.then((values) => {
 				// update global models queue

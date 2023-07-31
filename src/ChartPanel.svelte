@@ -27,7 +27,7 @@
 	// console.log("canvas", horzSpace, vertSpace);
 
 	// set default chart appearance
-	let defaultSize = 180, //250 for deplot, 180 for figures
+	let defaultSize = 180, //250 for default, 180 for figures
 		minSize = 16,
 		interChartPad = 10,
 		stripSize = 15,
@@ -3209,16 +3209,16 @@
 		}
 
 		// nudge bounds to avoid "jerky" HOPs
-		if (!(Number.isInteger(minX) && Number.isInteger(maxX))) {
-			let nudge = (maxX - minX) / 100;
-			minX = minX - nudge;
-			maxX = maxX + nudge;
-		}
-		if (!(Number.isInteger(minY) && Number.isInteger(maxY))) {
-			let nudge = (maxY - minY) / 100;
-			minY = minY - nudge;
-			maxY = maxY + nudge;
-		}
+		// if (!(Number.isInteger(minX) && Number.isInteger(maxX))) {
+		// 	let nudge = (maxX - minX) / 100;
+		// 	minX = minX - nudge;
+		// 	maxX = maxX + nudge;
+		// }
+		// if (!(Number.isInteger(minY) && Number.isInteger(maxY))) {
+		// 	let nudge = (maxY - minY) / 100;
+		// 	minY = minY - nudge;
+		// 	maxY = maxY + nudge;
+		// }
 
 		// sort unique values for axis domains
 		uniqueX.sort((a, b) => comparator(a, b));
